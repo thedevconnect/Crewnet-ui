@@ -1,6 +1,46 @@
-# Crewnet
+# Crewnet - HRMS & Attendance Management System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.1.
+A modern Employee Management, Attendance, and HRMS application built with Angular 20 and TypeScript.
+
+## 🚀 Features Implemented
+
+### ✅ Phase 1 - Core Setup (Completed)
+
+- **Authentication Module**
+  - Login page with form validation
+  - Auth guard for route protection
+  - HTTP interceptor for token management
+  - Mock authentication system (accepts any email/password)
+
+- **Main Layout**
+  - Responsive sidebar with navigation
+  - Topbar with user profile and notifications
+  - Clean and modern UI design
+  - Mobile-responsive layout
+
+- **Dashboard**
+  - Employee statistics cards (Total, Present, Absent, etc.)
+  - Recent activity feed
+  - Department-wise attendance tracking
+  - Upcoming birthdays
+  - Quick action buttons
+
+- **Module Structure**
+  - Employees (placeholder)
+  - Attendance (placeholder)
+  - Leaves (placeholder)
+  - Shifts (placeholder)
+  - Departments (placeholder)
+  - Reports (placeholder)
+  - Settings (placeholder)
+
+## 🎨 Login Credentials
+
+The app uses mock authentication. You can login with **any email and password**.
+
+Example:
+- Email: `admin@crewnet.com`
+- Password: `password`
 
 ## Development server
 
