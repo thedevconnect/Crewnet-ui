@@ -82,4 +82,4 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EmployeesComponent {}
+export class Employees {}

@@ -11,11 +11,11 @@ interface MenuItem {
 @Component({
   selector: 'app-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.css',
+  templateUrl: './layout.html',
+  styleUrl: './layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent {
+export class Layout {
   private readonly authService = inject(AuthService);
 
   protected readonly sidebarOpen = signal(true);

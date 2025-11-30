@@ -1,19 +1,19 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-departments',
+  selector: 'app-reports',
   imports: [],
   template: `
     <div class="page-container">
       <div class="page-header">
         <div>
-          <h1>Departments</h1>
-          <p>Manage organizational departments</p>
+          <h1>Reports</h1>
+          <p>Generate and view reports</p>
         </div>
-        <button class="btn-primary">Add Department</button>
+        <button class="btn-primary">Generate Report</button>
       </div>
       <div class="card">
-        <p class="placeholder-text">Department management module coming soon...</p>
+        <p class="placeholder-text">Reports module coming soon...</p>
       </div>
     </div>
   `,
@@ -29,4 +29,4 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DepartmentsComponent {}
+export class Reports {}

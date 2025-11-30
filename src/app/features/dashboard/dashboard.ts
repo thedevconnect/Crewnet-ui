@@ -19,11 +19,11 @@ interface RecentActivity {
 @Component({
   selector: 'app-dashboard',
   imports: [],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class Dashboard {
   protected readonly stats = signal<StatCard[]>([
     {
       title: 'Total Employees',

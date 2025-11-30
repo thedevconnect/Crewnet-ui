@@ -13,64 +13,64 @@ export const routes: Routes = [
       {
         path: 'login',
         loadComponent: () =>
-          import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+            import('./features/auth/login/login').then((m) => m.Login),
       },
       {
         path: 'register',
         loadComponent: () =>
-          import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+            import('./features/auth/register/register').then((m) => m.Register),
       },
     ],
   },
   {
     path: '',
     loadComponent: () =>
-      import('./shared/layout/layout.component').then((m) => m.LayoutComponent),
+        import('./shared/layout/layout').then((m) => m.Layout),
     canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+            import('./features/dashboard/dashboard').then((m) => m.Dashboard),
       },
       {
         path: 'employees',
         loadComponent: () =>
-          import('./features/employees/employees.component').then((m) => m.EmployeesComponent),
+            import('./features/employees/employees').then((m) => m.Employees),
       },
       {
         path: 'attendance',
         loadComponent: () =>
-          import('./features/attendance/attendance.component').then(
-            (m) => m.AttendanceComponent
-          ),
+            import('./features/attendance/attendance').then(
+              (m) => m.Attendance
+            ),
       },
       {
         path: 'leaves',
         loadComponent: () =>
-          import('./features/leaves/leaves.component').then((m) => m.LeavesComponent),
+            import('./features/leaves/leaves').then((m) => m.Leaves),
       },
       {
         path: 'shifts',
         loadComponent: () =>
-          import('./features/shifts/shifts.component').then((m) => m.ShiftsComponent),
+            import('./features/shifts/shifts').then((m) => m.Shifts),
       },
       {
         path: 'departments',
         loadComponent: () =>
-          import('./features/departments/departments.component').then(
-            (m) => m.DepartmentsComponent
-          ),
+            import('./features/departments/departments').then(
+              (m) => m.Departments
+            ),
       },
       {
         path: 'reports',
         loadComponent: () =>
-          import('./features/reports/reports.component').then((m) => m.ReportsComponent),
+            import('./features/reports/reports').then((m) => m.Reports),
       },
       {
         path: 'settings',
         loadComponent: () =>
-          import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+            import('./features/settings/settings').then((m) => m.Settings),
       },
     ],
   },

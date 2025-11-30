@@ -1,17 +1,19 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
+  templateUrl: './register.html',
+  styleUrl: './register.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent {
+export class Register {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
 
   protected readonly registerForm: FormGroup;
   protected readonly error = signal('');
@@ -74,11 +76,22 @@ export class RegisterComponent {
 
     this.loading.set(true);
 
-    // Simulate API call delay
-    setTimeout(() => {
-      // Mock registration success
-      this.loading.set(false);
-      this.router.navigate(['/auth/login']);
-    }, 500);
+    const { fullName, email, password } = this.registerForm.value;
+
+    this.authService.register({ name: fullName, email, password }).subscribe({
+      next: (response) => {
+        this.loading.set(false);
+        if (response.success) {
+          // Auto-login after successful registration
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.error.set(response.message || 'Registration failed. Please try again.');
+        }
+      },
+      error: () => {
+        this.loading.set(false);
+        this.error.set('An error occurred. Please try again.');
+      },
+    });
   }
 }
