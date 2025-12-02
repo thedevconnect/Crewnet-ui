@@ -1,6 +1,46 @@
 .dashboard {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Date Section */
+.date-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.date-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.date-info i {
+  color: #6b7280;
+}
+
+.quarter-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #eff6ff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quarter-badge i {
+  font-size: 0.75rem;
 }
 
 .dashboard-header {

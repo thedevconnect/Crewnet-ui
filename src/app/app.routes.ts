@@ -1,76 +1,67 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { Login } from './features/auth/login/login';
+import { Register } from './features/auth/register/register';
+import { Layout } from './shared/layout/layout';
+import { Dashboard } from './features/dashboard/dashboard';
+import { Attendance } from './features/attendance/attendance';
+import { Leaves } from './features/leaves/leaves';
+import { Shifts } from './features/shifts/shifts';
+import { Departments } from './features/departments/departments';
+import { Reports } from './features/reports/reports';
+import { Settings } from './features/settings/settings';
+import { Employees } from './features/employees/employees';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: '/login',
     pathMatch: 'full',
   },
   {
-    path: 'auth',
-    children: [
-      {
-        path: 'login',
-        loadComponent: () =>
-            import('./features/auth/login/login').then((m) => m.Login),
-      },
-      {
-        path: 'register',
-        loadComponent: () =>
-            import('./features/auth/register/register').then((m) => m.Register),
-      },
-    ],
+    path: 'login',
+    component: Login,
+  },
+  {
+    path: 'register',
+    component: Register,
   },
   {
     path: '',
-    loadComponent: () =>
-        import('./shared/layout/layout').then((m) => m.Layout),
+    component: Layout,
     canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',
-        loadComponent: () =>
-            import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+        component: Dashboard,
       },
       {
         path: 'employees',
-        loadComponent: () =>
-            import('./features/employees/employees').then((m) => m.Employees),
+        component: Employees,
       },
       {
         path: 'attendance',
-        loadComponent: () =>
-            import('./features/attendance/attendance').then(
-              (m) => m.Attendance
-            ),
+        component: Attendance,
       },
       {
         path: 'leaves',
-        loadComponent: () =>
-            import('./features/leaves/leaves').then((m) => m.Leaves),
+        component: Leaves,
       },
       {
         path: 'shifts',
-        loadComponent: () =>
-            import('./features/shifts/shifts').then((m) => m.Shifts),
+        component: Shifts,
       },
       {
         path: 'departments',
-        loadComponent: () =>
-            import('./features/departments/departments').then(
-              (m) => m.Departments
-            ),
+        component: Departments,
       },
       {
         path: 'reports',
-        loadComponent: () =>
-            import('./features/reports/reports').then((m) => m.Reports),
+        component: Reports,
       },
       {
         path: 'settings',
-        loadComponent: () =>
-            import('./features/settings/settings').then((m) => m.Settings),
+        component: Settings,
       },
     ],
   },
