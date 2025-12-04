@@ -9,8 +9,7 @@ import { Leaves } from './features/leaves/leaves';
 import { Shifts } from './features/shifts/shifts';
 import { Departments } from './features/departments/departments';
 import { Reports } from './features/reports/reports';
-import { Settings } from './features/settings/settings';
-import { Employees } from './features/employees/employees';
+import { Settings } from './features/settings/settings'; 
 
 export const routes: Routes = [
   {
