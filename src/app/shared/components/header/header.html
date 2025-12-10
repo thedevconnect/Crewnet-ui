@@ -1,54 +1,31 @@
 <div class="header">
   <div class="header-container">
-    <!-- Left Section - User Info -->
-    <div class="user-section">
-      <p-avatar 
-        [label]="user().name.charAt(0).toUpperCase()" 
-        styleClass="bg-blue-600 text-white font-semibold" 
-        shape="circle" 
-        size="large">
-      </p-avatar>
-      <div class="user-details">
-        <h2 class="user-name">{{ user().name }}</h2>
-        <p class="user-info">
-          <span class="user-role">{{ user().role }}</span>
-          @if (user().email) {
-            <span class="user-separator">•</span>
-            <span class="user-email">{{ user().email }}</span>
-          }
-        </p>
-      </div>
+    <!-- Welcome Message -->
+    <div class="welcome-section">
+      <h1 class="welcome-title">Welcome back, {{ user().name }}! 👋</h1>
+      <p class="welcome-subtitle">{{ user().role }}</p>
     </div>
 
-    <!-- Right Section - Actions -->
-    <div class="header-actions">
-      <button pButton 
-              icon="pi pi-user" 
-              label="Profile"
-              class="p-button-text p-button-plain action-btn"
-              (click)="handleProfile()"
-              pTooltip="View Profile" 
-              tooltipPosition="bottom">
-      </button>
-
-      <button pButton 
-              icon="pi pi-cog" 
-              label="Settings"
-              class="p-button-text p-button-plain action-btn"
-              (click)="handleSettings()"
-              pTooltip="Settings" 
-              tooltipPosition="bottom">
-      </button>
-
-      <div class="divider"></div>
+    <!-- User Section -->
+    <div class="user-section">
+      <div class="user-info-card">
+        <p-avatar 
+          [label]="user().name.charAt(0).toUpperCase()" 
+          styleClass="user-avatar" 
+          shape="circle" 
+          size="large">
+        </p-avatar>
+        <div class="user-details">
+          <span class="user-name">{{ user().name }}</span>
+          <span class="user-email">{{ user().email }}</span>
+        </div>
+      </div>
 
       <button pButton 
               icon="pi pi-sign-out" 
               label="Logout"
-              class="p-button-outlined p-button-danger logout-btn"
-              (click)="logout()"
-              pTooltip="Logout from system" 
-              tooltipPosition="bottom">
+              class="logout-btn"
+              (click)="logout()">
       </button>
     </div>
   </div>

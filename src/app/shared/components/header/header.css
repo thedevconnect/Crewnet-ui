@@ -1,144 +1,196 @@
+/* ============================================
+   PROFESSIONAL HEADER DESIGN
+   ============================================ */
+
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 2rem;
+  padding: 1.5rem 2rem;
   max-width: 100%;
+  gap: 2rem;
+}
+
+/* Welcome Section */
+.welcome-section {
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.welcome-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-weight: 500;
 }
 
 /* User Section */
 .user-section {
   display: flex;
   align-items: center;
+  gap: 1.5rem;
+}
+
+.user-info-card {
+  display: flex;
+  align-items: center;
   gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.user-info-card:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .user-avatar {
+  background: white !important;
+  color: #1e40af !important;
+  font-weight: 700 !important;
+  font-size: 1.125rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .user-name {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 0.9375rem;
+  font-weight: 600;
   color: white;
-  margin: 0;
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.user-role {
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 0.125rem 0.625rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.user-separator {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 300;
-}
-
 .user-email {
-  font-weight: 400;
-  opacity: 0.95;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.2;
 }
 
-/* Header Actions */
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.action-btn {
-  color: white !important;
-  border-color: transparent !important;
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-  transform: translateY(-1px);
-}
-
-.divider {
-  width: 1px;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.3);
-  margin: 0 0.5rem;
-}
-
+/* Logout Button */
 .logout-btn {
   background: white !important;
-  border-color: white !important;
+  border: 2px solid white !important;
   color: #dc2626 !important;
   font-weight: 600 !important;
-  transition: all 0.2s ease;
+  padding: 0.625rem 1.5rem !important;
+  border-radius: 10px !important;
+  font-size: 0.9375rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logout-btn:hover {
-  background: #fee2e2 !important;
+  background: #dc2626 !important;
   border-color: #dc2626 !important;
-  color: #b91c1c !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3) !important;
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+::ng-deep .logout-btn .p-button-icon {
+  font-size: 1rem;
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .welcome-title {
+    font-size: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .header-container {
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+  }
+
+  .welcome-section {
+    flex: 0;
+    min-width: 0;
+  }
+
+  .welcome-title {
+    font-size: 1.125rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .welcome-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .user-info-card {
+    padding: 0.625rem 1rem;
   }
 
   .user-email {
     display: none;
   }
 
-  .user-separator {
-    display: none;
-  }
-
-  .action-btn {
-    padding: 0.5rem !important;
-  }
-
-  .action-btn .p-button-label {
-    display: none;
+  .logout-btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
   }
 }
 
 @media (max-width: 640px) {
-  .user-name {
+  .welcome-title {
     font-size: 1rem;
   }
 
-  .header-actions {
-    gap: 0.25rem;
+  .user-section {
+    gap: 0.75rem;
   }
 
-  .divider {
+  .user-info-card {
+    padding: 0.5rem 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+  }
+
+  ::ng-deep .logout-btn .p-button-label {
     display: none;
+  }
+
+  .logout-btn {
+    padding: 0.625rem !important;
+    border-radius: 8px !important;
   }
 }

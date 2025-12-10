@@ -34,10 +34,7 @@ export const routes: Routes = [
         path: 'dashboard',
         component: Dashboard,
       },
-      {
-        path: 'employees',
-        component: Employees,
-      },
+      
       {
         path: 'attendance',
         component: Attendance,

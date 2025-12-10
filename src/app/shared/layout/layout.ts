@@ -31,11 +31,18 @@ export class Layout {
   
   protected readonly userDetails = computed(() => {
     const user = this.currentUser();
-    return user ? {
-      name: user.name,
-      email: user.email || '',
-      role: user.role
-    } : null;
+    if (user) {
+      return {
+        name: user.name,
+        email: user.email || '',
+        role: user.role
+      };
+    }
+    return {
+      name: 'Guest User',
+      email: 'guest@crewnet.com',
+      role: 'Guest'
+    };
   });
   protected readonly currentDate = new Date().toLocaleDateString('en-US', { 
     weekday: 'long', 

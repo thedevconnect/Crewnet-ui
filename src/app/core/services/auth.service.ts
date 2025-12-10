@@ -36,7 +36,12 @@ export interface AuthResponse {
 export class AuthService {
     private readonly router = inject(Router);
     private readonly http = inject(HttpClient);
-    private readonly currentUser = signal<User | null>(null);
+    private readonly currentUser = signal<User | null>({
+        id: '1',
+        name: 'John Doe',
+        email: 'john.doe@crewnet.com',
+        role: 'Administrator'
+    });
     private readonly apiUrl = environment.apiUrl;
 
     getCurrentUser() {
