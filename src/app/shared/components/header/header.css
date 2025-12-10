@@ -12,9 +12,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   max-width: 100%;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 /* Welcome Section */
@@ -23,16 +23,16 @@
 }
 
 .welcome-title {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: white;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.125rem 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
 
 .welcome-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
   font-weight: 500;
@@ -42,17 +42,17 @@
 .user-section {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .user-info-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
@@ -67,7 +67,7 @@
   background: white !important;
   color: #1e40af !important;
   font-weight: 700 !important;
-  font-size: 1.125rem !important;
+  font-size: 1rem !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -97,9 +97,9 @@
   border: 2px solid white !important;
   color: #dc2626 !important;
   font-weight: 600 !important;
-  padding: 0.625rem 1.5rem !important;
-  border-radius: 10px !important;
-  font-size: 0.9375rem !important;
+  padding: 0.5rem 1.25rem !important;
+  border-radius: 8px !important;
+  font-size: 0.875rem !important;
   transition: all 0.3s ease !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -123,18 +123,18 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .header-container {
-    padding: 1.25rem 1.5rem;
+    padding: 0.875rem 1.25rem;
   }
 
   .welcome-title {
-    font-size: 1.25rem;
+    font-size: 1.0625rem;
   }
 }
 
 @media (max-width: 768px) {
   .header-container {
-    padding: 1rem 1.25rem;
-    gap: 1rem;
+    padding: 0.875rem 1rem;
+    gap: 0.75rem;
   }
 
   .welcome-section {
@@ -143,18 +143,18 @@
   }
 
   .welcome-title {
-    font-size: 1.125rem;
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .welcome-subtitle {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
   }
 
   .user-info-card {
-    padding: 0.625rem 1rem;
+    padding: 0.5rem 0.875rem;
   }
 
   .user-email {
@@ -162,27 +162,27 @@
   }
 
   .logout-btn {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.875rem !important;
+    padding: 0.5rem 0.875rem !important;
+    font-size: 0.8125rem !important;
   }
 }
 
 @media (max-width: 640px) {
   .welcome-title {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
   .user-section {
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .user-info-card {
-    padding: 0.5rem 0.75rem;
-    gap: 0.75rem;
+    padding: 0.5rem 0.625rem;
+    gap: 0.625rem;
   }
 
   .user-name {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
 
   ::ng-deep .logout-btn .p-button-label {
@@ -190,7 +190,7 @@
   }
 
   .logout-btn {
-    padding: 0.625rem !important;
+    padding: 0.5rem !important;
     border-radius: 8px !important;
   }
 }

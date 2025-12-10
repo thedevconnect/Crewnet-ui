@@ -4,21 +4,28 @@
 
     <!-- Logo Section -->
     <div class="sidebar-logo">
-      @if (sidebarOpen()) {
-        <div class="logo-content">
-          <div class="logo-icon">
+      <div class="logo-header">
+        @if (sidebarOpen()) {
+          <div class="logo-content">
+            <div class="logo-icon">
+              <i class="pi pi-users"></i>
+            </div>
+            <div class="logo-text">
+              <h1 class="logo-title">Crewnet</h1>
+              <p class="logo-subtitle">HRMS Platform</p>
+            </div>
+          </div>
+        } @else {
+          <div class="logo-icon-collapsed">
             <i class="pi pi-users"></i>
           </div>
-          <div class="logo-text">
-            <h1 class="logo-title">Crewnet</h1>
-            <p class="logo-subtitle">HRMS Platform</p>
-          </div>
-        </div>
-      } @else {
-        <div class="logo-icon-collapsed">
-          <i class="pi pi-users"></i>
-        </div>
-      }
+        }
+        <button class="toggle-btn toggle-btn-top" 
+                (click)="toggleSidebar()"
+                [attr.title]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'">
+          <i [class]="sidebarOpen() ? 'pi pi-chevron-left' : 'pi pi-chevron-right'"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Navigation Menu -->
@@ -38,18 +45,6 @@
         </a>
       }
     </nav>
-
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-      <button class="toggle-btn" 
-              (click)="toggleSidebar()"
-              [attr.title]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'">
-        <i [class]="sidebarOpen() ? 'pi pi-chevron-left' : 'pi pi-chevron-right'"></i>
-        @if (sidebarOpen()) {
-          <span>Collapse</span>
-        }
-      </button>
-    </div>
   </aside>
 
   <!-- Main Content Wrapper -->

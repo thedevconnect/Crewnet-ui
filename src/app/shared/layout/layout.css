@@ -27,15 +27,23 @@
 
 /* Logo Section */
 .sidebar-logo {
-  padding: 1.5rem 1rem;
+  padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
+}
+
+.logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .logo-content {
   display: flex;
   align-items: center;
   gap: 0.875rem;
+  flex: 1;
 }
 
 .logo-icon {
@@ -63,8 +71,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
 
 .logo-icon-collapsed i {
@@ -185,28 +193,23 @@
   letter-spacing: -0.01em;
 }
 
-/* Sidebar Footer */
-.sidebar-footer {
-  padding: 1rem 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
-}
-
+/* Toggle Button */
 .toggle-btn {
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.625rem;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem;
   background: rgba(255, 255, 255, 0.08);
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   color: white;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .toggle-btn:hover {
@@ -215,6 +218,12 @@
 
 .toggle-btn i {
   font-size: 0.875rem;
+}
+
+.toggle-btn-top {
+  width: 32px;
+  height: 32px;
+  padding: 0.5rem;
 }
 
 /* Smooth transitions for main content */
