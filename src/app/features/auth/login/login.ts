@@ -41,30 +41,35 @@ export class Login {
   }
 
   onSubmit(): void {
-    this.error.set('');
-
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      this.error.set('Please fill in all fields correctly');
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.get(key)?.markAsTouched();
+      });
       return;
     }
 
     this.loading.set(true);
+    this.error.set('');
 
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.loading.set(false);
-        if (response.success) {
-          this.router.navigate(['/dashboard']);
+        if (response.success || response.token) {
+          const returnUrl = this.router.routerState.snapshot.root.queryParams['returnUrl'] || '/dashboard';
+          this.router.navigate([returnUrl]);
         } else {
-          this.error.set(response.message || 'Invalid email or password');
+          this.error.set(response.message || 'Login failed. Please try again.');
         }
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.error.set('An error occurred. Please try again.');
+        this.error.set(
+          err?.error?.message ||
+          err?.message ||
+          'Login failed. Please check your credentials.'
+        );
       },
     });
   }

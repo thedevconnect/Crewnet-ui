@@ -58,7 +58,7 @@ export class AuthService {
 
     login(email: string, password: string): Observable<AuthResponse> {
         return this.http
-            .post<AuthResponse>(`${this.apiUrl}/login`, { email, password })
+            .post<AuthResponse>(`${this.apiUrl}/auth/login`, { email, password })
             .pipe(
                 tap((response) => {
                     if (response.success && response.token && response.user) {
@@ -77,7 +77,7 @@ export class AuthService {
     }
 
     register(data: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
             tap((response) => {
                 if (response.success && response.token && response.user) {
                     localStorage.setItem('crewnet_token', response.token);
@@ -97,7 +97,7 @@ export class AuthService {
     logout(): void {
         localStorage.removeItem('crewnet_token');
         this.currentUser.set(null);
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/login']);
     }
 
     loadUser(): void {
