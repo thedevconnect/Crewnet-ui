@@ -4,6 +4,9 @@ import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { SelectModule } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 interface UserDetails {
   name: string;
@@ -14,7 +17,8 @@ interface UserDetails {
 
 @Component({
   selector: 'app-header',
-  imports: [ButtonModule, AvatarModule, TooltipModule, MenuModule],
+  imports: [CommonModule, FormsModule, ButtonModule, AvatarModule, TooltipModule, MenuModule, SelectModule],
+  standalone: true,
   templateUrl: './header.html',
   styleUrl: './header.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +29,8 @@ export class Header implements OnInit {
   onRoleChange = output<string>();
 
   selectedRole = signal<string>('Admin');
+  selectedCity = signal<string>('karnal');
+  selectedRoleItem = signal<string>('Ess');
 
   protected readonly profileMenuItems: MenuItem[] = [];
   protected readonly roleMenuItems: MenuItem[] = [];
@@ -34,6 +40,13 @@ export class Header implements OnInit {
     this.initRoleMenu();
 
     this.selectedRole.set(this.user().role);
+    // Set default values
+    if (this.cities.length > 0) {
+      this.selectedCity.set(this.cities[0]);
+    }
+    if (this.roleitem.length > 0) {
+      this.selectedRoleItem.set(this.roleitem[0]);
+    }
   }
 
   private initProfileMenu(): void {
@@ -54,6 +67,24 @@ export class Header implements OnInit {
     );
   }
 
+  protected readonly cities: string[] = [
+    'karnal',
+    'panipat',
+    'rohtak',
+    'yamunanagar',
+    'ambala',
+    'sirsa',
+    'faridabad',
+    'gurgaon',
+  ];
+  
+  protected readonly roleitem: string[] = [
+    'Hr',
+    'Ess',
+    'Finance',
+    'Sales',
+    'Engineering',
+  ];
   private initRoleMenu(): void {
     this.roleMenuItems.push(
       {
@@ -86,5 +117,15 @@ export class Header implements OnInit {
     this.selectedRole.set(role);
     this.onRoleChange.emit(role);
     console.log('Role changed to:', role);
+  }
+
+  onCityChange(city: string): void {
+    this.selectedCity.set(city);
+    console.log('City changed to:', city);
+  }
+
+  onRoleItemChange(roleItem: string): void {
+    this.selectedRoleItem.set(roleItem);
+    console.log('Role Item changed to:', roleItem);
   }
 }

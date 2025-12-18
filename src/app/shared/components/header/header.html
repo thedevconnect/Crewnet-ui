@@ -10,13 +10,27 @@
     <!-- Right Section -->
     <div class="user-section">
 
-      <!-- 🔽 Role Dropdown -->
-      <button pButton type="button" [label]="selectedRole()" icon="pi pi-briefcase" class="p-button-text role-btn"
-        (click)="roleMenu.toggle($event)">
-      </button>
+      <!-- City Dropdown -->
+      <p-select 
+        [options]="cities" 
+        [(ngModel)]="selectedCity"
+        (ngModelChange)="onCityChange($event)"
+        placeholder="Select City"
+        [filter]="true"
+        [showClear]="false"
+        styleClass="header-select city-select">
+      </p-select>
 
-      <p-menu #roleMenu [model]="roleMenuItems" [popup]="true" [appendTo]="'body'">
-      </p-menu>
+      <!-- Role Item Dropdown -->
+      <p-select 
+        [options]="roleitem" 
+        [(ngModel)]="selectedRoleItem"
+        (ngModelChange)="onRoleItemChange($event)"
+        placeholder="Select Role"
+        [filter]="true"
+        [showClear]="false"
+        styleClass="header-select role-select">
+      </p-select>
 
       <!-- 🔽 Profile Dropdown -->
       <button pButton type="button" class="p-button-text profile-btn" (click)="profileMenu.toggle($event)">
