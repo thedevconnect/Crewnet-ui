@@ -78,19 +78,27 @@ export class Register {
 
     const { fullName, email, password } = this.registerForm.value;
 
-    this.authService.register({ name: fullName, email, password }).subscribe({
+    this.authService.register({
+      name: fullName,
+      email,
+      password
+    }).subscribe({
       next: (response) => {
         this.loading.set(false);
-        if (response.success) {
+        if (response.success || response.token) {
           // Auto-login after successful registration
           this.router.navigate(['/dashboard']);
         } else {
           this.error.set(response.message || 'Registration failed. Please try again.');
         }
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.error.set('An error occurred. Please try again.');
+        this.error.set(
+          err?.error?.message ||
+          err?.message ||
+          'An error occurred. Please try again.'
+        );
       },
     });
   }
