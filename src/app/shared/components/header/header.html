@@ -1,32 +1,36 @@
 <div class="header">
   <div class="header-container">
+
     <!-- Welcome Message -->
     <div class="welcome-section">
       <h1 class="welcome-title">Welcome back, {{ user().name }}! 👋</h1>
       <p class="welcome-subtitle">{{ user().role }}</p>
     </div>
 
-    <!-- User Section -->
+    <!-- Right Section -->
     <div class="user-section">
-      <div class="user-info-card">
-        <p-avatar 
-          [label]="user().name.charAt(0).toUpperCase()" 
-          styleClass="user-avatar" 
-          shape="circle" 
-          size="large">
-        </p-avatar>
-        <div class="user-details">
-          <span class="user-name">{{ user().name }}</span>
-          <span class="user-email">{{ user().email }}</span>
-        </div>
-      </div>
 
-      <button pButton 
-              icon="pi pi-sign-out" 
-              label="Logout111111111111"
-              class="logout-btn"
-              (click)="logout()">
+      <!-- 🔽 Role Dropdown -->
+      <button pButton type="button" [label]="selectedRole()" icon="pi pi-briefcase" class="p-button-text role-btn"
+        (click)="roleMenu.toggle($event)">
       </button>
+
+      <p-menu #roleMenu [model]="roleMenuItems" [popup]="true" [appendTo]="'body'">
+      </p-menu>
+
+      <!-- 🔽 Profile Dropdown -->
+      <button pButton type="button" class="p-button-text profile-btn" (click)="profileMenu.toggle($event)">
+
+        <p-avatar [label]="user().name.charAt(0).toUpperCase()" shape="circle" class="mr-2">
+        </p-avatar>
+
+        <span class="user-name">{{ user().name }}</span>
+        <i class="pi pi-chevron-down ml-2"></i>
+      </button>
+
+      <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" [appendTo]="'body'">
+      </p-menu>
+
     </div>
   </div>
 </div>

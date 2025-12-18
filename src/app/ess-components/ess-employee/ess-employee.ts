@@ -9,8 +9,8 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EmployeeService } from '../../services/employee.service';
-import { Employee } from '../../models/employee.model';
+import { EmployeeService } from '../../features/employee/services/employee.service';
+import { Employee } from '../../features/employee/models/employee.model';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,7 +26,7 @@ import { MenuItem } from 'primeng/api';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-employee-list',
+  selector: 'app-ess-employee',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -43,12 +43,12 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     BreadcrumbModule,
     SelectModule,
   ],
-  templateUrl: './employee-list.html',
-  styleUrl: './employee-list.css',
+  templateUrl: './ess-employee.html',
+  styleUrl: './ess-employee.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ConfirmationService, MessageService],
 })
-export class EmployeeList implements OnInit {
+export class EssEmployee implements OnInit {
   private readonly svc = inject(EmployeeService);
   private readonly router = inject(Router);
   private readonly confirm = inject(ConfirmationService);
@@ -87,20 +87,24 @@ export class EmployeeList implements OnInit {
     { label: 'Inactive', value: 'Inactive' }
   ];
 
-  protected employeeForm: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
-    department: ['', [Validators.required]],
-    status: ['Active', [Validators.required]],
-    joiningDate: ['', [Validators.required]],
-  });
+  protected employeeForm: FormGroup;
 
   // Filtering is now done on the server side via API
   // This computed is kept for any client-side filtering if needed
   readonly filtered = computed(() => {
     return this.employees();
   });
+
+  constructor() {
+    this.employeeForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      department: ['', [Validators.required]],
+      status: ['Active', [Validators.required]],
+      joiningDate: ['', [Validators.required]],
+    });
+  }
 
   ngOnInit() {
     this.load();
@@ -142,13 +146,13 @@ export class EmployeeList implements OnInit {
       this.currentPage.set(event.page + 1); // Fallback for paginator events
       this.pageSize.set(event.rows);
     }
-
+    
     // Handle sorting from lazy load event
     if (event.sortField) {
       this.sortBy.set(event.sortField);
       this.sortOrder.set(event.sortOrder === 1 ? 'asc' : 'desc');
     }
-
+    
     this.load();
   }
 
@@ -303,3 +307,4 @@ export class EmployeeList implements OnInit {
     });
   }
 }
+

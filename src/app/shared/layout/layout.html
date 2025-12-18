@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-gray-50">
-  <!-- Sidebar -->
+<div class="layout-container">
+  <!-- Sidebar - Fixed on left -->
   <aside [class]="sidebarOpen() ? 'sidebar sidebar-open' : 'sidebar sidebar-closed'">
 
     <!-- Logo Section -->
@@ -11,8 +11,8 @@
             <i class="pi pi-users"></i>
           </div>
           <div class="logo-text">
-            <h1 class="logo-title">Crewnet</h1>
-            <p class="logo-subtitle">HRMS Platform</p>
+            <h1 class="logo-title">oblo</h1>
+            <p class="logo-subtitle">oblo Solutions</p>
           </div>
         </div>
         } @else {
@@ -43,19 +43,19 @@
     </nav>
   </aside>
 
-  <!-- Main Content Wrapper -->
-  <div [style.margin-left]="sidebarOpen() ? '260px' : '72px'" class="transition-all duration-300">
-
-    <!-- Header Component -->
+  <!-- Main Content Wrapper - Adjusts based on sidebar width -->
+  <div 
+    class="main-content-wrapper"
+    [class.sidebar-open]="sidebarOpen()"
+    [class.sidebar-closed]="!sidebarOpen()">
+    
+    <!-- Header Component - Sticky within main content -->
     @if (userDetails(); as user) {
     <app-header [user]="user" (onLogout)="logout()" />
     }
 
-    <!-- Top Navigation -->
-
-
     <!-- Page Content -->
-    <main class="p-6">
+    <main class="main-content">
       <router-outlet />
     </main>
   </div>

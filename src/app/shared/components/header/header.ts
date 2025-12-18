@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -19,43 +19,72 @@ interface UserDetails {
   styleUrl: './header.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Header {
+export class Header implements OnInit {
   user = input.required<UserDetails>();
   onLogout = output<void>();
+  onRoleChange = output<string>();
 
-  protected userMenuItems: MenuItem[] = [
-    {
-      label: 'Profile',
-      icon: 'pi pi-user',
-      command: () => this.handleProfile()
-    },
-    {
-      label: 'Settings',
-      icon: 'pi pi-cog',
-      command: () => this.handleSettings()
-    },
-    {
-      separator: true
-    },
-    {
-      label: 'Logout',
-      icon: 'pi pi-sign-out',
-      styleClass: 'text-red-600',
-      command: () => this.logout()
-    }
-  ];
+  selectedRole = signal<string>('Admin');
+
+  protected readonly profileMenuItems: MenuItem[] = [];
+  protected readonly roleMenuItems: MenuItem[] = [];
+
+  ngOnInit(): void {
+    this.initProfileMenu();
+    this.initRoleMenu();
+
+    this.selectedRole.set(this.user().role);
+  }
+
+  private initProfileMenu(): void {
+    this.profileMenuItems.push(
+      {
+        label: 'Profile',
+        icon: 'pi pi-user',
+        command: () => this.handleProfile(),
+      },
+      {
+        separator: true,
+      },
+      {
+        label: 'Logout',
+        icon: 'pi pi-sign-out',
+        command: () => this.logout(),
+      }
+    );
+  }
+
+  private initRoleMenu(): void {
+    this.roleMenuItems.push(
+      {
+        label: 'Admin',
+        icon: 'pi pi-briefcase',
+        command: () => this.changeRole('Admin'),
+      },
+      {
+        label: 'Manager',
+        icon: 'pi pi-users',
+        command: () => this.changeRole('Manager'),
+      },
+      {
+        label: 'User',
+        icon: 'pi pi-user',
+        command: () => this.changeRole('User'),
+      }
+    );
+  }
 
   logout(): void {
     this.onLogout.emit();
   }
 
   handleProfile(): void {
-    // Navigate to profile page
     console.log('Navigate to profile');
   }
 
-  handleSettings(): void {
-    // Navigate to settings page
-    console.log('Navigate to settings');
+  changeRole(role: string): void {
+    this.selectedRole.set(role);
+    this.onRoleChange.emit(role);
+    console.log('Role changed to:', role);
   }
 }

@@ -85,7 +85,7 @@ export class Register {
     }).subscribe({
       next: (response) => {
         this.loading.set(false);
-        if (response.success || response.token) {
+        if (response.success && response.token) {
           // Auto-login after successful registration
           this.router.navigate(['/dashboard']);
         } else {

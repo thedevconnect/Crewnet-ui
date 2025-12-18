@@ -1,14 +1,13 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Observable, tap, catchError, throwError, map } from 'rxjs';
 
 export interface User {
     id: string;
     name: string;
     email: string;
-    role: string;
+    role?: string;
     avatar?: string;
 }
 
@@ -23,11 +22,17 @@ export interface RegisterRequest {
     password: string;
 }
 
+export interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+}
+
 export interface AuthResponse {
     success: boolean;
+    message: string;
     token?: string;
     user?: User;
-    message?: string;
 }
 
 @Injectable({
@@ -36,13 +41,8 @@ export interface AuthResponse {
 export class AuthService {
     private readonly router = inject(Router);
     private readonly http = inject(HttpClient);
-    private readonly currentUser = signal<User | null>({
-        id: '1',
-        name: 'John Doe',
-        email: 'john.doe@crewnet.com',
-        role: 'Administrator'
-    });
-    private readonly apiUrl = environment.apiUrl;
+    private readonly currentUser = signal<User | null>(null);
+    private readonly baseUrl = 'http://localhost:3000/api';
 
     getCurrentUser() {
         return this.currentUser.asReadonly();
@@ -58,7 +58,7 @@ export class AuthService {
 
     login(email: string, password: string): Observable<AuthResponse> {
         return this.http
-            .post<AuthResponse>(`${this.apiUrl}/auth/login`, { email, password })
+            .post<AuthResponse>(`${this.baseUrl}/auth/login`, { email, password })
             .pipe(
                 tap((response) => {
                     if (response.success && response.token && response.user) {
@@ -68,16 +68,16 @@ export class AuthService {
                 }),
                 catchError((error) => {
                     console.error('Login error:', error);
-                    return of({
+                    return throwError(() => ({
                         success: false,
-                        message: error.error?.message || 'Login failed. Please try again.',
-                    });
+                        message: error.error?.message || error.message || 'Login failed. Please try again.',
+                    }));
                 })
             );
     }
 
     register(data: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
+        return this.http.post<AuthResponse>(`${this.baseUrl}/auth/register`, data).pipe(
             tap((response) => {
                 if (response.success && response.token && response.user) {
                     localStorage.setItem('crewnet_token', response.token);
@@ -86,10 +86,26 @@ export class AuthService {
             }),
             catchError((error) => {
                 console.error('Registration error:', error);
-                return of({
+                return throwError(() => ({
                     success: false,
-                    message: error.error?.message || 'Registration failed. Please try again.',
-                });
+                    message: error.error?.message || error.message || 'Registration failed. Please try again.',
+                }));
+            })
+        );
+    }
+
+    getProfile(id: string): Observable<User> {
+        return this.http.get<ApiResponse<User>>(`${this.baseUrl}/auth/profile/${id}`).pipe(
+            map((response) => {
+                if (response.success && response.data) {
+                    this.currentUser.set(response.data);
+                    return response.data;
+                }
+                throw new Error(response.message || 'Failed to fetch profile');
+            }),
+            catchError((error) => {
+                console.error('Profile fetch error:', error);
+                return throwError(() => error);
             })
         );
     }
@@ -103,11 +119,9 @@ export class AuthService {
     loadUser(): void {
         const token = this.getToken();
         if (token) {
-            // In a real app, you would fetch user data from the API
-            // For now, we'll just check if token exists
-            // this.http.get<User>(`${this.apiUrl}/me`).subscribe(user => {
-            //   this.currentUser.set(user);
-            // });
+            // Token exists, but we need user ID to fetch profile
+            // This can be extracted from token if JWT, or stored separately
+            // For now, we'll leave it as is
         }
     }
 }

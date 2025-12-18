@@ -14,6 +14,13 @@ interface NavMenuItem {
   route: string;
 }
 
+interface UserDetails {
+  name: string;
+  email: string;
+  role: string;
+  avatar?: string;
+}
+
 @Component({
   selector: 'app-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, AvatarModule, MenuModule, TooltipModule, Header],
@@ -29,13 +36,13 @@ export class Layout {
   protected readonly currentUser = this.authService.getCurrentUser();
   protected readonly notificationsCount = signal<number>(3);
   
-  protected readonly userDetails = computed(() => {
+  protected readonly userDetails = computed<UserDetails>(() => {
     const user = this.currentUser();
     if (user) {
       return {
         name: user.name,
         email: user.email || '',
-        role: user.role
+        role: user.role || 'User'
       };
     }
     return {

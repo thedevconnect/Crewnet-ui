@@ -54,9 +54,9 @@ export class Login {
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({
-      next: (response: any) => {
+      next: (response) => {
         this.loading.set(false);
-        if (response.success || response.token) {
+        if (response.success && response.token) {
           const returnUrl = this.router.routerState.snapshot.root.queryParams['returnUrl'] || '/dashboard';
           this.router.navigate([returnUrl]);
         } else {
@@ -66,8 +66,8 @@ export class Login {
       error: (err) => {
         this.loading.set(false);
         this.error.set(
-          err?.error?.message ||
           err?.message ||
+          err?.error?.message ||
           'Login failed. Please check your credentials.'
         );
       },

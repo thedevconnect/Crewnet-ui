@@ -4,12 +4,13 @@ import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { Layout } from './shared/layout/layout';
 import { Dashboard } from './features/dashboard/dashboard';
-import { AttendanceComponent } from './pages/attendance/attendance.component';
+import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
 import { Shifts } from './features/shifts/shifts';
 import { Departments } from './features/departments/departments';
 import { Reports } from './features/reports/reports';
-import { Settings } from './features/settings/settings'; 
+import { Settings } from './features/settings/settings';
+import { EssEmployee } from './ess-components/ess-employee/ess-employee';
 
 export const routes: Routes = [
   {
@@ -34,10 +35,13 @@ export const routes: Routes = [
         path: 'dashboard',
         component: Dashboard,
       },
-      
+      {
+        path: 'employees',
+        component: EssEmployee,
+      },
       {
         path: 'attendance',
-        component: AttendanceComponent,
+        component: Attendance,
       },
       {
         path: 'leaves',

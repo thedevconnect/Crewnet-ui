@@ -8,9 +8,9 @@ import { CommonModule } from '@angular/common';
   selector: 'app-attendance-page',
   standalone: true,
   imports: [CommonModule, Button, Card],
-  templateUrl: './attendance.component.html'
+  templateUrl: './attendance.html'
 })
-export class AttendanceComponent implements OnInit {
+export class Attendance implements OnInit {
 
   attendanceService = inject(AttendanceService);
 

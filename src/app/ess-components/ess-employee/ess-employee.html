@@ -4,18 +4,27 @@
       <h2 class="text-base font-semibold text-gray-800">
         <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
       </h2>
-      <div class="flex items-center justify-end ml-auto">
-
-        <p-button (click)="onAdd()" label="Add New Employee" icon="pi pi-plus" styleClass="orange-button"
-          [raised]="true"></p-button>
+      <div class="flex items-center space-x-2">
+        <p-button (click)="onAdd()" label="Add New Employee" icon="pi pi-plus"
+          styleClass="orange-button" [raised]="true"></p-button>
       </div>
     </div>
 
     <div class="p-4">
-      <p-table [value]="employees()" [paginator]="true" [rows]="pageSize()" [totalRecords]="totalRecords()"
-        [first]="(currentPage() - 1) * pageSize()" [loading]="loading()" [lazy]="true"
-        (onLazyLoad)="onPageChange($event)" [sortMode]="'single'" [sortField]="sortBy()"
-        [sortOrder]="sortOrder() === 'asc' ? 1 : -1" responsiveLayout="scroll" [tableStyle]="{'min-width': '50rem'}">
+      <p-table 
+        [value]="employees()" 
+        [paginator]="true" 
+        [rows]="pageSize()" 
+        [totalRecords]="totalRecords()"
+        [first]="(currentPage() - 1) * pageSize()"
+        [loading]="loading()" 
+        [lazy]="true"
+        (onLazyLoad)="onPageChange($event)"
+        [sortMode]="'single'"
+        [sortField]="sortBy()"
+        [sortOrder]="sortOrder() === 'asc' ? 1 : -1"
+        responsiveLayout="scroll"
+        [tableStyle]="{'min-width': '50rem'}">
         <ng-template pTemplate="header">
           <tr>
             <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
@@ -72,8 +81,7 @@
     [style]="{ width: '60%', 'max-width': '100%', 'overflow-y': 'auto' }" (onHide)="onDrawerClose()">
     <ng-template pTemplate="header">
       <div class="flex items-center gap-2">
-        <span class="font-semibold text-2xl">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ?
-          'Edit Employee' : 'View Employee' }}</span>
+        <span class="font-semibold text-2xl">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ? 'Edit Employee' : 'View Employee' }}</span>
         <i class="pi pi-user text-blue-500 text-xl"></i>
       </div>
     </ng-template>
@@ -88,54 +96,65 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
             <div>
               <label class="font-medium text-sm">Name<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="name" class="w-full"
+              <input pInputText formControlName="name" class="w-full" 
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched"
                 placeholder="Enter Employee Name" />
               @if (drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Name is required.</small>
+                <small class="text-red-500 text-xs mt-1 block">Name is required.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Email<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="email" class="w-full"
+              <input pInputText formControlName="email" class="w-full" 
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched"
                 placeholder="Enter Email" />
-              @if (drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched)
-              {
-              <small class="text-red-500 text-xs mt-1 block">Email is required or invalid format.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched) {
+                <small class="text-red-500 text-xs mt-1 block">Email is required or invalid format.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Phone</label>
-              <input pInputText formControlName="phone" class="w-full" placeholder="Enter Phone Number" />
+              <input pInputText formControlName="phone" class="w-full" 
+                placeholder="Enter Phone Number" />
             </div>
 
             <div>
               <label class="font-medium text-sm">Department<span class="text-red-500">*</span></label>
-              <p-select [options]="departments" optionLabel="label" optionValue="value" formControlName="department"
-                placeholder="Select Department" [filter]="true" [showClear]="true" class="w-full"
+              <p-select 
+                [options]="departments" 
+                optionLabel="label" 
+                optionValue="value"
+                formControlName="department" 
+                placeholder="Select Department" 
+                [filter]="true"
+                [showClear]="true" 
+                class="w-full" 
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched"></p-select>
-              @if (drawerMode() !== 'view' && employeeForm.get('department')?.invalid &&
-              employeeForm.get('department')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Department is required.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched) {
+                <small class="text-red-500 text-xs mt-1 block">Department is required.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Status<span class="text-red-500">*</span></label>
-              <p-select [options]="statuses" optionLabel="label" optionValue="value" formControlName="status"
-                placeholder="Select Status" [filter]="true" class="w-full"></p-select>
+              <p-select 
+                [options]="statuses" 
+                optionLabel="label" 
+                optionValue="value"
+                formControlName="status" 
+                placeholder="Select Status" 
+                [filter]="true"
+                class="w-full"></p-select>
             </div>
 
             <div>
               <label class="font-medium text-sm">Joining Date<span class="text-red-500">*</span></label>
               <input pInputText type="date" formControlName="joiningDate" class="w-full"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched" />
-              @if (drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid &&
-              employeeForm.get('joiningDate')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Joining Date is required.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched) {
+                <small class="text-red-500 text-xs mt-1 block">Joining Date is required.</small>
               }
             </div>
           </div>
@@ -160,3 +179,4 @@
   <p-confirmDialog></p-confirmDialog>
   <p-toast></p-toast>
 </div>
+
