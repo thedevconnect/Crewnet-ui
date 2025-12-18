@@ -41,11 +41,11 @@
             </td>
             <td>{{ e.joiningDate }}</td>
             <td class="text-center">
-              <button type="button" class="text-gray-600 hover:text-gray-900 cursor-pointer p-button-text"
-                (click)="actionPanel.toggle($event)">
+              <button type="button" #actionButton class="text-gray-600 hover:text-gray-900 cursor-pointer p-button-text"
+                (click)="actionPanel.toggle($event, actionButton)">
                 <i class="pi pi-ellipsis-v text-xl"></i>
               </button>
-              <p-overlayPanel #actionPanel>
+              <p-popover #actionPanel>
                 <div class="flex flex-col">
                   <button (click)="onView(e); actionPanel.hide()" title="View"
                     class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
@@ -60,7 +60,7 @@
                     <i class="pi pi-trash mr-2"></i> Delete
                   </button>
                 </div>
-              </p-overlayPanel>
+              </p-popover>
             </td>
           </tr>
         </ng-template>

@@ -19,7 +19,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover } from 'primeng/popover';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { SelectModule } from 'primeng/select';
 import { MenuItem } from 'primeng/api';
@@ -39,7 +39,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     ConfirmDialogModule,
     ToastModule,
     TooltipModule,
-    OverlayPanelModule,
+    Popover,
     BreadcrumbModule,
     SelectModule,
   ],

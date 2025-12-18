@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
@@ -14,6 +14,7 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   protected readonly loginForm: FormGroup;
   protected readonly error = signal('');
@@ -55,12 +56,31 @@ export class Login {
 
     this.authService.login(email, password).subscribe({
       next: (response) => {
-        this.loading.set(false);
         if (response.success && response.token) {
-          const returnUrl = this.router.routerState.snapshot.root.queryParams['returnUrl'] || '/dashboard';
-          this.router.navigate([returnUrl]);
+          // Token is already stored by the service in tap operator
+          // Wait a tick to ensure localStorage is updated
+          setTimeout(() => {
+            if (this.authService.isAuthenticated()) {
+              const returnUrl = this.router.routerState.snapshot.root.queryParams['returnUrl'] || '/dashboard';
+              this.router.navigate([returnUrl]).then(() => {
+                this.loading.set(false);
+                this.cdr.detectChanges();
+              }).catch(() => {
+                // Fallback: use window.location if router navigation fails
+                this.loading.set(false);
+                window.location.href = '/dashboard';
+              });
+            } else {
+              this.loading.set(false);
+              console.error('Token not found after login');
+              this.error.set('Authentication failed. Please try again.');
+              this.cdr.detectChanges();
+            }
+          }, 0);
         } else {
+          this.loading.set(false);
           this.error.set(response.message || 'Login failed. Please try again.');
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {
@@ -70,6 +90,7 @@ export class Login {
           err?.error?.message ||
           'Login failed. Please check your credentials.'
         );
+        this.cdr.detectChanges();
       },
     });
   }

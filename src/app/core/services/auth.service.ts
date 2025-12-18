@@ -124,4 +124,22 @@ export class AuthService {
             // For now, we'll leave it as is
         }
     }
+
+    getUsers(params?: { page?: number; limit?: number; search?: string }): Observable<ApiResponse<{ users: User[]; total: number; page: number; limit: number }>> {
+        let url = `${this.baseUrl}/auth/users?`;
+        if (params?.page) url += `page=${params.page}&`;
+        if (params?.limit) url += `limit=${params.limit}&`;
+        if (params?.search) url += `search=${params.search}&`;
+        
+        return this.http.get<ApiResponse<{ users: User[]; total: number; page: number; limit: number }>>(url).pipe(
+            catchError((error) => {
+                console.error('Get users error:', error);
+                return throwError(() => ({
+                    success: false,
+                    message: error.error?.message || error.message || 'Failed to fetch users.',
+                    data: { users: [], total: 0, page: 1, limit: 100 }
+                }));
+            })
+        );
+    }
 }

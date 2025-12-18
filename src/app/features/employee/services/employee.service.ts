@@ -5,12 +5,19 @@ import { Employee } from '../models/employee.model';
 
 interface ApiResponse<T> {
   success: boolean;
+  statusCode?: number;
   message: string;
   data: T;
 }
 
 interface EmployeesResponse {
   employees: Employee[];
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
   total?: number;
   page?: number;
   limit?: number;
@@ -53,20 +60,42 @@ export class EmployeeService {
       httpParams = httpParams.set('sortOrder', params.sortOrder);
     }
 
-    return this.http.get<ApiResponse<EmployeesResponse>>(this.apiUrl, { params: httpParams }).pipe(
+    return this.http.get<any>(this.apiUrl, { params: httpParams }).pipe(
       map(response => {
-        const employees = (response.data?.employees || Array.isArray(response.data) ? response.data : []) as Employee[];
+        // Handle response structure: { success, statusCode, message, data: { employees, pagination } }
+        const data = response.data || response;
+        let employees: Employee[] = [];
+        
+        // Extract employees array
+        if (data?.employees && Array.isArray(data.employees)) {
+          employees = data.employees;
+        } else if (Array.isArray(data)) {
+          employees = data;
+        }
+        
+        console.log('Employees fetched:', employees.length, employees);
+        
         // Format joiningDate to YYYY-MM-DD format
         const formattedEmployees = employees.map(emp => ({
           ...emp,
           joiningDate: emp.joiningDate ? new Date(emp.joiningDate).toISOString().split('T')[0] : emp.joiningDate
         }));
-        return {
+        
+        // Extract pagination info - check pagination object first, then direct properties
+        const pagination = data?.pagination;
+        const total = pagination?.total || data?.total || employees.length;
+        const page = pagination?.page || data?.page || params?.page || 1;
+        const limit = pagination?.limit || data?.limit || params?.limit || 10;
+        
+        const result = {
           employees: formattedEmployees,
-          total: response.data?.total,
-          page: response.data?.page || params?.page,
-          limit: response.data?.limit || params?.limit,
+          total: total,
+          page: page,
+          limit: limit,
         };
+        
+        console.log('Formatted result:', result);
+        return result;
       }),
       catchError(error => {
         console.error('Error fetching employees:', error);

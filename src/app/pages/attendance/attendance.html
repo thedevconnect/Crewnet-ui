@@ -1,47 +1,72 @@
-<div class="p-4 flex flex-col gap-4 max-w-md mx-auto">
+<div class="p-4 max-w-md mx-auto">
+  <p-toast></p-toast>
 
-  <p-card header="Today Attendance" class="shadow-lg rounded-xl">
+  <!-- Attendance Status -->
+  <p-card header="Today Attendance" class="shadow-lg rounded-xl mb-6">
 
-    <div class="text-center">
-      <p class="text-xl font-semibold">
-        Status: 
-        <span class="text-blue-600">
-          {{ todayStatus()?.status || 'Not Marked' }}
-        </span>
-      </p>
+    @if (loadingStatus()) {
+      <div class="text-center py-4">
+        <i class="pi pi-spin pi-spinner text-2xl text-blue-600"></i>
+        <p class="text-gray-600 mt-2">Loading status...</p>
+      </div>
+    } @else {
+      <div class="text-center">
+        <p class="text-xl font-semibold mb-2">
+          Status:
+          <span class="text-blue-600">
+            @if (todayStatus()?.attendance) {
+              {{ todayStatus()?.attendance?.swipeIn && todayStatus()?.attendance?.swipeOut ? 'Completed' : 'In Progress' }}
+            } @else {
+              Not Marked
+            }
+          </span>
+        </p>
 
-      <p class="text-gray-600">
-        Swipe In: {{ todayStatus()?.swipeIn || '-' }}
-      </p>
+        <p class="text-gray-600 mb-1">
+          Swipe In: {{ todayStatus()?.attendance?.swipeIn ? (todayStatus()?.attendance?.swipeIn | date:'short') : '-' }}
+        </p>
 
-      <p class="text-gray-600">
-        Swipe Out: {{ todayStatus()?.swipeOut || '-' }}
-      </p>
-    </div>
-
-    <div class="mt-6 flex justify-center gap-4">
-      
-      <p-button 
-        label="Swipe In" 
-        icon="pi pi-sign-in"
-        [loading]="loadingSwipeIn()"
-        (click)="doSwipeIn()"
-        [disabled]="todayStatus()?.swipeIn"
-        styleClass="p-button-success"
-      ></p-button>
-
-      <p-button 
-        label="Swipe Out" 
-        icon="pi pi-sign-out"
-        [loading]="loadingSwipeOut()"
-        (click)="doSwipeOut()"
-        [disabled]="!todayStatus()?.swipeIn || todayStatus()?.swipeOut"
-        styleClass="p-button-danger"
-      ></p-button>
-
-    </div>
+        <p class="text-gray-600">
+          Swipe Out: {{ todayStatus()?.attendance?.swipeOut ? (todayStatus()?.attendance?.swipeOut | date:'short') : '-' }}
+        </p>
+      </div>
+    }
 
   </p-card>
 
-</div>
+  <!-- Swipe Buttons -->
+  <div class="flex flex-col gap-4 mt-6">
+    
+    <!-- Swipe IN Button -->
+    <button 
+      (click)="doSwipeIn()"
+      [disabled]="!todayStatus()?.canSwipeIn || loadingSwipeIn() || loadingStatus()"
+      class="swipe-btn swipe-btn-in">
+      <i class="pi pi-sign-in text-2xl mr-3"></i>
+      <div class="flex flex-col items-start">
+        <span class="text-lg font-semibold">Swipe IN</span>
+        <span class="text-sm opacity-90">Office Entry</span>
+      </div>
+      @if (loadingSwipeIn()) {
+        <i class="pi pi-spin pi-spinner ml-auto"></i>
+      }
+    </button>
 
+    <!-- Swipe OUT Button -->
+    <button 
+      (click)="doSwipeOut()"
+      [disabled]="!todayStatus()?.canSwipeOut || loadingSwipeOut() || loadingStatus()"
+      class="swipe-btn swipe-btn-out">
+      <i class="pi pi-sign-out text-2xl mr-3"></i>
+      <div class="flex flex-col items-start">
+        <span class="text-lg font-semibold">Swipe OUT</span>
+        <span class="text-sm opacity-90">Office Exit</span>
+      </div>
+      @if (loadingSwipeOut()) {
+        <i class="pi pi-spin pi-spinner ml-auto"></i>
+      }
+    </button>
+
+  </div>
+
+</div>

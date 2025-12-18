@@ -19,7 +19,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover } from 'primeng/popover';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { SelectModule } from 'primeng/select';
 import { MenuItem } from 'primeng/api';
@@ -39,7 +39,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     ConfirmDialogModule,
     ToastModule,
     TooltipModule,
-    OverlayPanelModule,
+    Popover,
     BreadcrumbModule,
     SelectModule,
   ],
@@ -122,8 +122,19 @@ export class EssEmployee implements OnInit {
 
     this.svc.getAll(params).subscribe({
       next: (response) => {
-        this.employees.set(response.employees);
-        this.totalRecords.set(response.total || response.employees.length);
+        console.log('Response received in component:', response);
+        console.log('Employees array:', response.employees);
+        console.log('Total records:', response.total);
+
+        if (response.employees && Array.isArray(response.employees)) {
+          this.employees.set(response.employees);
+          this.totalRecords.set(response.total || response.employees.length);
+          console.log('Employees set:', this.employees().length);
+        } else {
+          console.warn('No employees array in response:', response);
+          this.employees.set([]);
+          this.totalRecords.set(0);
+        }
         this.loading.set(false);
       },
       error: (error) => {
@@ -131,9 +142,11 @@ export class EssEmployee implements OnInit {
         this.toast.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error?.message || 'Failed to load employees. Please try again.',
+          detail: error.error?.message || error.message || 'Failed to load employees. Please try again.',
         });
         this.loading.set(false);
+        this.employees.set([]);
+        this.totalRecords.set(0);
       },
     });
   }
@@ -146,13 +159,13 @@ export class EssEmployee implements OnInit {
       this.currentPage.set(event.page + 1); // Fallback for paginator events
       this.pageSize.set(event.rows);
     }
-    
+
     // Handle sorting from lazy load event
     if (event.sortField) {
       this.sortBy.set(event.sortField);
       this.sortOrder.set(event.sortOrder === 1 ? 'asc' : 'desc');
     }
-    
+
     this.load();
   }
 

@@ -1,0 +1,11 @@
+.swipe-btn {
+    @apply w-full px-6 py-4 rounded-xl text-white flex items-center justify-between transition-all duration-300 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.swipe-btn-in {
+    @apply bg-green-500 hover:bg-green-600 active:bg-green-700;
+}
+
+.swipe-btn-out {
+    @apply bg-red-500 hover:bg-red-600 active:bg-red-700;
+}

@@ -5,7 +5,9 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
-import { MenuItem } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { Header } from '../components/header/header';
 
 interface NavMenuItem {
@@ -23,10 +25,11 @@ interface UserDetails {
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, AvatarModule, MenuModule, TooltipModule, Header],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, AvatarModule, MenuModule, TooltipModule, ToastModule, ConfirmDialogModule, Header],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [MessageService, ConfirmationService]
 })
 export class Layout {
   private readonly authService = inject(AuthService);

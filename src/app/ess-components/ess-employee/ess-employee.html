@@ -1,79 +1,74 @@
-<div class="bg-[#FFFFFF] min-h-screen p-4 sm:p-6 lg:p-0">
-  <div class="bg-white overflow-hidden">
-    <div class="flex items-center justify-between p-3 sm:p-3 border-b border-gray-200">
-      <h2 class="text-base font-semibold text-gray-800">
-        <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
-      </h2>
-      <div class="flex items-center space-x-2">
-        <p-button (click)="onAdd()" label="Add New Employee" icon="pi pi-plus"
-          styleClass="orange-button" [raised]="true"></p-button>
+<div class="space-y-4">
+  <div class="employee-list-container">
+    <div class="employee-card">
+      <!-- Header Section -->
+      <div class="employee-header">
+        <div class="header-left">
+          <h1 class="page-title">Employees</h1>
+          <p-breadcrumb [model]="breadcrumbItems()" class="breadcrumb-custom"></p-breadcrumb>
+        </div>
+        <div class="header-right">
+          <p-button (click)="onAdd()" label="Add New Employee" icon="pi pi-plus" styleClass="add-employee-btn"
+            [raised]="true">
+          </p-button>
+        </div>
       </div>
-    </div>
 
-    <div class="p-4">
-      <p-table 
-        [value]="employees()" 
-        [paginator]="true" 
-        [rows]="pageSize()" 
-        [totalRecords]="totalRecords()"
-        [first]="(currentPage() - 1) * pageSize()"
-        [loading]="loading()" 
-        [lazy]="true"
-        (onLazyLoad)="onPageChange($event)"
-        [sortMode]="'single'"
-        [sortField]="sortBy()"
-        [sortOrder]="sortOrder() === 'asc' ? 1 : -1"
-        responsiveLayout="scroll"
-        [tableStyle]="{'min-width': '50rem'}">
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-            <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-            <th>Phone</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th pSortableColumn="joiningDate">Joining Date <p-sortIcon field="joiningDate"></p-sortIcon></th>
-            <th class="text-center">Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-e>
-          <tr>
-            <td>{{ e.name }}</td>
-            <td>{{ e.email }}</td>
-            <td>{{ e.phone }}</td>
-            <td>{{ e.department }}</td>
-            <td>
-              <span class="px-2 py-1 rounded text-white text-xs"
-                [class]="e.status === 'Active' ? 'bg-green-600' : 'bg-gray-500'">
-                {{ e.status }}
-              </span>
-            </td>
-            <td>{{ e.joiningDate }}</td>
-            <td class="text-center">
-              <button type="button" class="text-gray-600 hover:text-gray-900 cursor-pointer p-button-text"
-                (click)="actionPanel.toggle($event)">
-                <i class="pi pi-ellipsis-v text-xl"></i>
-              </button>
-              <p-overlayPanel #actionPanel>
-                <div class="flex flex-col">
-                  <button (click)="onView(e); actionPanel.hide()" title="View"
-                    class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
-                    <i class="pi pi-eye mr-2"></i> View
-                  </button>
-                  <button (click)="onEdit(e); actionPanel.hide()" title="Edit"
-                    class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
-                    <i class="pi pi-pencil mr-2"></i> Edit
-                  </button>
-                  <button (click)="onDelete(e); actionPanel.hide()" title="Delete"
-                    class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left text-red-600">
-                    <i class="pi pi-trash mr-2"></i> Delete
-                  </button>
-                </div>
-              </p-overlayPanel>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+      <!-- Table Section -->
+      <div class="table-container">
+        <p-table [value]="employees()" [paginator]="true" [rows]="pageSize()" [totalRecords]="totalRecords()"
+          [first]="(currentPage() - 1) * pageSize()" [loading]="loading()" [lazy]="true"
+          (onLazyLoad)="onPageChange($event)" [sortMode]="'single'" [sortField]="sortBy()"
+          [sortOrder]="sortOrder() === 'asc' ? 1 : -1" responsiveLayout="scroll" [tableStyle]="{'min-width': '50rem'}">
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+              <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+              <th>Phone</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th pSortableColumn="joiningDate">Joining Date <p-sortIcon field="joiningDate"></p-sortIcon></th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-e>
+            <tr>
+              <td>{{ e.name }}</td>
+              <td>{{ e.email }}</td>
+              <td>{{ e.phone }}</td>
+              <td>{{ e.department }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="e.status === 'Active' ? 'status-active' : 'status-inactive'">
+                  {{ e.status }}
+                </span>
+              </td>
+              <td>{{ e.joiningDate }}</td>
+              <td class="text-center">
+                <button type="button" #actionButton class="action-button"
+                  (click)="actionPanel.toggle($event, actionButton)">
+                  <i class="pi pi-ellipsis-v text-xl"></i>
+                </button>
+                <p-popover #actionPanel>
+                  <div class="flex flex-col">
+                    <button (click)="onView(e); actionPanel.hide()" title="View"
+                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
+                      <i class="pi pi-eye mr-2"></i> View
+                    </button>
+                    <button (click)="onEdit(e); actionPanel.hide()" title="Edit"
+                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
+                      <i class="pi pi-pencil mr-2"></i> Edit
+                    </button>
+                    <button (click)="onDelete(e); actionPanel.hide()" title="Delete"
+                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left text-red-600">
+                      <i class="pi pi-trash mr-2"></i> Delete
+                    </button>
+                  </div>
+                </p-popover>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 
@@ -81,7 +76,8 @@
     [style]="{ width: '60%', 'max-width': '100%', 'overflow-y': 'auto' }" (onHide)="onDrawerClose()">
     <ng-template pTemplate="header">
       <div class="flex items-center gap-2">
-        <span class="font-semibold text-2xl">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ? 'Edit Employee' : 'View Employee' }}</span>
+        <span class="font-semibold text-2xl">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ?
+          'Edit Employee' : 'View Employee' }}</span>
         <i class="pi pi-user text-blue-500 text-xl"></i>
       </div>
     </ng-template>
@@ -96,65 +92,54 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
             <div>
               <label class="font-medium text-sm">Name<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="name" class="w-full" 
+              <input pInputText formControlName="name" class="w-full"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched"
                 placeholder="Enter Employee Name" />
               @if (drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched) {
-                <small class="text-red-500 text-xs mt-1 block">Name is required.</small>
+              <small class="text-red-500 text-xs mt-1 block">Name is required.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Email<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="email" class="w-full" 
+              <input pInputText formControlName="email" class="w-full"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched"
                 placeholder="Enter Email" />
-              @if (drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched) {
-                <small class="text-red-500 text-xs mt-1 block">Email is required or invalid format.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched)
+              {
+              <small class="text-red-500 text-xs mt-1 block">Email is required or invalid format.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Phone</label>
-              <input pInputText formControlName="phone" class="w-full" 
-                placeholder="Enter Phone Number" />
+              <input pInputText formControlName="phone" class="w-full" placeholder="Enter Phone Number" />
             </div>
 
             <div>
               <label class="font-medium text-sm">Department<span class="text-red-500">*</span></label>
-              <p-select 
-                [options]="departments" 
-                optionLabel="label" 
-                optionValue="value"
-                formControlName="department" 
-                placeholder="Select Department" 
-                [filter]="true"
-                [showClear]="true" 
-                class="w-full" 
+              <p-select [options]="departments" optionLabel="label" optionValue="value" formControlName="department"
+                placeholder="Select Department" [filter]="true" [showClear]="true" class="w-full"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched"></p-select>
-              @if (drawerMode() !== 'view' && employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched) {
-                <small class="text-red-500 text-xs mt-1 block">Department is required.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('department')?.invalid &&
+              employeeForm.get('department')?.touched) {
+              <small class="text-red-500 text-xs mt-1 block">Department is required.</small>
               }
             </div>
 
             <div>
               <label class="font-medium text-sm">Status<span class="text-red-500">*</span></label>
-              <p-select 
-                [options]="statuses" 
-                optionLabel="label" 
-                optionValue="value"
-                formControlName="status" 
-                placeholder="Select Status" 
-                [filter]="true"
-                class="w-full"></p-select>
+              <p-select [options]="statuses" optionLabel="label" optionValue="value" formControlName="status"
+                placeholder="Select Status" [filter]="true" class="w-full"></p-select>
             </div>
 
             <div>
               <label class="font-medium text-sm">Joining Date<span class="text-red-500">*</span></label>
               <input pInputText type="date" formControlName="joiningDate" class="w-full"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched" />
-              @if (drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched) {
-                <small class="text-red-500 text-xs mt-1 block">Joining Date is required.</small>
+              @if (drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid &&
+              employeeForm.get('joiningDate')?.touched) {
+              <small class="text-red-500 text-xs mt-1 block">Joining Date is required.</small>
               }
             </div>
           </div>
@@ -179,4 +164,3 @@
   <p-confirmDialog></p-confirmDialog>
   <p-toast></p-toast>
 </div>
-
