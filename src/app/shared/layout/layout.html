@@ -6,23 +6,22 @@
     <div class="sidebar-logo">
       <div class="logo-header">
         @if (sidebarOpen()) {
-          <div class="logo-content">
-            <div class="logo-icon">
-              <i class="pi pi-users"></i>
-            </div>
-            <div class="logo-text">
-              <h1 class="logo-title">Crewnet</h1>
-              <p class="logo-subtitle">HRMS Platform</p>
-            </div>
-          </div>
-        } @else {
-          <div class="logo-icon-collapsed">
+        <div class="logo-content">
+          <div class="logo-icon">
             <i class="pi pi-users"></i>
           </div>
+          <div class="logo-text">
+            <h1 class="logo-title">Crewnet</h1>
+            <p class="logo-subtitle">HRMS Platform</p>
+          </div>
+        </div>
+        } @else {
+        <div class="logo-icon-collapsed">
+          <i class="pi pi-users"></i>
+        </div>
         }
-        <button class="toggle-btn toggle-btn-top" 
-                (click)="toggleSidebar()"
-                [attr.title]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'">
+        <button class="toggle-btn toggle-btn-top" (click)="toggleSidebar()"
+          [attr.title]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'">
           <i [class]="sidebarOpen() ? 'pi pi-chevron-left' : 'pi pi-chevron-right'"></i>
         </button>
       </div>
@@ -31,18 +30,15 @@
     <!-- Navigation Menu -->
     <nav class="sidebar-nav">
       @for (item of menuItems; track item.route) {
-        <a [routerLink]="item.route" 
-           routerLinkActive="nav-item-active"
-           class="nav-item"
-           [class.nav-item-collapsed]="!sidebarOpen()"
-           [attr.title]="!sidebarOpen() ? item.label : null">
-          <div class="nav-item-icon">
-            <i [class]="'pi ' + item.icon"></i>
-          </div>
-          @if (sidebarOpen()) {
-            <span class="nav-item-label">{{ item.label }}</span>
-          }
-        </a>
+      <a [routerLink]="item.route" routerLinkActive="nav-item-active" class="nav-item"
+        [class.nav-item-collapsed]="!sidebarOpen()" [attr.title]="!sidebarOpen() ? item.label : null">
+        <div class="nav-item-icon">
+          <i [class]="'pi ' + item.icon"></i>
+        </div>
+        @if (sidebarOpen()) {
+        <span class="nav-item-label">{{ item.label }}</span>
+        }
+      </a>
       }
     </nav>
   </aside>
@@ -52,68 +48,11 @@
 
     <!-- Header Component -->
     @if (userDetails(); as user) {
-      <app-header [user]="user" (onLogout)="logout()" />
+    <app-header [user]="user" (onLogout)="logout()" />
     }
 
     <!-- Top Navigation -->
-    <header class="sticky top-0 z-40 bg-white shadow-sm border-b border-gray-200">
-      <div class="flex items-center justify-between px-6 py-3">
 
-        <!-- Left Section -->
-        <div class="flex items-center gap-4">
-          <button pButton icon="pi pi-bars" (click)="toggleSidebar()" class="p-button-text p-button-rounded"
-            pTooltip="Toggle Menu" tooltipPosition="bottom">
-          </button>
-          <div class="hidden md:flex items-center gap-2 text-gray-600">
-            <i class="pi pi-calendar text-sm"></i>
-            <span class="text-sm font-medium">{{ currentDate }}</span>
-          </div>
-        </div>
-
-        <!-- Right Section -->
-        <div class="flex items-center gap-3">
-
-          <!-- Search -->
-          <button pButton icon="pi pi-search" class="p-button-text p-button-rounded" pTooltip="Search"
-            tooltipPosition="bottom">
-          </button>
-
-          <!-- Notifications -->
-          <button pButton icon="pi pi-bell" class="p-button-text p-button-rounded relative" pTooltip="Notifications"
-            tooltipPosition="bottom">
-            @if (notificationsCount() > 0) {
-              <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded-full leading-none font-semibold shadow">
-                {{ notificationsCount() }}
-              </span>
-            }
-          </button>
-
-          <!-- Divider -->
-          <div class="h-8 w-px bg-gray-200"></div>
-
-          <!-- User Info and Logout -->
-          @if (currentUser(); as user) {
-            <div class="flex items-center gap-3">
-              <p-avatar [label]="user.name.charAt(0)" styleClass="bg-blue-500 text-white" shape="circle" size="normal">
-              </p-avatar>
-              <div class="flex flex-col">
-                <span class="text-sm font-semibold text-gray-800">{{ user.name }}</span>
-                <span class="text-xs text-gray-500">{{ user.role }}</span>
-              </div>
-            </div>
-            
-            <button pButton 
-                    label="Logout" 
-                    icon="pi pi-sign-out" 
-                    (click)="logout()"
-                    class="p-button-text p-button-danger"
-                    pTooltip="Logout" 
-                    tooltipPosition="bottom">
-            </button>
-          }
-        </div>
-      </div>
-    </header>
 
     <!-- Page Content -->
     <main class="p-6">

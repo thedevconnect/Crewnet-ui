@@ -1,14 +1,13 @@
 import { Component, ChangeDetectionStrategy, signal, inject, computed, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { Sidebar, MenuItem } from '../sidebar/sidebar';
-import { Header, UserDetails } from '../header/header';
+import { Sidebar, MenuItem } from '../sidebar/sidebar'; 
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Sidebar, Header],
+  imports: [CommonModule, RouterOutlet, Sidebar],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,21 +18,7 @@ export class MainLayout implements OnInit {
   protected readonly sidebarOpen = signal(true);
   protected readonly currentUser = this.authService.getCurrentUser();
   
-  protected readonly userDetails = computed<UserDetails>(() => {
-    const user = this.currentUser();
-    if (user) {
-      return {
-        name: user.name,
-        email: user.email || '',
-        role: user.role
-      };
-    }
-    return {
-      name: 'Guest User',
-      email: 'guest@crewnet.com',
-      role: 'Guest'
-    };
-  });
+  
 
   protected readonly menuItems: MenuItem[] = [
     { label: 'Home', icon: 'pi-home', route: '/dashboard' },
