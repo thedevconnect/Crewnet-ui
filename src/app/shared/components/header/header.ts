@@ -31,6 +31,10 @@ export class Header implements OnInit {
   selectedRole = signal<string>('Admin');
   selectedCity = signal<string>('karnal');
   selectedRoleItem = signal<string>('Ess');
+  
+  // For ngModel binding
+  selectedCityModel: string = 'karnal';
+  selectedRoleItemModel: string = 'Ess';
 
   protected readonly profileMenuItems: MenuItem[] = [];
   protected readonly roleMenuItems: MenuItem[] = [];
@@ -43,9 +47,11 @@ export class Header implements OnInit {
     // Set default values
     if (this.cities.length > 0) {
       this.selectedCity.set(this.cities[0]);
+      this.selectedCityModel = this.cities[0];
     }
     if (this.roleitem.length > 0) {
       this.selectedRoleItem.set(this.roleitem[0]);
+      this.selectedRoleItemModel = this.roleitem[0];
     }
   }
 
@@ -121,11 +127,13 @@ export class Header implements OnInit {
 
   onCityChange(city: string): void {
     this.selectedCity.set(city);
+    this.selectedCityModel = city;
     console.log('City changed to:', city);
   }
 
   onRoleItemChange(roleItem: string): void {
     this.selectedRoleItem.set(roleItem);
+    this.selectedRoleItemModel = roleItem;
     console.log('Role Item changed to:', roleItem);
   }
 }

@@ -11,24 +11,14 @@
     <div class="user-section">
 
       <!-- City Dropdown -->
-      <p-select 
-        [options]="cities" 
-        [(ngModel)]="selectedCity"
-        (ngModelChange)="onCityChange($event)"
-        placeholder="Select City"
-        [filter]="true"
-        [showClear]="false"
+      <p-select [options]="cities" [(ngModel)]="selectedCityModel" (ngModelChange)="onCityChange($event)"
+        placeholder="Select City" [filter]="true" [showClear]="false" [style]="{'width': '150px'}"
         styleClass="header-select city-select">
       </p-select>
 
       <!-- Role Item Dropdown -->
-      <p-select 
-        [options]="roleitem" 
-        [(ngModel)]="selectedRoleItem"
-        (ngModelChange)="onRoleItemChange($event)"
-        placeholder="Select Role"
-        [filter]="true"
-        [showClear]="false"
+      <p-select [options]="roleitem" [(ngModel)]="selectedRoleItemModel" (ngModelChange)="onRoleItemChange($event)"
+        placeholder="Select Role" [filter]="true" [showClear]="false" [style]="{'width': '120px'}"
         styleClass="header-select role-select">
       </p-select>
 

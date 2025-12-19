@@ -53,36 +53,58 @@
 
 /* Header Select Dropdowns */
 .header-select {
-  min-width: 150px;
-  max-width: 200px;
+  display: inline-block;
 }
 
-.header-select ::ng-deep .p-select {
+.header-select ::ng-deep .p-select,
+.header-select ::ng-deep p-select {
   width: 100%;
-  height: 2.5rem;
+  display: block;
 }
 
-.header-select ::ng-deep .p-select-label {
+.header-select ::ng-deep .p-select-label,
+.header-select ::ng-deep .p-select-label-container {
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
 }
 
-.header-select ::ng-deep .p-select-trigger {
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #ffffff;
-  transition: all 0.2s ease;
+.header-select ::ng-deep .p-select-trigger,
+.header-select ::ng-deep .p-select-trigger-container {
+  border: 1px solid #d1d5db !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  transition: all 0.2s ease !important;
+  min-height: 2.5rem !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 !important;
 }
 
-.header-select ::ng-deep .p-select-trigger:hover {
-  border-color: #9ca3af;
+.header-select ::ng-deep .p-select-trigger:hover,
+.header-select ::ng-deep .p-select-trigger-container:hover {
+  border-color: #9ca3af !important;
+  background: #f9fafb !important;
 }
 
-.header-select ::ng-deep .p-select-trigger:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.header-select ::ng-deep .p-select-trigger.p-focus,
+.header-select ::ng-deep .p-select-trigger-container.p-focus,
+.header-select ::ng-deep .p-select-trigger:focus-within,
+.header-select ::ng-deep .p-select-trigger-container:focus-within {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+
+.header-select ::ng-deep .p-select-chevron,
+.header-select ::ng-deep .p-select-icon {
+  color: #6b7280 !important;
+  margin-left: 0.5rem;
 }
 
 .city-select {
