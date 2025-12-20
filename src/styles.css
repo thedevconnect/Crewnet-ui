@@ -1,5 +1,32 @@
-/* only your custom styles */
+@use "tailwindcss";
+
+
+.arial {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 body {
-    margin: 0;
+  //  font-family: "Barlow Semi Condensed", sans-serif;
+  font-family: "Roboto", sans-serif;
+}
+
+.custom-skeleton {
+  background-color: #e2e8f0 !important; // Tailwind's bg-slate-200
+}
+
+.button-styling {
+  background-color: #1976D2;
+  cursor: pointer;
+}
+
+
+.orange-button {
+  background-color: #1976D2 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+
+  /* Use !important to override PrimeNG's default styles if needed */
+  .pi {
+    font-size: 11px !important;
   }
-  
+}

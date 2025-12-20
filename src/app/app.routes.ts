@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
-import { Layout } from './shared/layout/layout';
+import { Layout } from './shared/design/layout/layout';
 import { Dashboard } from './features/dashboard/dashboard';
 import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
