@@ -112,7 +112,7 @@
                                     <label class="text-xs font-medium mb-1 block">Employee Code <em
                                             class="text-red-500">*</em></label>
                                     <input pInputText formControlName="employeeCode" readonly class="w-full bg-gray-100"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('employeeCode')}">
+                                        [ngClass]="{'p-invalid': isInvalid('employeeCode')}">
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Status <em
@@ -120,8 +120,11 @@
                                     <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
                                         optionValue="value" [filter]="false" [showClear]="false" appendTo="body"
                                         placeholder="Select status" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('status')}">
+                                        [ngClass]="{'p-invalid': isInvalid('status')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('status')" class="p-error text-xs mt-1 block">
+                                        Status is required
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -143,13 +146,21 @@
                                     <label class="text-xs font-medium mb-1 block">First Name <em
                                             class="text-red-500">*</em></label>
                                     <input pInputText formControlName="firstName" class="w-full" maxlength="100"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('firstName')}">
+                                        [ngClass]="{'p-invalid': isInvalid('firstName')}"
+                                        placeholder="Enter first name">
+                                    <small *ngIf="isInvalid('firstName')" class="p-error text-xs mt-1 block">
+                                        First name is required
+                                    </small>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Last Name <em
                                             class="text-red-500">*</em></label>
                                     <input pInputText formControlName="lastName" class="w-full" maxlength="100"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('lastName')}">
+                                        [ngClass]="{'p-invalid': isInvalid('lastName')}"
+                                        placeholder="Enter last name">
+                                    <small *ngIf="isInvalid('lastName')" class="p-error text-xs mt-1 block">
+                                        Last name is required
+                                    </small>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Gender <em
@@ -157,8 +168,11 @@
                                     <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
                                         optionValue="value" [filter]="false" [showClear]="false" appendTo="body"
                                         placeholder="Select gender" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('gender')}">
+                                        [ngClass]="{'p-invalid': isInvalid('gender')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('gender')" class="p-error text-xs mt-1 block">
+                                        Gender is required
+                                    </small>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Date of Birth <em
@@ -166,8 +180,11 @@
                                     <p-datepicker formControlName="dateOfBirth" [iconDisplay]="'input'"
                                         [showIcon]="true" appendTo="body" dateFormat="yy-mm-dd"
                                         placeholder="Select date" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('dateOfBirth')}">
+                                        [ngClass]="{'p-invalid': isInvalid('dateOfBirth')}">
                                     </p-datepicker>
+                                    <small *ngIf="isInvalid('dateOfBirth')" class="p-error text-xs mt-1 block">
+                                        Date of birth is required
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -190,13 +207,22 @@
                                             class="text-red-500">*</em></label>
                                     <input pInputText type="email" formControlName="email" class="w-full"
                                         maxlength="200" (blur)="onEmailBlur()"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('email')}">
+                                        [ngClass]="{'p-invalid': isInvalid('email')}"
+                                        placeholder="Enter email address">
+                                    <small *ngIf="isInvalid('email')" class="p-error text-xs mt-1 block">
+                                        <span *ngIf="employeeForm.get('email')?.errors?.['required']">Email is required</span>
+                                        <span *ngIf="employeeForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+                                    </small>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Mobile Number <em
                                             class="text-red-500">*</em></label>
                                     <input pInputText formControlName="mobileNumber" class="w-full" maxlength="15"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('mobileNumber')}">
+                                        [ngClass]="{'p-invalid': isInvalid('mobileNumber')}"
+                                        placeholder="Enter mobile number">
+                                    <small *ngIf="isInvalid('mobileNumber')" class="p-error text-xs mt-1 block">
+                                        Mobile number is required
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -220,8 +246,11 @@
                                     <p-select formControlName="department" [options]="departmentOptions"
                                         optionLabel="label" optionValue="value" [filter]="true" [showClear]="false"
                                         appendTo="body" placeholder="Select department" [style]="{'width': '100%'}"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('department')}">
+                                        [ngClass]="{'p-invalid': isInvalid('department')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('department')" class="p-error text-xs mt-1 block">
+                                        Department is required
+                                    </small>
                                 </div>
                                 <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Designation <em
@@ -229,8 +258,11 @@
                                     <p-select formControlName="designation" [options]="designationOptions"
                                         optionLabel="label" optionValue="value" [filter]="true" [showClear]="false"
                                         appendTo="body" placeholder="Select designation" [style]="{'width': '100%'}"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('designation')}">
+                                        [ngClass]="{'p-invalid': isInvalid('designation')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('designation')" class="p-error text-xs mt-1 block">
+                                        Designation is required
+                                    </small>
                                 </div>
                                 <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Employment Type <em
@@ -238,8 +270,11 @@
                                     <p-select formControlName="employmentType" [options]="employmentTypeOptions"
                                         optionLabel="label" optionValue="value" [filter]="false" [showClear]="false"
                                         appendTo="body" placeholder="Select employment type" [style]="{'width': '100%'}"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('employmentType')}">
+                                        [ngClass]="{'p-invalid': isInvalid('employmentType')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('employmentType')" class="p-error text-xs mt-1 block">
+                                        Employment type is required
+                                    </small>
                                 </div>
                                 <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Joining Date <em
@@ -247,8 +282,11 @@
                                     <p-datepicker formControlName="joiningDate" [iconDisplay]="'input'"
                                         [showIcon]="true" appendTo="body" dateFormat="yy-mm-dd"
                                         placeholder="Select date" [style]="{'width': '100%'}"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('joiningDate')}">
+                                        [ngClass]="{'p-invalid': isInvalid('joiningDate')}">
                                     </p-datepicker>
+                                    <small *ngIf="isInvalid('joiningDate')" class="p-error text-xs mt-1 block">
+                                        Joining date is required
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -272,8 +310,11 @@
                                     <p-select formControlName="role" [options]="roleOptions" optionLabel="label"
                                         optionValue="value" [filter]="false" [showClear]="false" appendTo="body"
                                         placeholder="Select role" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('role')}">
+                                        [ngClass]="{'p-invalid': isInvalid('role')}">
                                     </p-select>
+                                    <small *ngIf="isInvalid('role')" class="p-error text-xs mt-1 block">
+                                        Role is required
+                                    </small>
                                 </div>
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Username</label>

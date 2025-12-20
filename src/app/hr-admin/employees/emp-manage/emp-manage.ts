@@ -62,6 +62,7 @@ export class EmpManage implements OnInit {
 
   // Table columns configuration - Dynamic columns
   columns: Column[] = [
+    { field: 'actions', header: 'Actions', sortable: false, width: '120px' },
     { field: 'employeeCode', header: 'Employee Code', sortable: true },
     { field: 'name', header: 'Name', sortable: true },
     { field: 'email', header: 'Email', sortable: true },
@@ -69,7 +70,6 @@ export class EmpManage implements OnInit {
     { field: 'department', header: 'Department', sortable: true },
     { field: 'designation', header: 'Designation', sortable: true },
     { field: 'status', header: 'Status', sortable: true },
-    { field: 'actions', header: 'Actions', sortable: false, width: '120px' },
   ];
 
   // Drawer state
@@ -149,28 +149,28 @@ export class EmpManage implements OnInit {
   initForm() {
     this.employeeForm = this.fb.group({
       // Employee Identity
-      employeeCode: [''],
-      status: ['Active'],
+      employeeCode: [{ value: '', disabled: true }, Validators.required],
+      status: ['Active', Validators.required],
 
       // Personal Details
-      firstName: [''],
-      lastName: [''],
-      gender: [''],
-      dateOfBirth: [''],
+      firstName: ['', [Validators.required, Validators.maxLength(100)]],
+      lastName: ['', [Validators.required, Validators.maxLength(100)]],
+      gender: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],
 
       // Contact Details
-      email: [''],
-      mobileNumber: [''],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(200)]],
+      mobileNumber: ['', [Validators.required, Validators.maxLength(15)]],
 
       // Job Details
-      department: [''],
-      designation: [''],
-      employmentType: [''],
-      joiningDate: [''],
+      department: ['', Validators.required],
+      designation: ['', Validators.required],
+      employmentType: ['', Validators.required],
+      joiningDate: ['', Validators.required],
 
       // System Access
-      role: [''],
-      username: [],
+      role: ['', Validators.required],
+      username: [{ value: '', disabled: true }],
       firstLogin: [true],
     });
   }
@@ -268,17 +268,25 @@ export class EmpManage implements OnInit {
       this.headerIcon.set('pi pi-user-plus');
       this.resetAllForms();
       this.generateEmployeeCode();
+      this.employeeForm.enable();
+      this.employeeForm.get('employeeCode')?.disable();
+      this.employeeForm.get('username')?.disable();
     } else if (type === 'update') {
       this.header.set('Update Employee');
       this.headerIcon.set('pi pi-user-edit');
       if (item) {
+        this.employeeForm.enable();
         this.populateForm(item);
+        // Keep readonly fields disabled
+        this.employeeForm.get('employeeCode')?.disable();
+        this.employeeForm.get('username')?.disable();
       }
     } else if (type === 'view') {
       this.header.set('View Employee');
       this.headerIcon.set('pi pi-eye');
       if (item) {
         this.populateForm(item);
+        // Disable entire form for view mode
         this.employeeForm.disable();
       }
     }
@@ -287,23 +295,33 @@ export class EmpManage implements OnInit {
   }
 
   populateForm(data: any) {
-    this.employeeForm.patchValue({
-      employeeCode: data.employeeCode || '',
+    // Enable form first
+    this.employeeForm.enable();
+    
+    // Handle both camelCase and snake_case from API
+    const empData = {
+      employeeCode: data.employeeCode || data.employee_code || '',
       status: data.status || 'Active',
-      firstName: data.firstName || '',
-      lastName: data.lastName || '',
+      firstName: data.firstName || data.first_name || '',
+      lastName: data.lastName || data.last_name || '',
       gender: data.gender || '',
-      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : '',
+      dateOfBirth: data.dateOfBirth || data.date_of_birth ? new Date(data.dateOfBirth || data.date_of_birth) : null,
       email: data.email || '',
-      mobileNumber: data.mobileNumber || '',
+      mobileNumber: data.mobileNumber || data.mobile_number || '',
       department: data.department || '',
       designation: data.designation || '',
-      employmentType: data.employmentType || '',
-      joiningDate: data.joiningDate ? new Date(data.joiningDate) : '',
+      employmentType: data.employmentType || data.employment_type || '',
+      joiningDate: data.joiningDate || data.joining_date ? new Date(data.joiningDate || data.joining_date) : null,
       role: data.role || '',
       username: data.username || '',
-      firstLogin: data.firstLogin !== undefined ? data.firstLogin : true,
-    });
+      firstLogin: data.firstLogin !== undefined ? data.firstLogin : (data.first_login !== undefined ? data.first_login : true),
+    };
+
+    this.employeeForm.patchValue(empData);
+    
+    // Disable readonly fields
+    this.employeeForm.get('employeeCode')?.disable();
+    this.employeeForm.get('username')?.disable();
   }
 
   // Form validation helper
@@ -353,11 +371,21 @@ export class EmpManage implements OnInit {
     const formValue = this.employeeForm.getRawValue();
 
     // Convert dates to ISO string format (YYYY-MM-DD)
-    if (formValue.dateOfBirth instanceof Date) {
-      formValue.dateOfBirth = formValue.dateOfBirth.toISOString().split('T')[0];
+    if (formValue.dateOfBirth) {
+      if (formValue.dateOfBirth instanceof Date) {
+        formValue.dateOfBirth = formValue.dateOfBirth.toISOString().split('T')[0];
+      } else if (typeof formValue.dateOfBirth === 'string') {
+        // If it's already a string, use it as is
+        formValue.dateOfBirth = formValue.dateOfBirth.split('T')[0];
+      }
     }
-    if (formValue.joiningDate instanceof Date) {
-      formValue.joiningDate = formValue.joiningDate.toISOString().split('T')[0];
+    if (formValue.joiningDate) {
+      if (formValue.joiningDate instanceof Date) {
+        formValue.joiningDate = formValue.joiningDate.toISOString().split('T')[0];
+      } else if (typeof formValue.joiningDate === 'string') {
+        // If it's already a string, use it as is
+        formValue.joiningDate = formValue.joiningDate.split('T')[0];
+      }
     }
 
     // Remove employeeCode and username from payload (auto-generated by backend)
