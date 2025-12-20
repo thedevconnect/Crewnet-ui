@@ -4,9 +4,11 @@ import {
   input,
   output,
   OnInit,
+  OnChanges,
   ViewChild,
   signal,
   computed,
+  effect,
 } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -42,14 +44,28 @@ interface RoleOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit {
+  constructor() {
+    // Sync internal role with parent's selected role
+    effect(() => {
+      const parentRoleId = this.selectedRoleId();
+      if (parentRoleId) {
+        // Map 'hr' to 'hrAdmin' for compatibility
+        if (parentRoleId === 'hr') {
+          this.internalSelectedRoleId = 'hrAdmin';
+        } else {
+          this.internalSelectedRoleId = parentRoleId;
+        }
+      }
+    });
+  }
   @ViewChild('userMenu') userMenu: any;
 
   user = input.required<UserDetails>();
   onLogout = output<void>();
   onRoleChange = output<string>();
-  toggleSidebar = output<void>();
 
   sidebarOpen = input<boolean>(false);
+  selectedRoleId = input<string>('hr'); // Receive selected role from layout
 
   // District data
   distList: DistrictOption[] = [
@@ -64,18 +80,14 @@ export class Header implements OnInit {
     { drpoption: 'Gurgaon', drpvalue: 'gurgaon' },
   ];
 
-  // Role data
+  // Role data - Only HR Admin and ESS
   roleList: RoleOption[] = [
-    { rolDes: 'Service Engineer', roleId: 'service-engineer' },
-    { rolDes: 'HR', roleId: 'hr' },
+    { rolDes: 'HR Admin', roleId: 'hrAdmin' },
     { rolDes: 'ESS', roleId: 'ess' },
-    { rolDes: 'Finance', roleId: 'finance' },
-    { rolDes: 'Sales', roleId: 'sales' },
-    { rolDes: 'Engineering', roleId: 'engineering' },
   ];
 
   selectedDistrictValue: string = 'abohar';
-  selectedRoleId: string = 'service-engineer';
+  internalSelectedRoleId: string = 'hrAdmin'; // Internal state for dropdown
 
   filteredDistList = signal<DistrictOption[]>(this.distList);
   filteredRoleList = signal<RoleOption[]>(this.roleList);
@@ -86,8 +98,9 @@ export class Header implements OnInit {
   });
 
   currentRole = computed(() => {
-    const role = this.roleList.find((r) => r.roleId === this.selectedRoleId);
-    return role?.rolDes || '';
+    const roleId = this.internalSelectedRoleId || this.selectedRoleId();
+    const role = this.roleList.find((r) => r.roleId === roleId);
+    return role?.rolDes || 'HR Admin';
   });
 
   userMenuItems: MenuItem[] = [];
@@ -95,12 +108,20 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.initUserMenu();
 
+    // Initialize with value from parent, map 'hr' to 'hrAdmin' for compatibility
+    const parentRoleId = this.selectedRoleId();
+    if (parentRoleId === 'hr') {
+      this.internalSelectedRoleId = 'hrAdmin';
+    } else {
+      this.internalSelectedRoleId = parentRoleId || 'hrAdmin';
+    }
+
     // Set default values if not already set
     if (!this.selectedDistrictValue && this.distList.length > 0) {
       this.selectedDistrictValue = this.distList[0].drpvalue;
     }
-    if (!this.selectedRoleId && this.roleList.length > 0) {
-      this.selectedRoleId = this.roleList[0].roleId;
+    if (!this.internalSelectedRoleId && this.roleList.length > 0) {
+      this.internalSelectedRoleId = 'hrAdmin'; // Default to HR Admin
     }
   }
 
@@ -158,12 +179,10 @@ export class Header implements OnInit {
 
   onRoleDropdownChange(event: any): void {
     if (event && event.value) {
-      this.selectedRoleId = event.value;
-      const role = this.roleList.find((r) => r.roleId === event.value);
-      if (role) {
-        this.onRoleChange.emit(role.rolDes);
-        console.log('Role changed to:', role.rolDes);
-      }
+      this.internalSelectedRoleId = event.value;
+      // Emit the roleId to parent (layout)
+      this.onRoleChange.emit(event.value);
+      console.log('Role changed to:', event.value);
     }
   }
 

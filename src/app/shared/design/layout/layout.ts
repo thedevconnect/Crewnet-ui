@@ -123,7 +123,7 @@ export class Layout {
   ];
 
   protected selectedDistrictValue: string = 'abohar';
-  protected selectedRoleId: string = 'service-engineer';
+  protected readonly selectedRoleId = signal<string>('hrAdmin'); // Default to HR Admin
   
   protected readonly selectedDistrict = computed(() => {
     const dist = this.distList.find(d => d.drpvalue === this.selectedDistrictValue);
@@ -131,9 +131,20 @@ export class Layout {
   });
 
   protected readonly currentRole = computed(() => {
-    const role = this.roleList.find(r => r.roleId === this.selectedRoleId);
+    const role = this.roleList.find(r => r.roleId === this.selectedRoleId());
     return role?.rolDes || '';
   });
+
+  // Handle role change from header
+  onRoleChange(roleId: string): void {
+    this.selectedRoleId.set(roleId);
+    // Navigate to appropriate dashboard based on role
+    if (roleId === 'hrAdmin' || roleId === 'hr') {
+      this.router.navigate(['/hr-admin/dashboard']);
+    } else if (roleId === 'ess') {
+      this.router.navigate(['/ess/dashboard']);
+    }
+  }
 
   protected readonly userMenuItems: MenuItem[] = [
     {
@@ -151,67 +162,59 @@ export class Layout {
     }
   ];
 
-  // Static menu items with submenus
-  protected readonly menuItemsWithSubmenu: MenuItemWithSubmenu[] = [
-    {
-      menu: 'Ticket',
-      icon: 'pi-shield',
-      route: '/ticket',
-      submenus: [
-        { activity: 'Unassigned Requests', formValue: '/ticket/unassigned', menu: 'Ticket' },
-        { activity: 'My Tickets', formValue: '/ticket/my-tickets', menu: 'Ticket' },
-        { activity: 'All Tickets', formValue: '/ticket/all', menu: 'Ticket' },
-      ]
-    },
+  // HR Admin Menu Items (Compact: Dashboard, Employees, Attendance, Leaves)
+  private readonly hrMenuItems: MenuItemWithSubmenu[] = [
     {
       menu: 'Dashboard',
       icon: 'pi-home',
-      route: '/dashboard'
+      route: '/hr-admin/dashboard'
     },
     {
       menu: 'Employees',
       icon: 'pi-users',
-      route: '/employees',
-      submenus: [
-        { activity: 'Employee List', formValue: '/employees', menu: 'Employees' },
-        { activity: 'Add Employee', formValue: '/employees/add', menu: 'Employees' },
-      ]
+      route: '/hr-admin/employees'
     },
     {
       menu: 'Attendance',
       icon: 'pi-calendar',
-      route: '/attendance',
-      submenus: [
-        { activity: 'Daily Attendance', formValue: '/attendance/daily', menu: 'Attendance' },
-        { activity: 'Monthly Report', formValue: '/attendance/monthly', menu: 'Attendance' },
-      ]
+      route: '/hr-admin/attendance'
     },
     {
       menu: 'Leaves',
       icon: 'pi-calendar-minus',
-      route: '/leaves'
-    },
-    {
-      menu: 'Shifts',
-      icon: 'pi-clock',
-      route: '/shifts'
-    },
-    {
-      menu: 'Departments',
-      icon: 'pi-building',
-      route: '/departments'
-    },
-    {
-      menu: 'Reports',
-      icon: 'pi-chart-line',
-      route: '/reports'
-    },
-    {
-      menu: 'Settings',
-      icon: 'pi-cog',
-      route: '/settings'
+      route: '/hr-admin/leaves'
     },
   ];
+
+  // ESS Menu Items (Compact: Dashboard, Attendance, Leaves)
+  private readonly essMenuItems: MenuItemWithSubmenu[] = [
+    {
+      menu: 'Dashboard',
+      icon: 'pi-home',
+      route: '/ess/dashboard'
+    },
+    {
+      menu: 'Attendance',
+      icon: 'pi-calendar',
+      route: '/ess/attendance'
+    },
+    {
+      menu: 'Leaves',
+      icon: 'pi-calendar-minus',
+      route: '/ess/leaves'
+    },
+  ];
+
+  // Get menu items based on selected role
+  protected readonly menuItemsWithSubmenu = computed<MenuItemWithSubmenu[]>(() => {
+    const roleId = this.selectedRoleId();
+    if (roleId === 'hrAdmin' || roleId === 'hr') {
+      return this.hrMenuItems;
+    } else if (roleId === 'ess') {
+      return this.essMenuItems;
+    }
+    return this.hrMenuItems; // Default to HR Admin menu
+  });
 
   toggleSidebar(): void {
     this.sidebarOpen.update((value) => !value);
@@ -222,12 +225,12 @@ export class Layout {
   }
 
   hasSubmenu(menuName: string): boolean {
-    const menu = this.menuItemsWithSubmenu.find(m => m.menu === menuName);
+    const menu = this.menuItemsWithSubmenu().find(m => m.menu === menuName);
     return !!menu?.submenus && menu.submenus.length > 0;
   }
 
   getSubmenus(menuName: string): SubmenuItem[] {
-    const menu = this.menuItemsWithSubmenu.find(m => m.menu === menuName);
+    const menu = this.menuItemsWithSubmenu().find(m => m.menu === menuName);
     return menu?.submenus || [];
   }
 
@@ -288,13 +291,6 @@ export class Layout {
     console.log('District changed to:', value);
   }
 
-  onRoleDropdownChange(event: any): void {
-    if (event && event.value) {
-      this.selectedRoleId = event.value;
-      console.log('Role changed to:', event.value);
-    }
-  }
-
   getUserInitial(): string {
     const name = this.userDetails().name || '';
     return name.charAt(0).toUpperCase();
@@ -314,5 +310,15 @@ export class Layout {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  getDashboardRoute(): string {
+    const roleId = this.selectedRoleId();
+    if (roleId === 'hrAdmin' || roleId === 'hr') {
+      return '/hr-admin/dashboard';
+    } else if (roleId === 'ess') {
+      return '/ess/dashboard';
+    }
+    return '/hr-admin/dashboard'; // Default
   }
 }

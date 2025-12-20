@@ -1,52 +1,135 @@
-/* Header Host Styles */
+/* ============================================
+   HEADER COMPONENT STYLES - Slim HRMS Design
+   ============================================ */
+
 :host {
   display: block;
+  width: 100%;
 }
 
-/* PrimeNG Select Styles - Light Grey Background for Header */
-:host ::ng-deep .p-select-trigger {
-  border: 1px solid #e5e7eb !important;
-  border-radius: 6px !important;
-  background: #f9fafb !important;
-  height: 36px !important;
-  min-height: 36px !important;
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 48px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
-:host ::ng-deep .p-select-trigger:hover {
-  border-color: #d1d5db !important;
-  background: #f3f4f6 !important;
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 1rem;
 }
 
-:host ::ng-deep .p-select-trigger:focus-within,
-:host ::ng-deep .p-select-trigger.p-focus {
-  border-color: #9ca3af !important;
-  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.1) !important;
-  background: #ffffff !important;
+.role-dropdown {
+  min-width: 140px;
 }
 
-:host ::ng-deep .p-select-label {
-  padding: 0.5rem 0.75rem !important;
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  color: #374151 !important;
-  min-height: 36px !important;
-  display: flex !important;
-  align-items: center !important;
+/* PrimeNG Select Styles for Header Role Dropdown */
+:host ::ng-deep .header-role-select .p-select {
+  width: 100%;
+  min-width: 140px;
 }
 
-:host ::ng-deep .p-select-label.p-placeholder {
-  color: #6b7280 !important;
+:host ::ng-deep .header-role-select .p-select-trigger {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 0.5rem;
 }
 
-:host ::ng-deep .p-select-trigger-icon {
-  color: #6b7280 !important;
-  font-size: 0.75rem !important;
+:host ::ng-deep .header-role-select .p-select-trigger:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+:host ::ng-deep .header-role-select .p-select-trigger:focus-within,
+:host ::ng-deep .header-role-select .p-select-trigger.p-focus {
+  border-color: #1976D2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+:host ::ng-deep .header-role-select .p-select-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .header-role-select .p-select-label.p-placeholder {
+  color: #6b7280;
+}
+
+:host ::ng-deep .header-role-select .p-select-trigger-icon {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.user-avatar {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+:host ::ng-deep .user-avatar .p-avatar-label {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.875rem;
 }
 
 /* User Profile Menu Positioning */
 :host ::ng-deep .p-menu-overlay {
-  right: 0 !important;
+  right: 1rem !important;
   left: auto !important;
   transform: none !important;
   margin-top: 8px !important;
+  min-width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 1rem;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .role-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
 }

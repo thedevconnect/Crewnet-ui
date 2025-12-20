@@ -1,0 +1,22 @@
+/* Orange button style */
+::ng-deep .orange-button {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+::ng-deep .orange-button:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+}
+
+/* Overlay panel action menu styling */
+::ng-deep .p-overlaypanel-action-menu {
+  padding: 0.5rem !important;
+  min-width: 150px !important;
+}
+
+::ng-deep .p-overlaypanel-action-menu button {
+  width: 100%;
+  text-align: left;
+}
+

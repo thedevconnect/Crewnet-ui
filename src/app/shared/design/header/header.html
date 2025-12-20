@@ -1,43 +1,33 @@
-<header class="fixed top-0 z-30 flex h-16 items-center bg-white px-6 shadow-sm border-b border-gray-200"
-  [style.left.px]="sidebarOpen() ? 256 : 64"
-  style="right: 0;">
-  <!-- Left Section: Toggle Button -->
-  <div class="flex items-center">
-    <button type="button" (click)="toggleSidebar.emit()"
-      class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded transition-colors">
-      <i class="pi pi-angle-double-left text-xl"></i>
-    </button>
-  </div>
-
-  <!-- Right Section: Dropdowns + User Avatar (Pushed to end with ml-auto) -->
-  <div style="display: flex; justify-content: flex-end; gap: 10px;" class="ml-auto flex items-center gap-4">
-    <!-- District Dropdown -->
-    <div class="w-[150px]">
-      <p-select [options]="distList" optionLabel="drpoption" optionValue="drpvalue" [(ngModel)]="selectedDistrictValue"
-        [placeholder]="selectedDistrict() || 'Select District'" [filter]="true" filterBy="drpoption" appendTo="body"
-        styleClass="w-full">
-      </p-select>
-    </div>
-
+<header class="app-header">
+  <!-- Header Content -->
+  <div class="header-content">
     <!-- Role Dropdown -->
-    <div class="w-[150px]">
-      <p-select [options]="roleList" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="selectedRoleId"
-        [placeholder]="currentRole() || 'Select Role'" [filter]="true" filterBy="rolDes" appendTo="body"
-        styleClass="w-full">
+    <div class="role-dropdown">
+      <p-select 
+        [options]="roleList" 
+        optionLabel="rolDes" 
+        optionValue="roleId" 
+        [(ngModel)]="internalSelectedRoleId"
+        [placeholder]="currentRole() || 'Select Role'" 
+        [filter]="false" 
+        appendTo="body"
+        styleClass="header-role-select"
+        (onChange)="onRoleDropdownChange($event)">
       </p-select>
     </div>
 
-    <!-- User Avatar -->
-    <div class="flex items-center gap-4">
-      <p-avatar size="normal" shape="circle" class="cursor-pointer" (click)="userMenu.toggle($event)"
-        [style]="{'background-color': '#8b5cf6', 'width': '36px', 'height': '36px'}">
-        <span class="text-white font-bold text-sm">{{ getUserInitial() }}</span>
+    <!-- User Info -->
+    <div class="user-info">
+      <span class="user-name">{{ getUserName() }}</span>
+      <p-avatar 
+        size="normal" 
+        shape="circle" 
+        class="user-avatar cursor-pointer" 
+        (click)="userMenu.toggle($event)"
+        [style]="{'background-color': '#1976D2', 'width': '32px', 'height': '32px'}">
+        <span class="avatar-initial">{{ getUserInitial() }}</span>
       </p-avatar>
-      <span class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-        {{ getUserName() }}
-      </span>
-      <p-menu #userMenu [model]="userMenuItems" [popup]="true" [appendTo]="'body'">
-      </p-menu>
+      <p-menu #userMenu [model]="userMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
     </div>
   </div>
 </header>
