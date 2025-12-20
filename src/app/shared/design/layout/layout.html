@@ -5,9 +5,9 @@
     <!-- Logo Section with Company Name -->
     <div class="sidebar-logo">
       <a [routerLink]="getDashboardRoute()" class="logo-link">
-        <img src="assets/img/OBLO.png" alt="Crewnet Logo" class="logo-image">
+        <img src="assets/img/OBLO.png" alt="oblo Logo" class="logo-image">
         @if (sidebarOpen()) {
-          <span class="logo-text">Crewnet</span>
+        <span class="logo-text">oblo</span>
         }
       </a>
     </div>
@@ -34,8 +34,8 @@
 
     <!-- Header Component -->
     @if (userDetails(); as user) {
-    <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" 
-      (onLogout)="logout()" (onRoleChange)="onRoleChange($event)" />
+    <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" (onLogout)="logout()"
+      (onRoleChange)="onRoleChange($event)" />
     }
 
     <!-- Main Content -->

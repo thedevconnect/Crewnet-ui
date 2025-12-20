@@ -49,11 +49,11 @@ export class AuthService {
     }
 
     isAuthenticated(): boolean {
-        return !!localStorage.getItem('crewnet_token');
+        return !!localStorage.getItem('oblo_token');
     }
 
     getToken(): string | null {
-        return localStorage.getItem('crewnet_token');
+        return localStorage.getItem('oblo_token');
     }
 
     login(email: string, password: string): Observable<AuthResponse> {
@@ -62,7 +62,7 @@ export class AuthService {
             .pipe(
                 tap((response) => {
                     if (response.success && response.token && response.user) {
-                        localStorage.setItem('crewnet_token', response.token);
+                        localStorage.setItem('oblo_token', response.token);
                         this.currentUser.set(response.user);
                     }
                 }),
@@ -80,7 +80,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.baseUrl}/auth/register`, data).pipe(
             tap((response) => {
                 if (response.success && response.token && response.user) {
-                    localStorage.setItem('crewnet_token', response.token);
+                    localStorage.setItem('oblo_token', response.token);
                     this.currentUser.set(response.user);
                 }
             }),
@@ -111,7 +111,7 @@ export class AuthService {
     }
 
     logout(): void {
-        localStorage.removeItem('crewnet_token');
+        localStorage.removeItem('oblo_token');
         this.currentUser.set(null);
         this.router.navigate(['/login']);
     }

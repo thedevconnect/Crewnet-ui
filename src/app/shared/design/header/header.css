@@ -29,6 +29,55 @@
   gap: 1rem;
 }
 
+/* District Dropdown Styles */
+.district-dropdown {
+  min-width: 150px;
+}
+
+:host ::ng-deep .header-district-select .p-select {
+  width: 100%;
+  min-width: 150px;
+}
+
+:host ::ng-deep .header-district-select .p-select-trigger {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #ffffff;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 0.5rem;
+}
+
+:host ::ng-deep .header-district-select .p-select-trigger:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+:host ::ng-deep .header-district-select .p-select-trigger:focus-within,
+:host ::ng-deep .header-district-select .p-select-trigger.p-focus {
+  border-color: #1976D2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+:host ::ng-deep .header-district-select .p-select-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #374151;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .header-district-select .p-select-label.p-placeholder {
+  color: #6b7280;
+}
+
+:host ::ng-deep .header-district-select .p-select-trigger-icon {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
 .role-dropdown {
   min-width: 140px;
 }

@@ -1,7 +1,7 @@
-# Crewnet Project Structure
+# oblo Project Structure
 
 ## Overview
-This document describes the organized structure of the Crewnet HRMS application with clear separation between HR Admin and ESS (Employee Self Service) components.
+This document describes the organized structure of the oblo HRMS application with clear separation between HR Admin and ESS (Employee Self Service) components.
 
 ## Folder Structure
 

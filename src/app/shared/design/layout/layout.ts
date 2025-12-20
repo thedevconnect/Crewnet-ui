@@ -88,7 +88,7 @@ export class Layout {
     }
     return {
       name: 'Guest User',
-      email: 'guest@crewnet.com',
+      email: 'guest@oblo.com',
       role: 'Guest'
     };
   });

@@ -108,9 +108,21 @@ export class HrDashboard {
   ]);
 
   protected readonly upcomingBirthdays = signal([
-    { name: 'Sanjay Gupta', date: 'Dec 2', avatar: 'https://ui-avatars.com/api/?name=Sanjay+Gupta&background=2563eb&color=fff' },
-    { name: 'Anjali Verma', date: 'Dec 5', avatar: 'https://ui-avatars.com/api/?name=Anjali+Verma&background=10b981&color=fff' },
-    { name: 'Rohit Mehta', date: 'Dec 8', avatar: 'https://ui-avatars.com/api/?name=Rohit+Mehta&background=f59e0b&color=fff' },
+    {
+      name: 'Sanjay Gupta',
+      date: 'Dec 2',
+      avatar: 'https://ui-avatars.com/api/?name=Sanjay+Gupta&background=2563eb&color=fff',
+    },
+    {
+      name: 'Anjali Verma',
+      date: 'Dec 5',
+      avatar: 'https://ui-avatars.com/api/?name=Anjali+Verma&background=10b981&color=fff',
+    },
+    {
+      name: 'Rohit Mehta',
+      date: 'Dec 8',
+      avatar: 'https://ui-avatars.com/api/?name=Rohit+Mehta&background=f59e0b&color=fff',
+    },
   ]);
 
   protected readonly departmentStats = signal([

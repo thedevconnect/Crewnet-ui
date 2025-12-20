@@ -7,7 +7,6 @@ import { HrDashboard } from './hr-admin/dashboard/dashboard';
 import { EssDashboard } from './ess-components/dashboard/dashboard';
 
 // HR Admin Components
-import { EmployeeList } from './hr-admin/employee/pages/employee-list/employee-list';
 import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
 import { Shifts } from './features/shifts/shifts';
@@ -17,6 +16,7 @@ import { Settings } from './features/settings/settings';
 
 // ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
+import { EmpManage } from './hr-admin/employees/emp-manage/emp-manage';
 
 export const routes: Routes = [
   {
@@ -41,48 +41,24 @@ export const routes: Routes = [
       {
         path: 'hr-admin',
         children: [
-          {
-            path: 'dashboard',
-            component: HrDashboard,
-          },
-          {
-            path: 'employees',
-            component: EmployeeList,
-          },
-          {
-            path: 'attendance',
-            component: Attendance,
-          },
-          {
-            path: 'leaves',
-            component: Leaves,
-          },
-          {
-            path: 'shifts',
-            component: Shifts,
-          },
+          { path: 'dashboard', component: HrDashboard },
+          { path: 'employees', component: EmpManage },
+          { path: 'attendance', component: Attendance },
+          { path: 'leaves', component: Leaves },
+          { path: 'shifts', component: Shifts },
           {
             path: 'departments',
             component: Departments,
           },
-          {
-            path: 'reports',
-            component: Reports,
-          },
-          {
-            path: 'settings',
-            component: Settings,
-          },
+          { path: 'reports', component: Reports },
+          { path: 'settings', component: Settings },
         ],
       },
       // ESS Routes
       {
         path: 'ess',
         children: [
-          {
-            path: 'dashboard',
-            component: EssDashboard,
-          },
+          { path: 'dashboard', component: EssDashboard },
           {
             path: 'profile',
             component: EssEmployee, // Placeholder - will be replaced with actual ESS profile component
@@ -90,14 +66,8 @@ export const routes: Routes = [
           {
             path: 'attendance',
             children: [
-              {
-                path: 'view',
-                component: EssEmployee, // Placeholder
-              },
-              {
-                path: 'regularization',
-                component: EssEmployee, // Placeholder
-              },
+              { path: 'view', component: EssEmployee },
+              { path: 'regularization', component: EssEmployee },
             ],
           },
           {
@@ -105,11 +75,11 @@ export const routes: Routes = [
             children: [
               {
                 path: 'apply',
-                component: EssEmployee, // Placeholder
+                component: EssEmployee,
               },
               {
                 path: 'balance',
-                component: EssEmployee, // Placeholder
+                component: EssEmployee,
               },
               {
                 path: 'history',

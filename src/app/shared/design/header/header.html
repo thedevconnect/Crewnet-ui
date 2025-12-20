@@ -1,17 +1,15 @@
 <header class="app-header">
   <!-- Header Content -->
   <div class="header-content">
+    <div>
+      <p-select [options]="distList" optionLabel="drpoption" optionValue="drpvalue" [(ngModel)]="selectedDistrictValue"
+        [placeholder]="selectedDistrict() || 'Select District'" [filter]="false" appendTo="body"
+        styleClass="header-district-select" (onChange)="changeDistrict($event.value)" />
+    </div>
     <!-- Role Dropdown -->
     <div class="role-dropdown">
-      <p-select 
-        [options]="roleList" 
-        optionLabel="rolDes" 
-        optionValue="roleId" 
-        [(ngModel)]="internalSelectedRoleId"
-        [placeholder]="currentRole() || 'Select Role'" 
-        [filter]="false" 
-        appendTo="body"
-        styleClass="header-role-select"
+      <p-select [options]="roleList" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="internalSelectedRoleId"
+        [placeholder]="currentRole() || 'Select Role'" [filter]="false" appendTo="body" styleClass="header-role-select"
         (onChange)="onRoleDropdownChange($event)">
       </p-select>
     </div>
@@ -19,11 +17,7 @@
     <!-- User Info -->
     <div class="user-info">
       <span class="user-name">{{ getUserName() }}</span>
-      <p-avatar 
-        size="normal" 
-        shape="circle" 
-        class="user-avatar cursor-pointer" 
-        (click)="userMenu.toggle($event)"
+      <p-avatar size="normal" shape="circle" class="user-avatar cursor-pointer" (click)="userMenu.toggle($event)"
         [style]="{'background-color': '#1976D2', 'width': '32px', 'height': '32px'}">
         <span class="avatar-initial">{{ getUserInitial() }}</span>
       </p-avatar>

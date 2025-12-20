@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Crewnet": {
+    "oblo": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -20,6 +20,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
               }
             ],
             "styles": ["src/styles.css"]
@@ -52,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Crewnet:build:production"
+              "buildTarget": "oblo:build:production"
             },
             "development": {
-              "buildTarget": "Crewnet:build:development"
+              "buildTarget": "oblo:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -72,6 +77,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
               }
             ],
             "styles": ["src/styles.css"]

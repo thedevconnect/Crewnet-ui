@@ -28,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       // Handle 401 Unauthorized - redirect to login (except for auth endpoints)
       if (error.status === 401 && !isAuthEndpoint) {
         // Clear token and redirect to login
-        localStorage.removeItem('crewnet_token');
+        localStorage.removeItem('oblo_token');
         router.navigate(['/login'], {
           queryParams: { returnUrl: router.url },
           replaceUrl: true

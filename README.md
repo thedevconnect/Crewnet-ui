@@ -1,4 +1,4 @@
-# Crewnet - HRMS & Attendance Management System
+# oblo - HRMS & Attendance Management System
 
 A modern Employee Management, Attendance, and HRMS application built with Angular 20 and TypeScript.
 
@@ -39,7 +39,7 @@ A modern Employee Management, Attendance, and HRMS application built with Angula
 The app uses mock authentication. You can login with **any email and password**.
 
 Example:
-- Email: `admin@crewnet.com`
+- Email: `admin@oblo.com`
 - Password: `password`
 
 ## Development server
@@ -97,4 +97,4 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-"# Crewnet-ui" 
+"# oblo-ui" 

@@ -10,7 +10,7 @@ import { AuthService } from './core/services/auth.service';
 })
 export class App implements OnInit {
   private readonly authService = inject(AuthService);
-  protected readonly title = signal('Crewnet');
+  protected readonly title = signal('oblo');
 
   ngOnInit(): void {
     this.authService.loadUser();
