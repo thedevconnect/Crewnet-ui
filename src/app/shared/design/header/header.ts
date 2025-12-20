@@ -71,10 +71,10 @@ export class Header implements OnInit {
   distList: DistrictOption[] = [
     { drpoption: 'Select District', drpvalue: '' },
     { drpoption: 'Delhi', drpvalue: 'delhi' },
-    { drpoption: 'Karnal', drpvalue: 'karnal' },
     { drpoption: 'Panipat', drpvalue: 'panipat' },
     { drpoption: 'Rohtak', drpvalue: 'rohtak' },
     { drpoption: 'Yamunanagar', drpvalue: 'yamunanagar' },
+    { drpoption: 'Karnal', drpvalue: 'karnal' },
     { drpoption: 'Ambala', drpvalue: 'ambala' },
     { drpoption: 'Sirsa', drpvalue: 'sirsa' },
     { drpoption: 'Faridabad', drpvalue: 'faridabad' },

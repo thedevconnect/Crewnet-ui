@@ -149,39 +149,39 @@
                         </div>
                         <div *ngIf="showJobDetails()" class="p-4">
                             <div class="grid md:grid-cols-2 gap-4">
-                                <div>
+                                <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Department <em
                                             class="text-red-500">*</em></label>
                                     <p-select formControlName="department" [options]="departmentOptions"
                                         optionLabel="label" optionValue="value" [filter]="true" [showClear]="false"
-                                        appendTo="body" placeholder="Select department" class="w-full"
+                                        appendTo="body" placeholder="Select department" [style]="{'width': '100%'}"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('department')}">
                                     </p-select>
                                 </div>
-                                <div>
+                                <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Designation <em
                                             class="text-red-500">*</em></label>
                                     <p-select formControlName="designation" [options]="designationOptions"
                                         optionLabel="label" optionValue="value" [filter]="true" [showClear]="false"
-                                        appendTo="body" placeholder="Select designation" class="w-full"
+                                        appendTo="body" placeholder="Select designation" [style]="{'width': '100%'}"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('designation')}">
                                     </p-select>
                                 </div>
-                                <div>
+                                <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Employment Type <em
                                             class="text-red-500">*</em></label>
                                     <p-select formControlName="employmentType" [options]="employmentTypeOptions"
                                         optionLabel="label" optionValue="value" [filter]="false" [showClear]="false"
-                                        appendTo="body" placeholder="Select employment type" class="w-full"
+                                        appendTo="body" placeholder="Select employment type" [style]="{'width': '100%'}"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('employmentType')}">
                                     </p-select>
                                 </div>
-                                <div>
+                                <div class="w-full">
                                     <label class="text-xs font-medium mb-1 block">Joining Date <em
                                             class="text-red-500">*</em></label>
                                     <p-datepicker formControlName="joiningDate" [iconDisplay]="'input'"
                                         [showIcon]="true" appendTo="body" dateFormat="yy-mm-dd"
-                                        placeholder="Select date" class="w-full"
+                                        placeholder="Select date" [style]="{'width': '100%'}"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('joiningDate')}">
                                     </p-datepicker>
                                 </div>
