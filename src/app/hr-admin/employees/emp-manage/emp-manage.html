@@ -2,24 +2,25 @@
     <p-confirmDialog></p-confirmDialog>
     <p-toast></p-toast>
 
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-gray-200">
+    <div
+        class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-gray-200">
         <div class="mb-3 sm:mb-0">
             <h2 class="text-base font-semibold text-gray-800">
                 <p-breadcrumb [model]="breadcrumbItems"></p-breadcrumb>
             </h2>
         </div>
-        <div class="flex items-center space-x-2">
+        <div style="text-align: end;" class="flex items-center space-x-2">
             <p-button (click)="showDialog('add')" label="Add Employee" icon="pi pi-plus"
                 styleClass="orange-button p-button-warning" [raised]="true"></p-button>
         </div>
     </div>
 
     <!-- Table will go here -->
-    <div class="p-4">
+    <div style="text-align: center;" class="p-4">
         <p>Employee list table will be displayed here</p>
     </div>
 
-    <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false" [style]="{width:'70vw', 'max-width': '900px'}"
+    <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false" [style]="{width:'60vw'}"
         (onHide)="onDrawerHide()">
         <ng-template pTemplate="header">
             <div class="flex items-center gap-2">
@@ -31,8 +32,6 @@
         <div class="h-full flex flex-col justify-between">
             <div class="flex-grow overflow-y-auto p-4">
                 <form [formGroup]="employeeForm">
-
-                    <!-- Employee Identity Section -->
                     <div class="bg-white shadow-sm rounded-md overflow-hidden mb-4">
                         <div class="flex justify-between items-center bg-indigo-50 px-4 py-3 cursor-pointer"
                             (click)="toggle('showEmployeeIdentity')">
@@ -43,7 +42,7 @@
                                 class="text-indigo-600"></i>
                         </div>
                         <div *ngIf="showEmployeeIdentity()" class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Employee Code <em
                                             class="text-red-500">*</em></label>
@@ -74,7 +73,7 @@
                                 class="text-indigo-600"></i>
                         </div>
                         <div *ngIf="showPersonalDetails()" class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">First Name <em
                                             class="text-red-500">*</em></label>
@@ -99,8 +98,9 @@
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Date of Birth <em
                                             class="text-red-500">*</em></label>
-                                    <p-datepicker formControlName="dateOfBirth" [iconDisplay]="'input'" [showIcon]="true"
-                                        appendTo="body" dateFormat="yy-mm-dd" placeholder="Select date" class="w-full"
+                                    <p-datepicker formControlName="dateOfBirth" [iconDisplay]="'input'"
+                                        [showIcon]="true" appendTo="body" dateFormat="yy-mm-dd"
+                                        placeholder="Select date" class="w-full"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('dateOfBirth')}">
                                     </p-datepicker>
                                 </div>
@@ -119,12 +119,12 @@
                                 class="text-indigo-600"></i>
                         </div>
                         <div *ngIf="showContactDetails()" class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Email <em
                                             class="text-red-500">*</em></label>
-                                    <input pInputText type="email" formControlName="email" class="w-full" maxlength="200"
-                                        (blur)="onEmailBlur()"
+                                    <input pInputText type="email" formControlName="email" class="w-full"
+                                        maxlength="200" (blur)="onEmailBlur()"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('email')}">
                                 </div>
                                 <div>
@@ -148,7 +148,7 @@
                                 class="text-indigo-600"></i>
                         </div>
                         <div *ngIf="showJobDetails()" class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Department <em
                                             class="text-red-500">*</em></label>
@@ -179,8 +179,9 @@
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Joining Date <em
                                             class="text-red-500">*</em></label>
-                                    <p-datepicker formControlName="joiningDate" [iconDisplay]="'input'" [showIcon]="true"
-                                        appendTo="body" dateFormat="yy-mm-dd" placeholder="Select date" class="w-full"
+                                    <p-datepicker formControlName="joiningDate" [iconDisplay]="'input'"
+                                        [showIcon]="true" appendTo="body" dateFormat="yy-mm-dd"
+                                        placeholder="Select date" class="w-full"
                                         [ngClass]="{'ng-invalid ng-dirty': isInvalid('joiningDate')}">
                                     </p-datepicker>
                                 </div>
@@ -199,7 +200,7 @@
                                 class="text-indigo-600"></i>
                         </div>
                         <div *ngIf="showSystemAccess()" class="p-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-xs font-medium mb-1 block">Role <em
                                             class="text-red-500">*</em></label>
@@ -223,7 +224,6 @@
                             </div>
                         </div>
                     </div>
-
                 </form>
             </div>
 
