@@ -15,9 +15,74 @@
         </div>
     </div>
 
-    <!-- Table will go here -->
-    <div style="text-align: center;" class="p-4">
-        <p>Employee list table will be displayed here</p>
+    <!-- Employee List -->
+    <div class="p-4">
+        <div *ngIf="isLoading()" class="text-center p-8">
+            <i class="pi pi-spin pi-spinner text-2xl text-blue-500"></i>
+            <p class="mt-2 text-gray-600">Loading employees...</p>
+        </div>
+
+        <div *ngIf="!isLoading() && employees().length === 0" class="text-center p-8">
+            <i class="pi pi-users text-4xl text-gray-400"></i>
+            <p class="mt-2 text-gray-600">No employees found</p>
+        </div>
+
+        <div *ngIf="!isLoading() && employees().length > 0" class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <p-table [value]="employees()" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-sm">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let col of columns" [pSortableColumn]="col.sortable ? col.field : undefined"
+                            [style.width]="col.width || undefined">
+                            {{ col.header }}
+                            <p-sortIcon *ngIf="col.sortable" [field]="col.field"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-emp>
+                    <tr>
+                        <td *ngFor="let col of columns">
+                            <!-- Status with badge -->
+                            <ng-container *ngIf="col.field === 'status'">
+                                <span class="px-2 py-1 rounded text-xs font-medium"
+                                    [class.bg-green-100]="getCellValue(emp, col.field) === 'Active'"
+                                    [class.text-green-800]="getCellValue(emp, col.field) === 'Active'"
+                                    [class.bg-gray-100]="getCellValue(emp, col.field) === 'Inactive'"
+                                    [class.text-gray-800]="getCellValue(emp, col.field) === 'Inactive'">
+                                    {{ getCellValue(emp, col.field) }}
+                                </span>
+                            </ng-container>
+
+                            <!-- Actions -->
+                            <ng-container *ngIf="col.field === 'actions'">
+                                <button type="button"
+                                    class="p-button-text p-button-rounded p-button-sm text-blue-600 hover:text-blue-800 mr-2"
+                                    (click)="showDialog('view', emp)" pTooltip="View" tooltipPosition="top">
+                                    <i class="pi pi-eye"></i>
+                                </button>
+                                <button type="button"
+                                    class="p-button-text p-button-rounded p-button-sm text-green-600 hover:text-green-800 mr-2"
+                                    (click)="showDialog('update', emp)" pTooltip="Edit" tooltipPosition="top">
+                                    <i class="pi pi-pencil"></i>
+                                </button>
+                            </ng-container>
+
+                            <!-- Default fields -->
+                            <ng-container *ngIf="col.field !== 'status' && col.field !== 'actions'">
+                                {{ getCellValue(emp, col.field) }}
+                            </ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="columns.length" class="text-center p-8">
+                            <i class="pi pi-users text-4xl text-gray-400"></i>
+                            <p class="mt-2 text-gray-600">No employees found</p>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
     </div>
 
     <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false" [style]="{width:'60vw'}"
@@ -229,11 +294,12 @@
 
             <div class="flex justify-end gap-2 p-4 border-t sticky bottom-0 bg-white">
                 <p-button type="button" *ngIf="postType()!=='view'" label="Reset" severity="secondary"
-                    (click)="resetAllForms()"></p-button>
+                    (click)="resetAllForms()" [disabled]="isSubmitting()"></p-button>
                 <p-button [type]="postType()==='view' ? 'button' : 'submit'"
                     [label]="postType()==='view' ? 'Close' : (postType()==='update' ? 'Update' : 'Submit')"
                     (click)="postType()==='view' ? closeDrawer() : OnSubmitModal()"
-                    [severity]="postType()==='view' ? 'secondary' : 'primary'">
+                    [severity]="postType()==='view' ? 'secondary' : 'primary'" [loading]="isSubmitting()"
+                    [disabled]="isSubmitting()">
                 </p-button>
             </div>
         </div>

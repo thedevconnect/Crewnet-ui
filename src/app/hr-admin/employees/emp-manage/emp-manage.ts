@@ -10,7 +10,19 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { CheckboxModule } from 'primeng/checkbox';
-import { MenuItem } from 'primeng/api';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { MenuItem, MessageService } from 'primeng/api';
+import { HttpClient } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+
+interface Column {
+  field: string;
+  header: string;
+  sortable?: boolean;
+  width?: string;
+}
 
 @Component({
   selector: 'app-emp-manage',
@@ -26,12 +38,39 @@ import { MenuItem } from 'primeng/api';
     ConfirmDialogModule,
     ToastModule,
     CheckboxModule,
+    TableModule,
+    TooltipModule,
   ],
+  providers: [MessageService],
   templateUrl: './emp-manage.html',
   styleUrl: './emp-manage.css',
 })
 export class EmpManage implements OnInit {
   private fb = inject(FormBuilder);
+  private http = inject(HttpClient);
+  private messageService = inject(MessageService);
+
+  // API URLs
+  private readonly baseURL = 'http://localhost:3000/api';
+  private readonly createEmployeeURL = `${this.baseURL}/employees-onboarding`;
+  private readonly getEmployeesURL = `${this.baseURL}/employees`;
+
+  // Employee list state
+  employees = signal<any[]>([]);
+  isLoading = signal<boolean>(false);
+  isSubmitting = signal<boolean>(false);
+
+  // Table columns configuration - Dynamic columns
+  columns: Column[] = [
+    { field: 'employeeCode', header: 'Employee Code', sortable: true },
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'email', header: 'Email', sortable: true },
+    { field: 'mobileNumber', header: 'Mobile Number', sortable: false },
+    { field: 'department', header: 'Department', sortable: true },
+    { field: 'designation', header: 'Designation', sortable: true },
+    { field: 'status', header: 'Status', sortable: true },
+    { field: 'actions', header: 'Actions', sortable: false, width: '120px' },
+  ];
 
   // Drawer state
   visible = signal<boolean>(false);
@@ -101,39 +140,82 @@ export class EmpManage implements OnInit {
   ];
 
   // Form group
-  employeeForm: FormGroup;
+  employeeForm!: FormGroup;
 
   constructor() {
+    this.initForm();
+  }
+
+  initForm() {
     this.employeeForm = this.fb.group({
       // Employee Identity
-      employeeCode: [{ value: '', disabled: true }, Validators.required],
-      status: ['Active', Validators.required],
+      employeeCode: [''],
+      status: ['Active'],
 
       // Personal Details
-      firstName: ['', [Validators.required, Validators.maxLength(100)]],
-      lastName: ['', [Validators.required, Validators.maxLength(100)]],
-      gender: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
+      firstName: [''],
+      lastName: [''],
+      gender: [''],
+      dateOfBirth: [''],
 
       // Contact Details
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(200)]],
-      mobileNumber: ['', [Validators.required, Validators.maxLength(15)]],
+      email: [''],
+      mobileNumber: [''],
 
       // Job Details
-      department: ['', Validators.required],
-      designation: ['', Validators.required],
-      employmentType: ['', Validators.required],
-      joiningDate: ['', Validators.required],
+      department: [''],
+      designation: [''],
+      employmentType: [''],
+      joiningDate: [''],
 
       // System Access
-      role: ['', Validators.required],
-      username: [{ value: '', disabled: true }],
+      role: [''],
+      username: [],
       firstLogin: [true],
     });
   }
 
   ngOnInit() {
+    this.initForm();
     this.generateEmployeeCode();
+    this.loadEmployees();
+  }
+
+  // Load employees list
+  loadEmployees() {
+    this.isLoading.set(true);
+    this.http
+      .get<any>(this.getEmployeesURL)
+      .pipe(
+        catchError((error) => {
+          console.error('Error loading employees:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error?.message || 'Failed to load employees. Please try again.',
+          });
+          this.isLoading.set(false);
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          // Handle different response formats
+          if (response.data && Array.isArray(response.data.employees)) {
+            this.employees.set(response.data.employees);
+          } else if (Array.isArray(response.data)) {
+            this.employees.set(response.data);
+          } else if (Array.isArray(response)) {
+            this.employees.set(response);
+          } else {
+            this.employees.set([]);
+          }
+          this.isLoading.set(false);
+        },
+        error: () => {
+          this.isLoading.set(false);
+        },
+      });
   }
 
   // Toggle section visibility
@@ -204,7 +286,6 @@ export class EmpManage implements OnInit {
     this.visible.set(true);
   }
 
-  // Populate form with data
   populateForm(data: any) {
     this.employeeForm.patchValue({
       employeeCode: data.employeeCode || '',
@@ -261,12 +342,17 @@ export class EmpManage implements OnInit {
   OnSubmitModal() {
     if (this.employeeForm.invalid) {
       this.employeeForm.markAllAsTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation Error',
+        detail: 'Please fill all required fields correctly.',
+      });
       return;
     }
 
     const formValue = this.employeeForm.getRawValue();
 
-    // Convert dates to ISO string format
+    // Convert dates to ISO string format (YYYY-MM-DD)
     if (formValue.dateOfBirth instanceof Date) {
       formValue.dateOfBirth = formValue.dateOfBirth.toISOString().split('T')[0];
     }
@@ -274,17 +360,90 @@ export class EmpManage implements OnInit {
       formValue.joiningDate = formValue.joiningDate.toISOString().split('T')[0];
     }
 
-    console.log('Form submitted:', formValue);
+    // Remove employeeCode and username from payload (auto-generated by backend)
+    const payload = {
+      status: formValue.status,
+      firstName: formValue.firstName,
+      lastName: formValue.lastName,
+      gender: formValue.gender,
+      dateOfBirth: formValue.dateOfBirth,
+      email: formValue.email,
+      mobileNumber: formValue.mobileNumber,
+      department: formValue.department,
+      designation: formValue.designation,
+      employmentType: formValue.employmentType,
+      joiningDate: formValue.joiningDate,
+      role: formValue.role,
+      firstLogin: formValue.firstLogin,
+    };
 
-    // TODO: Implement API call to save employee data
-    // Example:
-    // if (this.postType() === 'add') {
-    //   this.employeeService.createEmployee(formValue).subscribe(...);
-    // } else if (this.postType() === 'update') {
-    //   this.employeeService.updateEmployee(formValue).subscribe(...);
-    // }
+    if (this.postType() === 'add') {
+      this.createEmployee(payload);
+    } else if (this.postType() === 'update') {
+      // TODO: Implement update API call when endpoint is available
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Info',
+        detail: 'Update functionality will be implemented soon.',
+      });
+    }
+  }
 
-    // Close drawer after successful submission
-    this.closeDrawer();
+  // Create employee
+  createEmployee(payload: any) {
+    this.isSubmitting.set(true);
+    this.http
+      .post<any>(this.createEmployeeURL, payload)
+      .pipe(
+        catchError((error) => {
+          console.error('Error creating employee:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error?.message || 'Failed to create employee. Please try again.',
+          });
+          this.isSubmitting.set(false);
+          return throwError(() => error);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: response.message || 'Employee created successfully!',
+          });
+          this.closeDrawer();
+          this.loadEmployees(); // Reload employee list
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.isSubmitting.set(false);
+        },
+      });
+  }
+
+  // Get cell value dynamically based on column field
+  getCellValue(emp: any, field: string): string {
+    switch (field) {
+      case 'employeeCode':
+        return emp.employeeCode || emp.employee_code || '-';
+      case 'name':
+        const firstName = emp.firstName || emp.first_name || '';
+        const lastName = emp.lastName || emp.last_name || '';
+        return `${firstName} ${lastName}`.trim() || '-';
+      case 'email':
+        return emp.email || '-';
+      case 'mobileNumber':
+        return emp.mobileNumber || emp.mobile_number || '-';
+      case 'department':
+        return emp.department || '-';
+      case 'designation':
+        return emp.designation || '-';
+      case 'status':
+        return emp.status || 'Active';
+      default:
+        return emp[field] || '-';
+    }
   }
 }
