@@ -97,4 +97,26 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-"# oblo-ui" 
+
+## 🚀 Deployment to GitHub Pages
+
+This app is configured for automatic deployment to GitHub Pages using GitHub Actions.
+
+### Quick Setup
+
+1. **Enable GitHub Pages:**
+   - Go to repository Settings → Pages
+   - Select "GitHub Actions" as the source
+
+2. **Update Repository Name:**
+   - If your repo name is different from `Crewnet-ui`, update the `base-href` in `package.json`:
+   ```json
+   "build:github": "ng build --configuration production --base-href /YOUR-REPO-NAME/"
+   ```
+
+3. **Deploy:**
+   - Push to `main` branch
+   - GitHub Actions will automatically build and deploy
+   - Your app will be live at: `https://YOUR-USERNAME.github.io/Crewnet-ui/`
+
+For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md) 
