@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -23,7 +23,9 @@ import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
+import { MenuModule } from 'primeng/menu';
 import { ConfirmationService } from 'primeng/api';
+import { BreadcrumbModule as PrimeNgBreadcrumbModule } from 'primeng/breadcrumb';
 
 import { EmployeeService } from '../../../core/services/employee.service';
 
@@ -34,7 +36,7 @@ import { EmployeeService } from '../../../core/services/employee.service';
     CommonModule,
     ReactiveFormsModule,
     ToastModule,
-    BreadcrumbModule,
+    PrimeNgBreadcrumbModule,
     ButtonModule,
     DrawerModule,
     InputTextModule,
@@ -45,13 +47,19 @@ import { EmployeeService } from '../../../core/services/employee.service';
     TableModule,
     DialogModule,
     ConfirmDialogModule,
-    TooltipModule
+    TooltipModule,
+    MenuModule,
+    PrimeNgBreadcrumbModule,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-employees.html',
   styleUrls: ['./hr-employees.css']
 })
 export class HrEmployees implements OnInit {
+  protected readonly breadcrumbItems = computed<MenuItem[]>(() => [
+    { label: 'Dashboard', routerLink: '/dashboard' },
+    { label: 'Employees' }
+  ]);
 
   private employeeService = inject(EmployeeService);
   private confirmationService = inject(ConfirmationService);
@@ -75,7 +83,6 @@ export class HrEmployees implements OnInit {
   showSystemAccess = signal(true);
 
   employeeForm!: FormGroup;
-  breadcrumbItems!: MenuItem[];
 
   statusOptions = [
     { label: 'Active', value: 'Active' },
@@ -118,11 +125,6 @@ export class HrEmployees implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.breadcrumbItems = [
-      { label: 'Dashboard', icon: 'pi pi-home' },
-      { label: 'Employees', icon: 'pi pi-users' }
-    ];
-
     this.initForm();
     this.loadEmployees();
   }
@@ -216,6 +218,36 @@ export class HrEmployees implements OnInit {
     this.visible.set(true);
   }
 
+  getActionMenuItems(employee: any): MenuItem[] {
+    return [
+      {
+        label: 'View',
+        icon: 'pi pi-eye',
+        command: () => {
+          this.viewEmployee(employee);
+        }
+      },
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => {
+          this.editEmployee(employee);
+        }
+      },
+      {
+        separator: true
+      },
+      {
+        label: 'Delete',
+        icon: 'pi pi-trash',
+        styleClass: 'text-red-600',
+        command: () => {
+          this.deleteEmployee(employee);
+        }
+      }
+    ];
+  }
+
   deleteEmployee(employee: any): void {
     this.confirmationService.confirm({
       message: `Are you sure you want to delete ${employee.first_name} ${employee.last_name}?`,
@@ -248,7 +280,7 @@ export class HrEmployees implements OnInit {
   private populateForm(employee: any): void {
     const dateOfBirth = employee.date_of_birth ? new Date(employee.date_of_birth) : null;
     const joiningDate = employee.joining_date ? new Date(employee.joining_date) : new Date();
-    
+
     this.employeeForm.patchValue({
       employeeCode: employee.employee_code || '',
       status: employee.status === 'ACTIVE' ? 'Active' : 'Inactive',
@@ -331,7 +363,7 @@ export class HrEmployees implements OnInit {
 
     this.isSubmitting.set(true);
     const formValue = this.employeeForm.getRawValue();
-    
+
     // Transform form data to API format
     const payload = {
       employee_code: formValue.employeeCode,
@@ -414,9 +446,9 @@ export class HrEmployees implements OnInit {
   formatDateTime(date: string | Date): string {
     if (!date) return '';
     const d = new Date(date);
-    return d.toLocaleString('en-GB', { 
-      year: 'numeric', 
-      month: '2-digit', 
+    return d.toLocaleString('en-GB', {
+      year: 'numeric',
+      month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit'
