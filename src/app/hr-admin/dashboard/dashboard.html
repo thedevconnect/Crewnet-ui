@@ -1,0 +1,131 @@
+<div class="dashboard">
+  <!-- Date and Quarter Info -->
+  <!-- <div class="date-section">
+    <div class="date-info">
+      <i class="pi pi-calendar"></i>
+      <span>Tuesday, December 2, 2025</span>
+    </div>
+    <div class="quarter-badge">
+      <i class="pi pi-chart-bar"></i>
+      <span>Q3 3</span>
+    </div>
+  </div> -->
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back! Here's what's happening today</p>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-6">
+    @for (stat of stats(); track stat.title) {
+    <div class="stat-card bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex justify-between items-start mb-4">
+        <span class="stat-icon w-12 h-12 rounded-lg flex items-center justify-center text-2xl" 
+          [style.background]="stat.color + '20'" 
+          [style.color]="stat.color">
+          {{ stat.icon }}
+        </span>
+        <span class="text-3xl font-bold text-gray-900">{{ stat.value }}</span>
+      </div>
+      <h3 class="text-sm font-medium text-gray-600 mb-1">{{ stat.title }}</h3>
+      <p class="text-xs text-green-600 font-medium">{{ stat.change }}</p>
+    </div>
+    }
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Recent Activities -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent Activities</h2>
+        <button class="btn-text">View All</button>
+      </div>
+      <div class="activities-list">
+        @for (activity of recentActivities(); track activity.id) {
+        <div class="activity-item">
+          <div [class]="'activity-dot ' + activity.type"></div>
+          <div class="activity-content">
+            <p class="activity-text">
+              <strong>{{ activity.employee }}</strong> {{ activity.action }}
+            </p>
+            <span class="activity-time">{{ activity.time }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Department Attendance -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Department Attendance</h2>
+        <button class="btn-text">Details</button>
+      </div>
+      <div class="department-list">
+        @for (dept of departmentStats(); track dept.name) {
+        <div class="department-item">
+          <div class="department-info">
+            <span class="department-name">{{ dept.name }}</span>
+            <span class="department-count">{{ dept.present }}/{{ dept.total }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="dept.percentage"></div>
+          </div>
+          <span class="percentage-text">{{ dept.percentage }}%</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Grid -->
+  <div class="bottom-grid">
+    <!-- Upcoming Birthdays -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🎂 Upcoming Birthdays</h2>
+      </div>
+      <div class="birthday-list">
+        @for (birthday of upcomingBirthdays(); track birthday.name) {
+        <div class="birthday-item">
+          <img [src]="birthday.avatar" [alt]="birthday.name" class="birthday-avatar" />
+          <div class="birthday-info">
+            <span class="birthday-name">{{ birthday.name }}</span>
+            <span class="birthday-date">{{ birthday.date }}</span>
+          </div>
+          <button class="btn-icon">🎁</button>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="quick-actions">
+        <button class="action-button">
+          <span class="action-icon">➕</span>
+          <span>Add Employee</span>
+        </button>
+        <button class="action-button">
+          <span class="action-icon">📝</span>
+          <span>Mark Attendance</span>
+        </button>
+        <button class="action-button">
+          <span class="action-icon">✅</span>
+          <span>Approve Leaves</span>
+        </button>
+        <button class="action-button">
+          <span class="action-icon">📊</span>
+          <span>Generate Report</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

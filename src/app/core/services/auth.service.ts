@@ -49,11 +49,11 @@ export class AuthService {
     }
 
     isAuthenticated(): boolean {
-        return !!localStorage.getItem('crewnet_token');
+        return !!localStorage.getItem('oblo_token');
     }
 
     getToken(): string | null {
-        return localStorage.getItem('crewnet_token');
+        return localStorage.getItem('oblo_token');
     }
 
     login(email: string, password: string): Observable<AuthResponse> {
@@ -62,7 +62,7 @@ export class AuthService {
             .pipe(
                 tap((response) => {
                     if (response.success && response.token && response.user) {
-                        localStorage.setItem('crewnet_token', response.token);
+                        localStorage.setItem('oblo_token', response.token);
                         this.currentUser.set(response.user);
                     }
                 }),
@@ -77,12 +77,25 @@ export class AuthService {
     }
 
     register(data: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.baseUrl}/auth/register`, data).pipe(
-            tap((response) => {
-                if (response.success && response.token && response.user) {
-                    localStorage.setItem('crewnet_token', response.token);
-                    this.currentUser.set(response.user);
+        return this.http.post<any>(`${this.baseUrl}/auth/register`, data).pipe(
+            map((response) => {
+                // Backend returns: { success, message, user: { id, name, email } }
+                if (response.success && response.user) {
+                    // Convert backend user format to frontend User format
+                    const user: User = {
+                        id: response.user.id.toString(),
+                        name: response.user.name,
+                        email: response.user.email,
+                    };
+                    this.currentUser.set(user);
+                    // Return success response (token will be handled by login if needed)
+                    return {
+                        success: true,
+                        message: response.message || 'Registration successful',
+                        user: user,
+                    };
                 }
+                throw new Error(response.message || 'Registration failed');
             }),
             catchError((error) => {
                 console.error('Registration error:', error);
@@ -111,7 +124,7 @@ export class AuthService {
     }
 
     logout(): void {
-        localStorage.removeItem('crewnet_token');
+        localStorage.removeItem('oblo_token');
         this.currentUser.set(null);
         this.router.navigate(['/login']);
     }

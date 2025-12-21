@@ -4,9 +4,11 @@ import {
   input,
   output,
   OnInit,
+  OnChanges,
   ViewChild,
   signal,
   computed,
+  effect,
 } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
@@ -15,6 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { MenuItem } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 interface UserDetails {
   name: string;
@@ -42,52 +45,43 @@ interface RoleOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit {
+  constructor(private router: Router) {
+    effect(() => {
+      const parentRoleId = this.selectedRoleId();
+      if (parentRoleId) {
+        if (parentRoleId === 'hr') {
+          this.internalSelectedRoleId = 'hrAdmin';
+        } else {
+          this.internalSelectedRoleId = parentRoleId;
+        }
+      }
+    });
+  }
   @ViewChild('userMenu') userMenu: any;
 
   user = input.required<UserDetails>();
   onLogout = output<void>();
   onRoleChange = output<string>();
-  toggleSidebar = output<void>();
 
   sidebarOpen = input<boolean>(false);
+  selectedRoleId = input<string>('hrAdmin');
+  onToggleSidebar = output<void>();
 
-  // District data
-  distList: DistrictOption[] = [
-    { drpoption: 'Abohar', drpvalue: 'abohar' },
-    { drpoption: 'Karnal', drpvalue: 'karnal' },
-    { drpoption: 'Panipat', drpvalue: 'panipat' },
-    { drpoption: 'Rohtak', drpvalue: 'rohtak' },
-    { drpoption: 'Yamunanagar', drpvalue: 'yamunanagar' },
-    { drpoption: 'Ambala', drpvalue: 'ambala' },
-    { drpoption: 'Sirsa', drpvalue: 'sirsa' },
-    { drpoption: 'Faridabad', drpvalue: 'faridabad' },
-    { drpoption: 'Gurgaon', drpvalue: 'gurgaon' },
-  ];
 
-  // Role data
+
   roleList: RoleOption[] = [
-    { rolDes: 'Service Engineer', roleId: 'service-engineer' },
-    { rolDes: 'HR', roleId: 'hr' },
+    { rolDes: 'HR Admin', roleId: 'hrAdmin' },
     { rolDes: 'ESS', roleId: 'ess' },
-    { rolDes: 'Finance', roleId: 'finance' },
-    { rolDes: 'Sales', roleId: 'sales' },
-    { rolDes: 'Engineering', roleId: 'engineering' },
   ];
 
-  selectedDistrictValue: string = 'abohar';
-  selectedRoleId: string = 'service-engineer';
+  internalSelectedRoleId: string = 'hrAdmin';
 
-  filteredDistList = signal<DistrictOption[]>(this.distList);
   filteredRoleList = signal<RoleOption[]>(this.roleList);
 
-  selectedDistrict = computed(() => {
-    const dist = this.distList.find((d) => d.drpvalue === this.selectedDistrictValue);
-    return dist?.drpoption || '';
-  });
-
   currentRole = computed(() => {
-    const role = this.roleList.find((r) => r.roleId === this.selectedRoleId);
-    return role?.rolDes || '';
+    const roleId = this.internalSelectedRoleId || this.selectedRoleId();
+    const role = this.roleList.find((r) => r.roleId === roleId);
+    return role?.rolDes || 'HR Admin';
   });
 
   userMenuItems: MenuItem[] = [];
@@ -95,12 +89,15 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.initUserMenu();
 
-    // Set default values if not already set
-    if (!this.selectedDistrictValue && this.distList.length > 0) {
-      this.selectedDistrictValue = this.distList[0].drpvalue;
+    const parentRoleId = this.selectedRoleId();
+    if (parentRoleId === 'hr') {
+      this.internalSelectedRoleId = 'hrAdmin';
+    } else {
+      this.internalSelectedRoleId = parentRoleId || 'hrAdmin';
     }
-    if (!this.selectedRoleId && this.roleList.length > 0) {
-      this.selectedRoleId = this.roleList[0].roleId;
+
+    if (!this.internalSelectedRoleId && this.roleList.length > 0) {
+      this.internalSelectedRoleId = 'hrAdmin';
     }
   }
 
@@ -150,28 +147,22 @@ export class Header implements OnInit {
     });
   });
 
-  changeDistrict(value: string): void {
-    this.selectedDistrictValue = value;
-    console.log('District changed to:', value);
-    // Emit event if needed
-  }
-
   onRoleDropdownChange(event: any): void {
     if (event && event.value) {
-      this.selectedRoleId = event.value;
-      const role = this.roleList.find((r) => r.roleId === event.value);
-      if (role) {
-        this.onRoleChange.emit(role.rolDes);
-        console.log('Role changed to:', role.rolDes);
-      }
+      this.internalSelectedRoleId = event.value;
+      this.onRoleChange.emit(event.value);
     }
   }
 
   logout(): void {
-    this.onLogout.emit();
+    this.router.navigate(['/login']);
   }
 
   handleProfile(): void {
-    console.log('Navigate to profile');
+    this.router.navigate(['/profile']);
+  }
+
+  toggleSidebar(): void {
+    this.onToggleSidebar.emit();
   }
 }

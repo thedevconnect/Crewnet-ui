@@ -1,122 +1,43 @@
 <div class="layout-wrapper">
   <!-- Sidebar -->
-  <aside class="sidebar" [class.w-64]="sidebarOpen()" [class.w-16]="!sidebarOpen()">
+  <aside class="sidebar" [class.sidebar-expanded]="sidebarOpen()" [class.sidebar-collapsed]="!sidebarOpen()">
 
-    <!-- Logo Section -->
+    <!-- Logo Section with Company Name -->
     <div class="sidebar-logo">
-      <a href="/home" class="cursor-pointer flex items-center justify-center">
-        <img [src]="sidebarOpen() ? '/assets/OBLO_mainlogo_0.png' : '/assets/oblo_icon_fevicon.png'"
-          [class.h-10]="sidebarOpen()" [class.h-8]="!sidebarOpen()" alt="Logo" class="object-contain"
-          onerror="this.style.display='none'">
+      <a [routerLink]="getDashboardRoute()" class="logo-link">
+        <img src="assets/img/OBLO.png" alt="oblo Logo" class="logo-image">
+        @if (sidebarOpen()) {
+        <span class="logo-text"> </span>
+        }
       </a>
     </div>
 
     <!-- Menu -->
     <nav class="sidebar-nav">
-      @for (menu of menuItemsWithSubmenu; track menu.menu) {
-      <div class="relative group">
-        <!-- Main Menu Button -->
-        @if (hasSubmenu(menu.menu)) {
-        <button (mouseenter)="onHoverMenu(menu.menu, $event)" (mouseleave)="onLeaveMenu()"
-          (click)="toggleSubmenu(menu.menu, true)" class="menu-button" [class.justify-center]="!sidebarOpen()"
-          [class.justify-start]="sidebarOpen()">
-          <i [class]="'pi ' + menu.icon"></i>
-          @if (sidebarOpen()) {
-          <span class="ml-2">{{ menu.menu }}</span>
-          }
-        </button>
-
-        <!-- Submenu when sidebar is open -->
-        @if (sidebarOpen() && hasSubmenu(menu.menu)) {
-        <div class="submenu-container" [class.max-h-0]="!isSubmenuOpen(menu.menu)"
-          [class.max-h-[400px]]="isSubmenuOpen(menu.menu)" [class.opacity-0]="!isSubmenuOpen(menu.menu)"
-          [class.opacity-100]="isSubmenuOpen(menu.menu)">
-          @for (sub of getSubmenus(menu.menu); track sub.activity) {
-          @if (!sub.formValue) {
-          <button (click)="toggleSubmenu(sub.activity)" class="submenu-item">
-            {{ sub.activity }}
-            <i class="pi pi-angle-down ml-auto" [class.rotate-180]="isSubmenuOpen(sub.activity)">
-            </i>
-          </button>
-          }
-
-          @if (sub.formValue) {
-          <a [routerLink]="sub.formValue" routerLinkActive="submenu-active" class="submenu-item-link">
-            {{ sub.activity }}
-          </a>
-          }
-
-          @if (hasSubmenuLevel2(sub.activity)) {
-          <div class="submenu-level2" [class.max-h-0]="!isSubmenuOpen(sub.activity)"
-            [class.max-h-[400px]]="isSubmenuOpen(sub.activity)" [class.opacity-0]="!isSubmenuOpen(sub.activity)"
-            [class.opacity-100]="isSubmenuOpen(sub.activity)">
-            @for (lvl2 of getSubmenuLevel2(sub.activity); track lvl2.activity) {
-            <a [routerLink]="lvl2.formValue" routerLinkActive="submenu-active" class="submenu-item-link-level2">
-              {{ lvl2.activity }}
-            </a>
-            }
-          </div>
-          }
-          }
-        </div>
-        }
-        } @else {
-        <!-- Menu without submenu -->
+      @for (menu of menuItemsWithSubmenu(); track menu.menu) {
+      <div class="menu-item-wrapper">
+        <!-- Menu Link -->
         <a [routerLink]="menu.route" routerLinkActive="menu-item-active" class="menu-button"
           [class.justify-center]="!sidebarOpen()" [class.justify-start]="sidebarOpen()">
           <i [class]="'pi ' + menu.icon"></i>
           @if (sidebarOpen()) {
-          <span class="ml-2">{{ menu.menu }}</span>
+          <span>{{ menu.menu }}</span>
           }
         </a>
-        }
       </div>
       }
-
-      <!-- Sidebar Controls -->
-      <div class="sidebar-controls">
-        <div class="sidebar-separator"></div>
-        <button (click)="toggleSidebar()" class="sidebar-toggle-btn" [class.justify-center]="!sidebarOpen()"
-          [title]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'">
-          <i class="pi pi-angle-double-left" [class.rotate-180]="!sidebarOpen()"></i>
-        </button>
-      </div>
     </nav>
-
-    <!-- Footer section in sidebar (District, Role, User) -->
-   
   </aside>
 
-  <!-- Overlay for mobile -->
-  @if (sidebarOpen()) {
-  <div class="mobile-overlay" (click)="toggleSidebar()"></div>
-  }
-
-  <!-- Floating Hover Submenu (for collapsed sidebar) -->
-  @if (hoveredMenuSubmenus().length && !sidebarOpen()) {
-  <div class="hover-submenu" [style.top.px]="hoverMenuPosition()?.top || 0"
-    [style.left.px]="hoverMenuPosition()?.left || 0" (mouseenter)="keepHover()" (mouseleave)="clearHover()">
-    @for (sub of hoveredMenuSubmenus(); track sub.activity) {
-    @if (sub.formValue || sub.route) {
-    <a [routerLink]="sub.formValue || sub.route" routerLinkActive="hover-submenu-active" class="hover-submenu-item">
-      {{ sub.activity }}
-    </a>
-    }
-    @if (!sub.formValue && !sub.route) {
-    <a (click)="toggleSubmenu(sub.activity)" class="hover-submenu-item">
-      {{ sub.activity }}
-    </a>
-    }
-    }
-  </div>
-  }
-
   <!-- Main Content Area -->
-  <div class="main-content-area" [class.sidebar-open]="sidebarOpen()" [class.sidebar-closed]="!sidebarOpen()">
+  <div class="main-content-area" [class.sidebar-closed]="!sidebarOpen()">
 
-    <!-- Header Component -->
+    <!-- Header Component - Fixed -->
     @if (userDetails(); as user) {
-    <app-header [user]="user" [sidebarOpen]="sidebarOpen()" (onLogout)="logout()" (toggleSidebar)="toggleSidebar()" />
+    <header class="header-fixed">
+      <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" (onLogout)="logout()"
+        (onRoleChange)="onRoleChange($event)" (onToggleSidebar)="toggleSidebar()" />
+    </header>
     }
 
     <!-- Main Content -->
@@ -127,7 +48,7 @@
     <!-- Footer -->
     <footer class="content-footer">
       <div class="footer-content">
-        <span>© 2025 Nobilitas Infotech Pvt. Ltd.</span>
+        <span>© 2025 sam tyagi Pvt. Ltd.</span>
         <span class="footer-links">
           Privacy · Terms
         </span>

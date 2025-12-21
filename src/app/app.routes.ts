@@ -3,13 +3,15 @@ import { authGuard } from './core/guards/auth.guard';
 import { Login } from './features/auth/login/login';
 import { Register } from './features/auth/register/register';
 import { Layout } from './shared/design/layout/layout';
-import { Dashboard } from './features/dashboard/dashboard';
+import { HrDashboard } from './hr-admin/dashboard/dashboard';
+import { EssDashboard } from './ess-components/dashboard/dashboard';
+
+// HR Admin Components
 import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
-import { Shifts } from './features/shifts/shifts';
-import { Departments } from './features/departments/departments';
-import { Reports } from './features/reports/reports';
-import { Settings } from './features/settings/settings';
+import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
+
+// ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
 
 export const routes: Routes = [
@@ -31,42 +33,32 @@ export const routes: Routes = [
     component: Layout,
     canActivate: [authGuard],
     children: [
+      // HR Admin Routes
       {
-        path: 'dashboard',
-        component: Dashboard,
+        path: 'hr-admin',
+        children: [
+          { path: 'dashboard', component: HrDashboard },
+          { path: 'HrEmployees', component: HrEmployees },
+          { path: 'leaves', component: Leaves },
+        ],
       },
+      // ESS Routes
       {
-        path: 'employees',
-        component: EssEmployee,
+        path: 'ess',
+        children: [
+          { path: 'dashboard', component: EssDashboard },
+          { path: 'attendance', component: Attendance },
+          { path: 'leaves', component: Leaves },
+        ],
       },
-      {
-        path: 'attendance',
-        component: Attendance,
-      },
-      {
-        path: 'leaves',
-        component: Leaves,
-      },
-      {
-        path: 'shifts',
-        component: Shifts,
-      },
-      {
-        path: 'departments',
-        component: Departments,
-      },
-      {
-        path: 'reports',
-        component: Reports,
-      },
-      {
-        path: 'settings',
-        component: Settings,
-      },
+      { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full', },
+      { path: 'HrEmployees', redirectTo: '/hr-admin/HrEmployees', pathMatch: 'full', },
+      { path: 'attendance', redirectTo: '/hr-admin/attendance', pathMatch: 'full', },
+      { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full', },
     ],
   },
   {
     path: '**',
-    redirectTo: '/dashboard',
+    redirectTo: '/hr-admin/dashboard',
   },
 ];
