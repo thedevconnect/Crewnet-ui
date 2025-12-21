@@ -9,7 +9,7 @@ import { EssDashboard } from './ess-components/dashboard/dashboard';
 // HR Admin Components
 import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
-import { EmpManage } from './hr-admin/employees/emp-manage/emp-manage';
+import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
 
 // ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
@@ -38,7 +38,7 @@ export const routes: Routes = [
         path: 'hr-admin',
         children: [
           { path: 'dashboard', component: HrDashboard },
-          { path: 'employees', component: EmpManage },
+          { path: 'HrEmployees', component: HrEmployees },
           { path: 'leaves', component: Leaves },
         ],
       },
@@ -52,7 +52,7 @@ export const routes: Routes = [
         ],
       },
       { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full', },
-      { path: 'employees', redirectTo: '/hr-admin/employees', pathMatch: 'full', },
+      { path: 'HrEmployees', redirectTo: '/hr-admin/HrEmployees', pathMatch: 'full', },
       { path: 'attendance', redirectTo: '/hr-admin/attendance', pathMatch: 'full', },
       { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full', },
     ],

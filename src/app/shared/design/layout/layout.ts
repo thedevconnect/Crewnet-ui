@@ -69,7 +69,7 @@ export class Layout {
 
   private readonly hrMenuItems: MenuItem[] = [
     { menu: 'Dashboard', icon: 'pi-home', route: '/hr-admin/dashboard' },
-    { menu: 'Employees', icon: 'pi-users', route: '/hr-admin/employees' },
+    { menu: 'Employee Onboarding', icon: 'pi-users', route: '/hr-admin/HrEmployees' },
     { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/hr-admin/leaves' },
     { menu: 'Attendance', icon: 'pi-calendar', route: '/hr-admin/attendance' },
     { menu: 'Shifts', icon: 'pi-clock', route: '/hr-admin/shifts' },
