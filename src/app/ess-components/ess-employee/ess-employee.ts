@@ -6,7 +6,7 @@ import {
   computed,
   OnInit,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EmployeeService } from '../../core/services/employee.service';
@@ -29,8 +29,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   selector: 'app-ess-employee',
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
+    ReactiveFormsModule, 
     TableModule,
     ButtonModule,
     InputTextModule,
