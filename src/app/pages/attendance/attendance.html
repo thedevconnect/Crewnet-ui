@@ -1,4 +1,15 @@
-<div class="p-6 max-w-6xl mx-auto">  
+<div class="p-6 max-w-6xl mx-auto">
+  <p-toast></p-toast>
+
+  <!-- Geolocation Warning Message -->
+  @if (geolocationBlocked()) {
+  <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+    <div class="flex items-start">
+      <i class="pi pi-exclamation-triangle text-red-600 text-xl mr-3 mt-1"></i>
+      <div class="flex-1">  </div>
+    </div>
+  </div>
+  }
 
   @if (loadingStatus()) {
   <div class="text-center py-12">
@@ -7,157 +18,74 @@
   </div>
   } @else {
   <div class="grid md:grid-cols-2 gap-6">
-    
+
     <!-- Swipe IN Card -->
-    <p-card class="shadow-xl border-l-4 border-l-green-500 hover:shadow-2xl transition-shadow duration-300">
+    <p-card class="shadow-xl border-l-4 border-l-blue-500 hover:shadow-2xl transition-shadow duration-300">
       <ng-template pTemplate="header">
-        <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 rounded-t-lg">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="bg-white/20 p-3 rounded-full">
-                <i class="pi pi-sign-in text-2xl text-white"></i>
-              </div>
-              <div>
-                <h3 class="text-white text-xl font-bold m-0">Swipe IN</h3>
-                <p class="text-white/90 text-sm m-0 mt-1">Office Entry</p>
-              </div>
-            </div>
-            @if (todayStatus()?.attendance?.swipeIn) {
-            <div class="bg-white/20 px-3 py-1 rounded-full">
-              <i class="pi pi-check-circle text-white text-lg"></i>
-            </div>
-            }
-          </div>
+        <div class="bg-blue-600 px-6 py-4 rounded-t-lg">
+          <h3 class="text-white text-lg font-bold m-0">{{ currentDate() | date:'MMM dd, yyyy' }}</h3>
         </div>
       </ng-template>
 
       <div class="p-6">
         @if (todayStatus()?.attendance?.swipeIn) {
         <div class="space-y-4">
-          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-medium text-gray-600">Swipe In Time</span>
-              <span class="text-green-600 font-semibold">
-                <i class="pi pi-clock mr-2"></i>
-                {{ todayStatus()?.attendance?.swipeIn | date:'short' }}
-              </span>
-            </div>
-            
+          <div class="text-center">
+            <div class="text-4xl font-bold text-gray-800 mb-4 font-mono">{{ currentTime() }}</div>
+            <p class="text-sm text-gray-600 mb-4">Swipe In Time: {{ todayStatus()?.attendance?.swipeIn | date:'short' }}
+            </p>
+
             @if (todayStatus()?.attendance?.swipeIn && !todayStatus()?.attendance?.swipeOut) {
-            <div class="mt-4 pt-4 border-t border-green-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-600">Elapsed Time</span>
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-stopwatch text-green-600"></i>
-                  <span class="text-2xl font-bold text-green-600 font-mono">{{ elapsedTime() }}</span>
-                </div>
-              </div>
+            <div class="mb-4">
+              <span class="text-sm text-gray-600">Elapsed Time: </span>
+              <span class="text-lg font-bold text-blue-600 font-mono">{{ elapsedTime() }}</span>
             </div>
             }
           </div>
-          
-          <p-button 
-            label="Swipe In Again" 
-            icon="pi pi-refresh" 
-            [disabled]="true"
-            severity="secondary"
-            styleClass="w-full"
-            [outlined]="true">
+
+          <p-button label="Swipe In" icon="pi pi-sign-in" [disabled]="true" severity="success" styleClass="w-full">
           </p-button>
         </div>
         } @else {
         <div class="text-center py-4">
-          <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4">
-            <i class="pi pi-clock text-5xl text-gray-400 mb-4"></i>
-            <p class="text-gray-600 font-medium">Not Swiped In</p>
-            <p class="text-sm text-gray-500 mt-1">Click the button below to mark your entry</p>
-          </div>
-          
-          <p-button 
-            label="Swipe IN" 
-            icon="pi pi-sign-in" 
-            (click)="doSwipeIn()"
-            [disabled]="!todayStatus()?.canSwipeIn || loadingSwipeIn()"
-            [loading]="loadingSwipeIn()"
-            severity="success"
-            styleClass="w-full py-3 text-lg font-semibold">
+          <div class="text-4xl font-bold text-gray-800 mb-6 font-mono">{{ currentTime() }}</div>
+
+          <p-button label="Swipe In" icon="pi pi-sign-in" (click)="doSwipeIn()"
+            [disabled]="!todayStatus()?.canSwipeIn || loadingSwipeIn() || geolocationBlocked()"
+            [loading]="loadingSwipeIn()" severity="success" styleClass="w-full py-3 text-lg font-semibold">
           </p-button>
         </div>
         }
       </div>
     </p-card>
 
-    <!-- Swipe OUT Card -->
-    <p-card class="shadow-xl border-l-4 border-l-red-500 hover:shadow-2xl transition-shadow duration-300">
+    <!-- Recent Swipes Card -->
+    <p-card class="shadow-xl border-l-4 border-l-blue-500 hover:shadow-2xl transition-shadow duration-300">
       <ng-template pTemplate="header">
-        <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 rounded-t-lg">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="bg-white/20 p-3 rounded-full">
-                <i class="pi pi-sign-out text-2xl text-white"></i>
-              </div>
-              <div>
-                <h3 class="text-white text-xl font-bold m-0">Swipe OUT</h3>
-                <p class="text-white/90 text-sm m-0 mt-1">Office Exit</p>
-              </div>
-            </div>
-            @if (todayStatus()?.attendance?.swipeOut) {
-            <div class="bg-white/20 px-3 py-1 rounded-full">
-              <i class="pi pi-check-circle text-white text-lg"></i>
-            </div>
-            }
-          </div>
+        <div class="bg-blue-600 px-6 py-4 rounded-t-lg">
+          <h3 class="text-white text-lg font-bold m-0">Recent Swipes</h3>
         </div>
       </ng-template>
 
       <div class="p-6">
-        @if (todayStatus()?.attendance?.swipeOut) {
-        <div class="space-y-4">
-          <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-sm font-medium text-gray-600">Swipe Out Time</span>
-              <span class="text-red-600 font-semibold">
-                <i class="pi pi-clock mr-2"></i>
-                {{ todayStatus()?.attendance?.swipeOut | date:'short' }}
-              </span>
-            </div>
-            
-            @if (todayStatus()?.attendance?.swipeIn && todayStatus()?.attendance?.swipeOut) {
-            <div class="mt-4 pt-4 border-t border-red-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-medium text-gray-600">Total Duration</span>
-                <span class="text-lg font-bold text-red-600">{{ getTotalDuration() }}</span>
+        @if (recentSwipes() && recentSwipes()!.length > 0) {
+        <div class="space-y-3">
+          @for (swipe of recentSwipes(); track swipe.id) {
+          <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="font-semibold text-gray-800">{{ swipe.type === 'IN' ? 'Swipe In' : 'Swipe Out' }}</p>
+                <p class="text-sm text-gray-600">{{ swipe.timestamp | date:'short' }}</p>
               </div>
+              <i [class]="swipe.type === 'IN' ? 'pi pi-sign-in text-green-600' : 'pi pi-sign-out text-red-600'"
+                class="text-2xl"></i>
             </div>
-            }
           </div>
-          
-          <p-button 
-            label="Swipe Out Again" 
-            icon="pi pi-refresh" 
-            [disabled]="true"
-            severity="secondary"
-            styleClass="w-full"
-            [outlined]="true">
-          </p-button>
+          }
         </div>
         } @else {
-        <div class="text-center py-4">
-          <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 mb-4">
-            <i class="pi pi-clock text-5xl text-gray-400 mb-4"></i>
-            <p class="text-gray-600 font-medium">Not Swiped Out</p>
-            <p class="text-sm text-gray-500 mt-1">Click the button below to mark your exit</p>
-          </div>
-          
-          <p-button 
-            label="Swipe OUT" 
-            icon="pi pi-sign-out" 
-            (click)="doSwipeOut()"
-            [disabled]="!todayStatus()?.canSwipeOut || loadingSwipeOut()"
-            [loading]="loadingSwipeOut()"
-            severity="danger"
-            styleClass="w-full py-3 text-lg font-semibold">
-          </p-button>
+        <div class="text-center py-8">
+          <p class="text-red-600 font-medium">Data Not Found</p>
         </div>
         }
       </div>

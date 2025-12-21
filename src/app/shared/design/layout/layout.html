@@ -32,15 +32,12 @@
   <!-- Main Content Area -->
   <div class="main-content-area" [class.sidebar-closed]="!sidebarOpen()">
 
-    <!-- Header Component -->
+    <!-- Header Component - Fixed -->
     @if (userDetails(); as user) {
-    <app-header 
-      [user]="user" 
-      [sidebarOpen]="sidebarOpen()" 
-      [selectedRoleId]="selectedRoleId()" 
-      (onLogout)="logout()"
-      (onRoleChange)="onRoleChange($event)"
-      (onToggleSidebar)="toggleSidebar()" />
+    <header class="header-fixed">
+      <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" (onLogout)="logout()"
+        (onRoleChange)="onRoleChange($event)" (onToggleSidebar)="toggleSidebar()" />
+    </header>
     }
 
     <!-- Main Content -->

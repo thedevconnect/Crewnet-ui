@@ -29,9 +29,77 @@ export class Attendance implements OnInit, OnDestroy {
   elapsedTime = signal<string>('00:00:00');
   private timerInterval: any = null;
   private swipeInTime: Date | null = null;
+  
+  // Current date and time
+  currentDate = signal<Date>(new Date());
+  currentTime = signal<string>('00:00:00');
+  private timeInterval: any = null;
+  
+  // Geolocation
+  geolocationBlocked = signal<boolean>(false);
+  
+  // Recent swipes
+  recentSwipes = signal<any[] | null>(null);
 
   ngOnInit(): void {
     this.loadTodayStatus();
+    this.startTimeUpdate();
+    this.checkGeolocation();
+    this.loadRecentSwipes();
+  }
+  
+  startTimeUpdate() {
+    this.updateTime();
+    this.timeInterval = setInterval(() => {
+      this.updateTime();
+    }, 1000);
+  }
+  
+  updateTime() {
+    const now = new Date();
+    this.currentDate.set(now);
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    this.currentTime.set(`${hours}:${minutes}:${seconds}`);
+  }
+  
+  checkGeolocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          this.geolocationBlocked.set(false);
+        },
+        (error) => {
+          if (error.code === error.PERMISSION_DENIED) {
+            this.geolocationBlocked.set(true);
+          }
+        }
+      );
+    }
+  }
+  
+  requestGeolocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          this.geolocationBlocked.set(false);
+          window.location.reload();
+        },
+        (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Permission Denied',
+            detail: 'Please allow geolocation access in your browser settings.'
+          });
+        }
+      );
+    }
+  }
+  
+  loadRecentSwipes() {
+    // Mock data - replace with actual API call
+    this.recentSwipes.set([]);
   }
 
   loadTodayStatus() {
@@ -233,6 +301,9 @@ export class Attendance implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopTimer();
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval);
+    }
   }
 }
 

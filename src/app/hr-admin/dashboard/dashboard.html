@@ -19,17 +19,19 @@
   </div>
 
   <!-- Stats Grid -->
-  <div class="stats-grid">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-6">
     @for (stat of stats(); track stat.title) {
-    <div class="stat-card">
-      <div class="stat-header">
-        <span class="stat-icon" [style.background]="stat.color + '20'" [style.color]="stat.color">
+    <div class="stat-card bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div class="flex justify-between items-start mb-4">
+        <span class="stat-icon w-12 h-12 rounded-lg flex items-center justify-center text-2xl" 
+          [style.background]="stat.color + '20'" 
+          [style.color]="stat.color">
           {{ stat.icon }}
         </span>
-        <span class="stat-value">{{ stat.value }}</span>
+        <span class="text-3xl font-bold text-gray-900">{{ stat.value }}</span>
       </div>
-      <h3 class="stat-title">{{ stat.title }}</h3>
-      <p class="stat-change">{{ stat.change }}</p>
+      <h3 class="text-sm font-medium text-gray-600 mb-1">{{ stat.title }}</h3>
+      <p class="text-xs text-green-600 font-medium">{{ stat.change }}</p>
     </div>
     }
   </div>

@@ -5,11 +5,9 @@
       [pTooltip]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'" tooltipPosition="bottom">
       <i [class]="sidebarOpen() ? 'pi pi-angle-left' : 'pi pi-angle-right'" class="text-gray-600 text-lg"></i>
     </button>
-
-
   </div>
 
-  <div style="display: flex; justify-content: end; margin-right: 20px; height: 50px;">
+  <div style="display: flex; justify-content: end; gap: 20px; margin-right: 20px; height: 50px;">
     <div class="role-dropdown">
       <p-select [options]="roleList" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="internalSelectedRoleId"
         [placeholder]="currentRole() || 'Select Role'" [filter]="false" appendTo="body" styleClass="header-role-select"

@@ -1,273 +1,170 @@
-<div class="bg-white min-h-screen p-4 sm:p-6 lg:p-0">
-    <p-toast></p-toast>
+<div class="bg-white min-h-screen p-4 sm:p-6">
 
-    <div
-        class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-gray-200 bg-white">
-        <div class="mb-3 sm:mb-0">
-            <h2 class="text-base font-semibold text-gray-800">
-                <p-breadcrumb [model]="breadcrumbItems"
-                    styleClass="border-none p-0 bg-transparent text-sm"></p-breadcrumb>
-            </h2>
-        </div>
-        <div style="text-align: end;" class="flex items-center space-x-2">
-            <p-button (click)="showDialog()" label="Add Employee" icon="pi pi-plus"
-                styleClass="p-button-warning shadow-sm" [raised]="true"></p-button>
-        </div>
+    <!-- PAGE HEADER -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h1 class="text-2xl font-bold text-gray-800">Employee Management</h1>
+        <p-button label="Add Employee" icon="pi pi-plus" (click)="showDialog()" [raised]="true">
+        </p-button>
     </div>
 
-    <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false"
-        [style]="{width:'60vw', maxWidth:'850px'}" (onHide)="onDrawerHide()" styleClass="employee-drawer">
+    <p-toast></p-toast>
 
+    <!-- DRAWER -->
+    <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false"
+        [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="employee-drawer">
+
+        <!-- DRAWER HEADER -->
         <ng-template pTemplate="header">
-            <div class="flex items-center justify-between px-6 py-4 bg-gray-50 border-b border-gray-200 w-full">
+            <div class="flex items-center justify-between px-4 py-3 border-b">
                 <div class="flex items-center gap-2">
-                    <span class="font-bold text-xl text-gray-800">{{ header() }}</span>
-                    <i [ngClass]="headerIcon()" class="text-blue-600 text-lg"></i>
+                    <i class="pi pi-user-plus text-primary"></i>
+                    <span class="text-lg font-semibold">{{ header() }}</span>
                 </div>
             </div>
         </ng-template>
 
-        <div class="h-full flex flex-col justify-between">
-            <div class="flex-grow overflow-y-auto p-6 bg-white">
-                <form [formGroup]="employeeForm" class="space-y-6">
+        <!-- DRAWER BODY -->
+        <form [formGroup]="employeeForm" class="flex flex-col gap-6 p-4">
 
-                    <div class="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                        <i class="pi pi-info-circle text-blue-600 text-lg"></i>
-                        <span class="font-semibold text-base text-gray-800">Employee Details</span>
+            <!-- EMPLOYEE IDENTITY -->
+            <p-panel header="Employee Identity" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field-group">
+                        <label>Employee Code *</label>
+                        <input pInputText formControlName="employeeCode" readonly />
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="flex justify-between items-center bg-slate-50 px-5 py-3 cursor-pointer hover:bg-slate-100 transition-colors border-b border-gray-200"
-                            (click)="toggle('showEmployeeIdentity')">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-gray-700">
-                                <i class="pi pi-id-card text-blue-600"></i> Employee Identity
-                            </h4>
-                            <i [class]="showEmployeeIdentity() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                                class="text-gray-500"></i>
-                        </div>
-
-                        <div style="display: flex;" *ngIf="showEmployeeIdentity()" class="p-5">
-                            <div class="grid md:grid-cols-2 gap-5 items-start">
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Employee Code <span
-                                            class="text-red-500">*</span></label>
-                                    <input pInputText formControlName="employeeCode" readonly
-                                        class="w-full bg-gray-100 text-gray-500 cursor-not-allowed h-[2.5rem]">
-                                </div>
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Status <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
-                                        optionValue="value" [style]="{'width':'100%'}" styleClass="w-full"
-                                        appendTo="body" placeholder="Select status"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('status')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('status')" class="text-red-500 text-xs mt-1 block">Status is
-                                        required</small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="field-group">
+                        <label>Status *</label>
+                        <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
+                            optionValue="value" placeholder="Select Status" styleClass="w-full">
+                        </p-select>
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="flex justify-between items-center bg-slate-50 px-5 py-3 cursor-pointer hover:bg-slate-100 transition-colors border-b border-gray-200"
-                            (click)="toggle('showPersonalDetails')">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-gray-700">
-                                <i class="pi pi-user text-blue-600"></i> Personal Details
-                            </h4>
-                            <i [class]="showPersonalDetails() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                                class="text-gray-500"></i>
-                        </div>
-                        <div *ngIf="showPersonalDetails()" class="p-5">
-                            <div class="grid md:grid-cols-2 gap-5">
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">First Name <span
-                                            class="text-red-500">*</span></label>
-                                    <input pInputText formControlName="firstName" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('firstName')}"
-                                        placeholder="Enter first name">
-                                    <small *ngIf="isInvalid('firstName')" class="text-red-500 text-xs mt-1 block">First
-                                        name is required</small>
-                                </div>
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Last Name <span
-                                            class="text-red-500">*</span></label>
-                                    <input pInputText formControlName="lastName" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('lastName')}"
-                                        placeholder="Enter last name">
-                                    <small *ngIf="isInvalid('lastName')" class="text-red-500 text-xs mt-1 block">Last
-                                        name is required</small>
-                                </div>
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Gender <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
-                                        optionValue="value" [style]="{'width':'100%'}" styleClass="w-full"
-                                        appendTo="body" placeholder="Select gender"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('gender')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('gender')" class="text-red-500 text-xs mt-1 block">Gender is
-                                        required</small>
-                                </div>
-                                <div class="field-group w-full flex flex-col">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Date of Birth <span
-                                            class="text-red-500">*</span></label>
-                                    <p-datepicker formControlName="dateOfBirth" [showIcon]="true"
-                                        [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}" styleClass="w-full"
-                                        appendTo="body" dateFormat="yy-mm-dd" placeholder="Select date"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('dateOfBirth')}">
-                                    </p-datepicker>
-                                    <small *ngIf="isInvalid('dateOfBirth')" class="text-red-500 text-xs mt-1 block">Date
-                                        of birth is required</small>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </p-panel>
+
+            <!-- PERSONAL DETAILS -->
+            <p-panel header="Personal Details" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field-group">
+                        <label>First Name *</label>
+                        <input pInputText formControlName="firstName" />
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="flex justify-between items-center bg-slate-50 px-5 py-3 cursor-pointer hover:bg-slate-100 transition-colors border-b border-gray-200"
-                            (click)="toggle('showContactDetails')">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-gray-700">
-                                <i class="pi pi-phone text-blue-600"></i> Contact Details
-                            </h4>
-                            <i [class]="showContactDetails() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                                class="text-gray-500"></i>
-                        </div>
-                        <div *ngIf="showContactDetails()" class="p-5">
-                            <div class="grid md:grid-cols-2 gap-5">
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Email <span
-                                            class="text-red-500">*</span></label>
-                                    <input pInputText formControlName="email" (blur)="onEmailBlur()" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('email')}"
-                                        placeholder="Enter email address">
-                                    <small *ngIf="isInvalid('email')" class="text-red-500 text-xs mt-1 block">Valid
-                                        email is required</small>
-                                </div>
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Mobile Number <span
-                                            class="text-red-500">*</span></label>
-                                    <input pInputText formControlName="mobileNumber" class="w-full"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('mobileNumber')}"
-                                        placeholder="Enter mobile number">
-                                    <small *ngIf="isInvalid('mobileNumber')"
-                                        class="text-red-500 text-xs mt-1 block">Mobile number is required</small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="field-group">
+                        <label>Last Name *</label>
+                        <input pInputText formControlName="lastName" />
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="flex justify-between items-center bg-slate-50 px-5 py-3 cursor-pointer hover:bg-slate-100 transition-colors border-b border-gray-200"
-                            (click)="toggle('showJobDetails')">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-gray-700">
-                                <i class="pi pi-briefcase text-blue-600"></i> Job Details
-                            </h4>
-                            <i [class]="showJobDetails() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                                class="text-gray-500"></i>
-                        </div>
-                        <div *ngIf="showJobDetails()" class="p-5">
-                            <div class="grid md:grid-cols-2 gap-5">
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Department <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="department" [options]="departmentOptions"
-                                        optionLabel="label" optionValue="value" [style]="{'width':'100%'}"
-                                        styleClass="w-full" [filter]="true" appendTo="body"
-                                        placeholder="Select department"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('department')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('department')"
-                                        class="text-red-500 text-xs mt-1 block">Department is required</small>
-                                </div>
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Designation <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="designation" [options]="designationOptions"
-                                        optionLabel="label" optionValue="value" [style]="{'width':'100%'}"
-                                        styleClass="w-full" [filter]="true" appendTo="body"
-                                        placeholder="Select designation"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('designation')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('designation')"
-                                        class="text-red-500 text-xs mt-1 block">Designation is required</small>
-                                </div>
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Employment Type <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="employmentType" [options]="employmentTypeOptions"
-                                        optionLabel="label" optionValue="value" [style]="{'width':'100%'}"
-                                        styleClass="w-full" appendTo="body" placeholder="Select type"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('employmentType')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('employmentType')"
-                                        class="text-red-500 text-xs mt-1 block">Required</small>
-                                </div>
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Joining Date <span
-                                            class="text-red-500">*</span></label>
-                                    <p-datepicker formControlName="joiningDate" [showIcon]="true"
-                                        [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}" styleClass="w-full"
-                                        appendTo="body" dateFormat="yy-mm-dd" placeholder="Select date"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('joiningDate')}">
-                                    </p-datepicker>
-                                    <small *ngIf="isInvalid('joiningDate')"
-                                        class="text-red-500 text-xs mt-1 block">Joining date is required</small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="field-group">
+                        <label>Gender *</label>
+                        <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
+                            optionValue="value" placeholder="Select Gender" styleClass="w-full">
+                        </p-select>
                     </div>
 
-                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                        <div class="flex justify-between items-center bg-slate-50 px-5 py-3 cursor-pointer hover:bg-slate-100 transition-colors border-b border-gray-200"
-                            (click)="toggle('showSystemAccess')">
-                            <h4 class="text-sm font-bold flex items-center gap-2 text-gray-700">
-                                <i class="pi pi-key text-blue-600"></i> System Access
-                            </h4>
-                            <i [class]="showSystemAccess() ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                                class="text-gray-500"></i>
-                        </div>
-                        <div *ngIf="showSystemAccess()" class="p-5">
-                            <div class="grid md:grid-cols-2 gap-5">
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Role <span
-                                            class="text-red-500">*</span></label>
-                                    <p-select formControlName="role" [options]="roleOptions" optionLabel="label"
-                                        optionValue="value" [style]="{'width':'100%'}" styleClass="w-full"
-                                        appendTo="body" placeholder="Select role"
-                                        [ngClass]="{'ng-invalid ng-dirty': isInvalid('role')}">
-                                    </p-select>
-                                    <small *ngIf="isInvalid('role')" class="text-red-500 text-xs mt-1 block">Role is
-                                        required</small>
-                                </div>
-                                <div class="field-group w-full">
-                                    <label class="text-sm font-medium mb-2 block text-gray-700">Username</label>
-                                    <input pInputText formControlName="username" readonly
-                                        class="w-full bg-gray-100 text-gray-600 cursor-not-allowed">
-                                </div>
-                                <div class="field-group w-full flex items-center mt-4">
-                                    <p-checkbox formControlName="firstLogin" [binary]="true"
-                                        inputId="firstLogin"></p-checkbox>
-                                    <label for="firstLogin" class="ml-2 text-sm text-gray-700 cursor-pointer">Force
-                                        Password Change on First Login</label>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="field-group">
+                        <label>Date of Birth *</label>
+                        <p-datepicker formControlName="dateOfBirth" dateFormat="yy-mm-dd" [showIcon]="true"
+                            styleClass="w-full">
+                        </p-datepicker>
                     </div>
 
-                </form>
-            </div>
+                </div>
+            </p-panel>
 
-            <div
-                class="flex justify-end gap-3 p-5 border-t border-gray-200 sticky bottom-0 bg-white z-20 shadow-[-2px_-5px_15px_rgba(0,0,0,0.05)]">
-                <p-button type="button" label="Reset" severity="secondary" (click)="resetAllForms()"
-                    [disabled]="isSubmitting()" styleClass="p-button-outlined px-6"></p-button>
-                <p-button type="submit" label="Submit" (click)="OnSubmitModal()" severity="primary"
-                    [loading]="isSubmitting()" [disabled]="isSubmitting()"
-                    styleClass="bg-blue-600 border-blue-600 px-6">
+            <!-- CONTACT DETAILS -->
+            <p-panel header="Contact Details" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field-group">
+                        <label>Email *</label>
+                        <input pInputText formControlName="email" />
+                    </div>
+
+                    <div class="field-group">
+                        <label>Mobile Number *</label>
+                        <input pInputText formControlName="mobileNumber" />
+                    </div>
+
+                </div>
+            </p-panel>
+
+            <!-- JOB DETAILS -->
+            <p-panel header="Job Details" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field-group">
+                        <label>Department *</label>
+                        <p-select formControlName="department" [options]="departmentOptions" optionLabel="label"
+                            optionValue="value" [filter]="true" placeholder="Select Department" styleClass="w-full">
+                        </p-select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Designation *</label>
+                        <p-select formControlName="designation" [options]="designationOptions" optionLabel="label"
+                            optionValue="value" [filter]="true" placeholder="Select Designation" styleClass="w-full">
+                        </p-select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Employment Type *</label>
+                        <p-select formControlName="employmentType" [options]="employmentTypeOptions" optionLabel="label"
+                            optionValue="value" placeholder="Select Type" styleClass="w-full">
+                        </p-select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Joining Date *</label>
+                        <p-datepicker formControlName="joiningDate" dateFormat="yy-mm-dd" [showIcon]="true"
+                            styleClass="w-full">
+                        </p-datepicker>
+                    </div>
+
+                </div>
+            </p-panel>
+
+            <!-- SYSTEM ACCESS -->
+            <p-panel header="System Access" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="field-group">
+                        <label>Role *</label>
+                        <p-select formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value"
+                            placeholder="Select Role" styleClass="w-full">
+                        </p-select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Username</label>
+                        <input pInputText formControlName="username" readonly />
+                    </div>
+
+                    <div class="flex items-center gap-2 md:col-span-2">
+                        <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
+                        <label for="firstLogin">Force password change on first login</label>
+                    </div>
+
+                </div>
+            </p-panel>
+
+        </form>
+
+        <!-- DRAWER FOOTER -->
+        <ng-template pTemplate="footer">
+            <div style="display: flex; justify-content: end; gap: 1rem; padding: 1rem; border-top: 1px solid #e0e0e0;">
+                <p-button label="Reset" severity="secondary" (click)="resetAllForms()">
+                </p-button>
+
+                <p-button label="Submit" severity="primary" (click)="OnSubmitModal()" [loading]="isSubmitting()">
                 </p-button>
             </div>
+        </ng-template>
 
-        </div>
     </p-drawer>
+
 </div>
