@@ -29,7 +29,7 @@ export class HrDashboard {
       title: 'Total Employees',
       value: 247,
       icon: '👥',
-      color: '#2563eb',
+      color: '#8b5cf6',
       change: '+12% from last month',
     },
     {
@@ -43,7 +43,7 @@ export class HrDashboard {
       title: 'Absent Today',
       value: 8,
       icon: '❌',
-      color: '#ef4444',
+      color: '#ec4899',
       change: '3.2% absent rate',
     },
     {
@@ -57,15 +57,8 @@ export class HrDashboard {
       title: 'Late Arrivals',
       value: 12,
       icon: '⏰',
-      color: '#8b5cf6',
-      change: '4.8% late today',
-    },
-    {
-      title: 'Pending Leaves',
-      value: 5,
-      icon: '📋',
       color: '#ec4899',
-      change: 'Needs approval',
+      change: '4.8% late today',
     },
   ]);
 

@@ -34,8 +34,13 @@
 
     <!-- Header Component -->
     @if (userDetails(); as user) {
-    <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" (onLogout)="logout()"
-      (onRoleChange)="onRoleChange($event)" />
+    <app-header 
+      [user]="user" 
+      [sidebarOpen]="sidebarOpen()" 
+      [selectedRoleId]="selectedRoleId()" 
+      (onLogout)="logout()"
+      (onRoleChange)="onRoleChange($event)"
+      (onToggleSidebar)="toggleSidebar()" />
     }
 
     <!-- Main Content -->
@@ -46,7 +51,7 @@
     <!-- Footer -->
     <footer class="content-footer">
       <div class="footer-content">
-        <span>© 2025 Nobilitas Infotech Pvt. Ltd.</span>
+        <span>© 2025 sam tyagi Pvt. Ltd.</span>
         <span class="footer-links">
           Privacy · Terms
         </span>

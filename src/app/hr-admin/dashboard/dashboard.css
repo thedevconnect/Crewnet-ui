@@ -126,13 +126,19 @@
   border-radius: 0.75rem;
   padding: 1.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .stat-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
 }
 
 .stat-icon {
@@ -141,27 +147,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: #111827;
+  line-height: 1;
 }
 
 .stat-title {
   font-size: 0.875rem;
   font-weight: 500;
   color: #6b7280;
-  margin: 0 0 0.25rem 0;
+  margin: 0.5rem 0 0.25rem 0;
 }
 
 .stat-change {
   font-size: 0.75rem;
   color: #10b981;
   margin: 0;
+  font-weight: 500;
 }
 
 /* Content Grid */

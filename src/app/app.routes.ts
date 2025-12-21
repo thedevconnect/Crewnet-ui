@@ -9,14 +9,10 @@ import { EssDashboard } from './ess-components/dashboard/dashboard';
 // HR Admin Components
 import { Attendance } from './pages/attendance/attendance';
 import { Leaves } from './features/leaves/leaves';
-import { Shifts } from './features/shifts/shifts';
-import { Departments } from './features/departments/departments';
-import { Reports } from './features/reports/reports';
-import { Settings } from './features/settings/settings';
+import { EmpManage } from './hr-admin/employees/emp-manage/emp-manage';
 
 // ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
-import { EmpManage } from './hr-admin/employees/emp-manage/emp-manage';
 
 export const routes: Routes = [
   {
@@ -43,15 +39,7 @@ export const routes: Routes = [
         children: [
           { path: 'dashboard', component: HrDashboard },
           { path: 'employees', component: EmpManage },
-          { path: 'attendance', component: Attendance },
           { path: 'leaves', component: Leaves },
-          { path: 'shifts', component: Shifts },
-          {
-            path: 'departments',
-            component: Departments,
-          },
-          { path: 'reports', component: Reports },
-          { path: 'settings', component: Settings },
         ],
       },
       // ESS Routes
@@ -59,51 +47,14 @@ export const routes: Routes = [
         path: 'ess',
         children: [
           { path: 'dashboard', component: EssDashboard },
-          {
-            path: 'profile',
-            component: EssEmployee, // Placeholder - will be replaced with actual ESS profile component
-          },
-          {
-            path: 'attendance',
-            children: [
-              { path: 'view', component: EssEmployee },
-              { path: 'regularization', component: EssEmployee },
-            ],
-          },
-          {
-            path: 'leaves',
-            children: [
-              {
-                path: 'apply',
-                component: EssEmployee,
-              },
-              {
-                path: 'balance',
-                component: EssEmployee,
-              },
-              {
-                path: 'history',
-                component: EssEmployee, // Placeholder
-              },
-            ],
-          },
-          {
-            path: 'holidays',
-            component: EssEmployee, // Placeholder
-          },
+          { path: 'attendance', component: Attendance },
+          { path: 'leaves', component: Leaves },
         ],
       },
-      // Legacy routes - redirect to HR Admin for backward compatibility
-      {
-        path: 'dashboard',
-        redirectTo: '/hr-admin/dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'employees',
-        redirectTo: '/hr-admin/employees',
-        pathMatch: 'full',
-      },
+      { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full', },
+      { path: 'employees', redirectTo: '/hr-admin/employees', pathMatch: 'full', },
+      { path: 'attendance', redirectTo: '/hr-admin/attendance', pathMatch: 'full', },
+      { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full', },
     ],
   },
   {

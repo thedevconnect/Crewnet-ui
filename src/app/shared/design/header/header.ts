@@ -17,6 +17,7 @@ import { SelectModule } from 'primeng/select';
 import { MenuItem } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 interface UserDetails {
   name: string;
@@ -44,12 +45,10 @@ interface RoleOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit {
-  constructor() {
-    // Sync internal role with parent's selected role
+  constructor(private router: Router) {
     effect(() => {
       const parentRoleId = this.selectedRoleId();
       if (parentRoleId) {
-        // Map 'hr' to 'hrAdmin' for compatibility
         if (parentRoleId === 'hr') {
           this.internalSelectedRoleId = 'hrAdmin';
         } else {
@@ -65,38 +64,19 @@ export class Header implements OnInit {
   onRoleChange = output<string>();
 
   sidebarOpen = input<boolean>(false);
-  selectedRoleId = input<string>('hr'); // Receive selected role from layout
+  selectedRoleId = input<string>('hrAdmin');
+  onToggleSidebar = output<void>();
 
-  // District data
-  distList: DistrictOption[] = [
-    { drpoption: 'Select District', drpvalue: '' },
-    { drpoption: 'Delhi', drpvalue: 'delhi' },
-    { drpoption: 'Panipat', drpvalue: 'panipat' },
-    { drpoption: 'Rohtak', drpvalue: 'rohtak' },
-    { drpoption: 'Yamunanagar', drpvalue: 'yamunanagar' },
-    { drpoption: 'Karnal', drpvalue: 'karnal' },
-    { drpoption: 'Ambala', drpvalue: 'ambala' },
-    { drpoption: 'Sirsa', drpvalue: 'sirsa' },
-    { drpoption: 'Faridabad', drpvalue: 'faridabad' },
-    { drpoption: 'Gurgaon', drpvalue: 'gurgaon' },
-  ];
 
-  // Role data - Only HR Admin and ESS
+
   roleList: RoleOption[] = [
     { rolDes: 'HR Admin', roleId: 'hrAdmin' },
     { rolDes: 'ESS', roleId: 'ess' },
   ];
 
-  selectedDistrictValue: string = 'abohar';
-  internalSelectedRoleId: string = 'hrAdmin'; // Internal state for dropdown
+  internalSelectedRoleId: string = 'hrAdmin';
 
-  filteredDistList = signal<DistrictOption[]>(this.distList);
   filteredRoleList = signal<RoleOption[]>(this.roleList);
-
-  selectedDistrict = computed(() => {
-    const dist = this.distList.find((d) => d.drpvalue === this.selectedDistrictValue);
-    return dist?.drpoption || '';
-  });
 
   currentRole = computed(() => {
     const roleId = this.internalSelectedRoleId || this.selectedRoleId();
@@ -109,7 +89,6 @@ export class Header implements OnInit {
   ngOnInit(): void {
     this.initUserMenu();
 
-    // Initialize with value from parent, map 'hr' to 'hrAdmin' for compatibility
     const parentRoleId = this.selectedRoleId();
     if (parentRoleId === 'hr') {
       this.internalSelectedRoleId = 'hrAdmin';
@@ -117,12 +96,8 @@ export class Header implements OnInit {
       this.internalSelectedRoleId = parentRoleId || 'hrAdmin';
     }
 
-    // Set default values if not already set
-    if (!this.selectedDistrictValue && this.distList.length > 0) {
-      this.selectedDistrictValue = this.distList[0].drpvalue;
-    }
     if (!this.internalSelectedRoleId && this.roleList.length > 0) {
-      this.internalSelectedRoleId = 'hrAdmin'; // Default to HR Admin
+      this.internalSelectedRoleId = 'hrAdmin';
     }
   }
 
@@ -172,26 +147,22 @@ export class Header implements OnInit {
     });
   });
 
-  changeDistrict(value: string): void {
-    this.selectedDistrictValue = value;
-    console.log('District changed to:', value);
-    // Emit event if needed
-  }
-
   onRoleDropdownChange(event: any): void {
     if (event && event.value) {
       this.internalSelectedRoleId = event.value;
-      // Emit the roleId to parent (layout)
       this.onRoleChange.emit(event.value);
-      console.log('Role changed to:', event.value);
     }
   }
 
   logout(): void {
-    this.onLogout.emit();
+    this.router.navigate(['/login']);
   }
 
   handleProfile(): void {
-    console.log('Navigate to profile');
+    this.router.navigate(['/profile']);
+  }
+
+  toggleSidebar(): void {
+    this.onToggleSidebar.emit();
   }
 }

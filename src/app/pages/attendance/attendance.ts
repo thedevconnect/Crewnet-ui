@@ -1,5 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { AttendanceService, TodayStatusResponse } from '../../services/attendance.service';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { AttendanceService, TodayStatusResponse } from '../../core/services/attendance.service';
 import { Button } from 'primeng/button';
 import { Card } from 'primeng/card';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './attendance.css',
   providers: [MessageService]
 })
-export class Attendance implements OnInit {
+export class Attendance implements OnInit, OnDestroy {
 
   attendanceService = inject(AttendanceService);
   messageService = inject(MessageService);
@@ -24,6 +24,11 @@ export class Attendance implements OnInit {
   loadingStatus = signal(false);
 
   todayStatus = signal<TodayStatusResponse | null>(null);
+  
+  // Timer functionality
+  elapsedTime = signal<string>('00:00:00');
+  private timerInterval: any = null;
+  private swipeInTime: Date | null = null;
 
   ngOnInit(): void {
     this.loadTodayStatus();
@@ -35,6 +40,13 @@ export class Attendance implements OnInit {
       next: (res: TodayStatusResponse) => {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
+        
+        // Start timer if swipe in is done but swipe out is not
+        if (res.attendance?.swipeIn && !res.attendance?.swipeOut) {
+          this.startTimer(new Date(res.attendance.swipeIn));
+        } else {
+          this.stopTimer();
+        }
       },
       error: (error: any) => {
         console.error('Error loading attendance status:', error);
@@ -88,6 +100,8 @@ export class Attendance implements OnInit {
           summary: 'Success',
           detail: res.message || 'Swipe In Successful!'
         });
+        // Start timer immediately
+        this.startTimer(new Date());
         this.loadTodayStatus();
       },
       error: (error: any) => {
@@ -116,6 +130,8 @@ export class Attendance implements OnInit {
           summary: 'Success',
           detail: res.message || 'Swipe Out Successful!'
         });
+        // Stop timer
+        this.stopTimer();
         this.loadTodayStatus();
       },
       error: (error: any) => {
@@ -175,5 +191,48 @@ export class Attendance implements OnInit {
     this.activeType = null;
   }
 
+  startTimer(swipeInTime: Date) {
+    this.swipeInTime = swipeInTime;
+    this.stopTimer(); // Clear any existing timer
+    
+    this.timerInterval = setInterval(() => {
+      if (this.swipeInTime) {
+        const now = new Date();
+        const diff = now.getTime() - this.swipeInTime.getTime();
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        this.elapsedTime.set(
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+        );
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    this.swipeInTime = null;
+  }
+
+  getTotalDuration(): string {
+    const status = this.todayStatus();
+    if (status?.attendance?.swipeIn && status?.attendance?.swipeOut) {
+      const swipeIn = new Date(status.attendance.swipeIn);
+      const swipeOut = new Date(status.attendance.swipeOut);
+      const diff = swipeOut.getTime() - swipeIn.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      return `${hours}h ${minutes}m`;
+    }
+    return '-';
+  }
+
+  ngOnDestroy() {
+    this.stopTimer();
+  }
 }
 

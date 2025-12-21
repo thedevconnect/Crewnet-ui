@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
-import { Employee } from '../models/employee.model';
+import { Observable, catchError, throwError, map } from 'rxjs'; 
 
 interface ApiResponse<T> {
   success: boolean;
@@ -11,7 +10,7 @@ interface ApiResponse<T> {
 }
 
 interface EmployeesResponse {
-  employees: Employee[];
+  employees: any[];
   pagination?: {
     total: number;
     page: number;
@@ -24,7 +23,7 @@ interface EmployeesResponse {
 }
 
 interface EmployeeResponse {
-  employee: Employee;
+  employee: any;
 }
 
 export interface EmployeeQueryParams {
@@ -41,7 +40,7 @@ export class EmployeeService {
   private readonly baseUrl = 'http://localhost:3000/api';
   private readonly apiUrl = `${this.baseUrl}/employees`;
 
-  getAll(params?: EmployeeQueryParams): Observable<{ employees: Employee[]; total?: number; page?: number; limit?: number }> {
+  getAll(params?: EmployeeQueryParams): Observable<{ employees: any[]; total?: number; page?: number; limit?: number }> {
     let httpParams = new HttpParams();
     
     if (params?.page) {
@@ -64,7 +63,7 @@ export class EmployeeService {
       map(response => {
         // Handle response structure: { success, statusCode, message, data: { employees, pagination } }
         const data = response.data || response;
-        let employees: Employee[] = [];
+        let employees: any[] = [];
         
         // Extract employees array
         if (data?.employees && Array.isArray(data.employees)) {
@@ -104,10 +103,10 @@ export class EmployeeService {
     );
   }
 
-  getById(id: number): Observable<Employee> {
-    return this.http.get<ApiResponse<EmployeeResponse | Employee>>(`${this.apiUrl}/${id}`).pipe(
+  getById(id: number): Observable<any> {
+    return this.http.get<ApiResponse<EmployeeResponse | any>>(`${this.apiUrl}/${id}`).pipe(
       map(response => {
-        const employee = (response.data as any)?.employee || response.data as Employee;
+        const employee = (response.data as any)?.employee || response.data as any;
         // Format joiningDate to YYYY-MM-DD format
         return {
           ...employee,
@@ -121,10 +120,10 @@ export class EmployeeService {
     );
   }
 
-  create(payload: Omit<Employee, 'id'>): Observable<Employee> {
-    return this.http.post<ApiResponse<EmployeeResponse | Employee>>(this.apiUrl, payload).pipe(
+  create(payload: Omit<any, 'id'>): Observable<any> {
+      return this.http.post<ApiResponse<EmployeeResponse | any>>(this.apiUrl, payload).pipe(
       map(response => {
-        const employee = (response.data as any)?.employee || response.data as Employee;
+        const employee = (response.data as any)?.employee || response.data as any;
         return {
           ...employee,
           joiningDate: employee.joiningDate ? new Date(employee.joiningDate).toISOString().split('T')[0] : employee.joiningDate
@@ -137,10 +136,10 @@ export class EmployeeService {
     );
   }
 
-  update(id: number, payload: Partial<Employee>): Observable<Employee> {
-    return this.http.put<ApiResponse<EmployeeResponse | Employee>>(`${this.apiUrl}/${id}`, payload).pipe(
+    update(id: number, payload: Partial<any>): Observable<any> {
+    return this.http.put<ApiResponse<EmployeeResponse | any>>(`${this.apiUrl}/${id}`, payload).pipe(
       map(response => {
-        const employee = (response.data as any)?.employee || response.data as Employee;
+        const employee = (response.data as any)?.employee || response.data as any;
         return {
           ...employee,
           joiningDate: employee.joiningDate ? new Date(employee.joiningDate).toISOString().split('T')[0] : employee.joiningDate

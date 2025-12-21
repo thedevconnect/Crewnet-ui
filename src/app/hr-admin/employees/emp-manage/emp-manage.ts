@@ -1,477 +1,152 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
-import { DatePickerModule } from 'primeng/datepicker';
-import { DrawerModule } from 'primeng/drawer';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { CheckboxModule } from 'primeng/checkbox';
-import { TableModule } from 'primeng/table';
-import { TooltipModule } from 'primeng/tooltip';
-import { MenuItem, MessageService } from 'primeng/api';
-import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MessageService, MenuItem } from 'primeng/api';
 
-interface Column {
-  field: string;
-  header: string;
-  sortable?: boolean;
-  width?: string;
-}
+// Imports (Check your PrimeNG version: if v17/16, use SidebarModule, DropdownModule, CalendarModule)
+import { ToastModule } from 'primeng/toast';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select'; // PrimeNG v18. use DropdownModule for older
+import { DatePickerModule } from 'primeng/datepicker'; // PrimeNG v18. use CalendarModule for older
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-emp-manage',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    ToastModule,
+    BreadcrumbModule,
     ButtonModule,
+    DrawerModule,
     InputTextModule,
     SelectModule,
     DatePickerModule,
-    DrawerModule,
-    BreadcrumbModule,
-    ConfirmDialogModule,
-    ToastModule,
-    CheckboxModule,
-    TableModule,
-    TooltipModule,
+    CheckboxModule
   ],
   providers: [MessageService],
   templateUrl: './emp-manage.html',
-  styleUrl: './emp-manage.css',
+  styleUrls: ['./emp-manage.css'] // Ensure you have this file
 })
 export class EmpManage implements OnInit {
-  private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  private messageService = inject(MessageService);
 
-  // API URLs
-  private readonly baseURL = 'http://localhost:3000/api';
-  private readonly createEmployeeURL = `${this.baseURL}/employees-onboarding`;
-  private readonly getEmployeesURL = `${this.baseURL}/employees`;
+  // UI State Signals
+  visible = signal(false);
+  isSubmitting = signal(false);
+  header = signal('Add New Employee');
+  headerIcon = signal('pi pi-user-plus');
 
-  // Employee list state
-  employees = signal<any[]>([]);
-  isLoading = signal<boolean>(false);
-  isSubmitting = signal<boolean>(false);
+  // Toggle Signals
+  showEmployeeIdentity = signal(true);
+  showPersonalDetails = signal(true);
+  showContactDetails = signal(true);
+  showJobDetails = signal(true);
+  showSystemAccess = signal(true);
 
-  // Table columns configuration - Dynamic columns
-  columns: Column[] = [
-    { field: 'actions', header: 'Actions', sortable: false, width: '120px' },
-    { field: 'employeeCode', header: 'Employee Code', sortable: true },
-    { field: 'name', header: 'Name', sortable: true },
-    { field: 'email', header: 'Email', sortable: true },
-    { field: 'mobileNumber', header: 'Mobile Number', sortable: false },
-    { field: 'department', header: 'Department', sortable: true },
-    { field: 'designation', header: 'Designation', sortable: true },
-    { field: 'status', header: 'Status', sortable: true },
-  ];
-
-  // Drawer state
-  visible = signal<boolean>(false);
-  postType = signal<'add' | 'update' | 'view'>('add');
-  header = signal<string>('Add Employee');
-  headerIcon = signal<string>('pi pi-user-plus');
-
-  // Section toggles
-  showEmployeeIdentity = signal<boolean>(true);
-  showPersonalDetails = signal<boolean>(true);
-  showContactDetails = signal<boolean>(true);
-  showJobDetails = signal<boolean>(true);
-  showSystemAccess = signal<boolean>(true);
-
-  // Breadcrumb
-  breadcrumbItems: MenuItem[] = [
-    { label: 'Home', routerLink: '/' },
-    { label: 'HR Admin' },
-    { label: 'Employee Management' },
-  ];
-
-  // Dropdown options
-  statusOptions = [
-    { label: 'Active', value: 'Active' },
-    { label: 'Inactive', value: 'Inactive' },
-  ];
-
-  genderOptions = [
-    { label: 'Male', value: 'Male' },
-    { label: 'Female', value: 'Female' },
-    { label: 'Other', value: 'Other' },
-  ];
-
-  employmentTypeOptions = [
-    { label: 'Full Time', value: 'Full Time' },
-    { label: 'Intern', value: 'Intern' },
-    { label: 'Part Time', value: 'Part Time' },
-    { label: 'Contract', value: 'Contract' },
-    { label: 'Freelance', value: 'Freelance' },
-    { label: 'Temporary', value: 'Temporary' },
-    { label: 'Seasonal', value: 'Seasonal' },
-    { label: 'Project Based', value: 'Project Based' },
-    { label: 'Other', value: 'Other' },
-  ];
-
-  roleOptions = [
-    { label: 'HRADMIN', value: 'HRADMIN' },
-    { label: 'ESS', value: 'ESS' },
-  ];
-
-  departmentOptions = [
-    { label: 'HR', value: 'HR' },
-    { label: 'IT', value: 'IT' },
-    { label: 'Finance', value: 'Finance' },
-    { label: 'Sales', value: 'Sales' },
-    { label: 'Marketing', value: 'Marketing' },
-    { label: 'Operations', value: 'Operations' },
-  ];
-
-  designationOptions = [
-    { label: 'Manager', value: 'Manager' },
-    { label: 'Senior Manager', value: 'Senior Manager' },
-    { label: 'Executive', value: 'Executive' },
-    { label: 'Senior Executive', value: 'Senior Executive' },
-    { label: 'Associate', value: 'Associate' },
-    { label: 'Intern', value: 'Intern' },
-  ];
-
-  // Form group
   employeeForm!: FormGroup;
+  breadcrumbItems: MenuItem[] | undefined;
 
-  constructor() {
+  // Dropdown Data
+  statusOptions = [{ label: 'Active', value: 'Active' }, { label: 'Inactive', value: 'Inactive' }];
+  genderOptions = [{ label: 'Male', value: 'Male' }, { label: 'Female', value: 'Female' }, { label: 'Other', value: 'Other' }];
+  departmentOptions = [{ label: 'IT', value: 'IT' }, { label: 'HR', value: 'HR' }, { label: 'Sales', value: 'Sales' }];
+  designationOptions = [{ label: 'Developer', value: 'Developer' }, { label: 'Manager', value: 'Manager' }, { label: 'Analyst', value: 'Analyst' }];
+  employmentTypeOptions = [{ label: 'Full Time', value: 'Full Time' }, { label: 'Contract', value: 'Contract' }, { label: 'Intern', value: 'Intern' }];
+  roleOptions = [{ label: 'Admin', value: 'Admin' }, { label: 'User', value: 'User' }];
+
+  constructor(private fb: FormBuilder, private messageService: MessageService) { }
+
+  ngOnInit(): void {
+    this.breadcrumbItems = [{ label: 'Dashboard', icon: 'pi pi-home' }, { label: 'Employees', icon: 'pi pi-users' }];
     this.initForm();
   }
 
   initForm() {
     this.employeeForm = this.fb.group({
-      // Employee Identity
       employeeCode: [{ value: '', disabled: true }, Validators.required],
       status: ['Active', Validators.required],
-
-      // Personal Details
       firstName: ['', [Validators.required, Validators.maxLength(100)]],
       lastName: ['', [Validators.required, Validators.maxLength(100)]],
-      gender: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
-
-      // Contact Details
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(200)]],
-      mobileNumber: ['', [Validators.required, Validators.maxLength(15)]],
-
-      // Job Details
-      department: ['', Validators.required],
-      designation: ['', Validators.required],
-      employmentType: ['', Validators.required],
-      joiningDate: ['', Validators.required],
-
-      // System Access
-      role: ['', Validators.required],
+      gender: [null, Validators.required],
+      dateOfBirth: [null, Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$')]],
+      department: [null, Validators.required],
+      designation: [null, Validators.required],
+      employmentType: [null, Validators.required],
+      joiningDate: [new Date(), Validators.required],
+      role: [null, Validators.required],
       username: [{ value: '', disabled: true }],
-      firstLogin: [true],
+      firstLogin: [true]
+    });
+
+    // Auto-generate username from email
+    this.employeeForm.get('email')?.valueChanges.subscribe(val => {
+      if (val && val.includes('@')) this.employeeForm.patchValue({ username: val.split('@')[0] });
     });
   }
 
-  ngOnInit() {
-    this.initForm();
+  showDialog() {
+    this.visible.set(true);
     this.generateEmployeeCode();
-    this.loadEmployees();
   }
 
-  // Load employees list
-  loadEmployees() {
-    this.isLoading.set(true);
-    this.http
-      .get<any>(this.getEmployeesURL)
-      .pipe(
-        catchError((error) => {
-          console.error('Error loading employees:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: error.error?.message || 'Failed to load employees. Please try again.',
-          });
-          this.isLoading.set(false);
-          return throwError(() => error);
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          // Handle different response formats
-          if (response.data && Array.isArray(response.data.employees)) {
-            this.employees.set(response.data.employees);
-          } else if (Array.isArray(response.data)) {
-            this.employees.set(response.data);
-          } else if (Array.isArray(response)) {
-            this.employees.set(response);
-          } else {
-            this.employees.set([]);
-          }
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.isLoading.set(false);
-        },
-      });
+  closeDrawer() {
+    this.visible.set(false);
   }
 
-  // Toggle section visibility
+  onDrawerHide() {
+    this.resetAllForms();
+  }
+
   toggle(section: string) {
     switch (section) {
-      case 'showEmployeeIdentity':
-        this.showEmployeeIdentity.set(!this.showEmployeeIdentity());
-        break;
-      case 'showPersonalDetails':
-        this.showPersonalDetails.set(!this.showPersonalDetails());
-        break;
-      case 'showContactDetails':
-        this.showContactDetails.set(!this.showContactDetails());
-        break;
-      case 'showJobDetails':
-        this.showJobDetails.set(!this.showJobDetails());
-        break;
-      case 'showSystemAccess':
-        this.showSystemAccess.set(!this.showSystemAccess());
-        break;
+      case 'showEmployeeIdentity': this.showEmployeeIdentity.update(v => !v); break;
+      case 'showPersonalDetails': this.showPersonalDetails.update(v => !v); break;
+      case 'showContactDetails': this.showContactDetails.update(v => !v); break;
+      case 'showJobDetails': this.showJobDetails.update(v => !v); break;
+      case 'showSystemAccess': this.showSystemAccess.update(v => !v); break;
     }
   }
 
-  // Generate employee code (auto-generated)
   generateEmployeeCode() {
-    // Generate a unique employee code (you can modify this logic as per your requirements)
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.floor(Math.random() * 1000)
-      .toString()
-      .padStart(3, '0');
-    const employeeCode = `EMP${timestamp}${random}`;
-    this.employeeForm.patchValue({ employeeCode });
+    this.employeeForm.patchValue({ employeeCode: 'EMP-' + Math.floor(1000 + Math.random() * 9000) });
   }
 
-  // Derive username from email
   onEmailBlur() {
-    const email = this.employeeForm.get('email')?.value;
-    if (email) {
-      const username = email.split('@')[0];
-      this.employeeForm.patchValue({ username });
-    }
+    this.employeeForm.get('email')?.markAsTouched();
   }
 
-  // Show dialog/drawer
-  showDialog(type: 'add' | 'update' | 'view', item?: any) {
-    this.postType.set(type);
-
-    if (type === 'add') {
-      this.header.set('Add Employee');
-      this.headerIcon.set('pi pi-user-plus');
-      this.resetAllForms();
-      this.generateEmployeeCode();
-      this.employeeForm.enable();
-      this.employeeForm.get('employeeCode')?.disable();
-      this.employeeForm.get('username')?.disable();
-    } else if (type === 'update') {
-      this.header.set('Update Employee');
-      this.headerIcon.set('pi pi-user-edit');
-      if (item) {
-        this.employeeForm.enable();
-        this.populateForm(item);
-        // Keep readonly fields disabled
-        this.employeeForm.get('employeeCode')?.disable();
-        this.employeeForm.get('username')?.disable();
-      }
-    } else if (type === 'view') {
-      this.header.set('View Employee');
-      this.headerIcon.set('pi pi-eye');
-      if (item) {
-        this.populateForm(item);
-        // Disable entire form for view mode
-        this.employeeForm.disable();
-      }
-    }
-
-    this.visible.set(true);
-  }
-
-  populateForm(data: any) {
-    // Enable form first
-    this.employeeForm.enable();
-    
-    // Handle both camelCase and snake_case from API
-    const empData = {
-      employeeCode: data.employeeCode || data.employee_code || '',
-      status: data.status || 'Active',
-      firstName: data.firstName || data.first_name || '',
-      lastName: data.lastName || data.last_name || '',
-      gender: data.gender || '',
-      dateOfBirth: data.dateOfBirth || data.date_of_birth ? new Date(data.dateOfBirth || data.date_of_birth) : null,
-      email: data.email || '',
-      mobileNumber: data.mobileNumber || data.mobile_number || '',
-      department: data.department || '',
-      designation: data.designation || '',
-      employmentType: data.employmentType || data.employment_type || '',
-      joiningDate: data.joiningDate || data.joining_date ? new Date(data.joiningDate || data.joining_date) : null,
-      role: data.role || '',
-      username: data.username || '',
-      firstLogin: data.firstLogin !== undefined ? data.firstLogin : (data.first_login !== undefined ? data.first_login : true),
-    };
-
-    this.employeeForm.patchValue(empData);
-    
-    // Disable readonly fields
-    this.employeeForm.get('employeeCode')?.disable();
-    this.employeeForm.get('username')?.disable();
-  }
-
-  // Form validation helper
-  isInvalid(controlName: string, formGroup: FormGroup = this.employeeForm): boolean {
-    const control = formGroup.get(controlName);
+  isInvalid(controlName: string): boolean {
+    const control = this.employeeForm.get(controlName);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
-  // Reset all forms
   resetAllForms() {
-    this.employeeForm.reset();
-    this.employeeForm.patchValue({
-      status: 'Active',
-      firstLogin: true,
-    });
-    this.generateEmployeeCode();
-    this.employeeForm.enable();
-    this.employeeForm.get('employeeCode')?.disable();
-    this.employeeForm.get('username')?.disable();
+    this.employeeForm.reset({ status: 'Active', joiningDate: new Date(), firstLogin: true });
+    this.isSubmitting.set(false);
   }
 
-  // Close drawer
-  closeDrawer() {
-    this.visible.set(false);
-    this.employeeForm.enable();
-    this.employeeForm.get('employeeCode')?.disable();
-    this.employeeForm.get('username')?.disable();
-  }
-
-  // On drawer hide
-  onDrawerHide() {
-    this.closeDrawer();
-  }
-
-  // Submit form
   OnSubmitModal() {
     if (this.employeeForm.invalid) {
       this.employeeForm.markAllAsTouched();
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validation Error',
-        detail: 'Please fill all required fields correctly.',
-      });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Please fill all fields correctly.' });
       return;
     }
 
-    const formValue = this.employeeForm.getRawValue();
-
-    // Convert dates to ISO string format (YYYY-MM-DD)
-    if (formValue.dateOfBirth) {
-      if (formValue.dateOfBirth instanceof Date) {
-        formValue.dateOfBirth = formValue.dateOfBirth.toISOString().split('T')[0];
-      } else if (typeof formValue.dateOfBirth === 'string') {
-        // If it's already a string, use it as is
-        formValue.dateOfBirth = formValue.dateOfBirth.split('T')[0];
-      }
-    }
-    if (formValue.joiningDate) {
-      if (formValue.joiningDate instanceof Date) {
-        formValue.joiningDate = formValue.joiningDate.toISOString().split('T')[0];
-      } else if (typeof formValue.joiningDate === 'string') {
-        // If it's already a string, use it as is
-        formValue.joiningDate = formValue.joiningDate.split('T')[0];
-      }
-    }
-
-    // Remove employeeCode and username from payload (auto-generated by backend)
-    const payload = {
-      status: formValue.status,
-      firstName: formValue.firstName,
-      lastName: formValue.lastName,
-      gender: formValue.gender,
-      dateOfBirth: formValue.dateOfBirth,
-      email: formValue.email,
-      mobileNumber: formValue.mobileNumber,
-      department: formValue.department,
-      designation: formValue.designation,
-      employmentType: formValue.employmentType,
-      joiningDate: formValue.joiningDate,
-      role: formValue.role,
-      firstLogin: formValue.firstLogin,
-    };
-
-    if (this.postType() === 'add') {
-      this.createEmployee(payload);
-    } else if (this.postType() === 'update') {
-      // TODO: Implement update API call when endpoint is available
-      this.messageService.add({
-        severity: 'info',
-        summary: 'Info',
-        detail: 'Update functionality will be implemented soon.',
-      });
-    }
-  }
-
-  // Create employee
-  createEmployee(payload: any) {
     this.isSubmitting.set(true);
-    this.http
-      .post<any>(this.createEmployeeURL, payload)
-      .pipe(
-        catchError((error) => {
-          console.error('Error creating employee:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: error.error?.message || 'Failed to create employee. Please try again.',
-          });
-          this.isSubmitting.set(false);
-          return throwError(() => error);
-        })
-      )
-      .subscribe({
-        next: (response) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: response.message || 'Employee created successfully!',
-          });
-          this.closeDrawer();
-          this.loadEmployees(); // Reload employee list
-          this.isSubmitting.set(false);
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        },
-      });
-  }
+    console.log(this.employeeForm.getRawValue());
 
-  // Get cell value dynamically based on column field
-  getCellValue(emp: any, field: string): string {
-    switch (field) {
-      case 'employeeCode':
-        return emp.employeeCode || emp.employee_code || '-';
-      case 'name':
-        const firstName = emp.firstName || emp.first_name || '';
-        const lastName = emp.lastName || emp.last_name || '';
-        return `${firstName} ${lastName}`.trim() || '-';
-      case 'email':
-        return emp.email || '-';
-      case 'mobileNumber':
-        return emp.mobileNumber || emp.mobile_number || '-';
-      case 'department':
-        return emp.department || '-';
-      case 'designation':
-        return emp.designation || '-';
-      case 'status':
-        return emp.status || 'Active';
-      default:
-        return emp[field] || '-';
-    }
+    // Fake API simulation
+    setTimeout(() => {
+      this.isSubmitting.set(false);
+      this.visible.set(false);
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Employee added!' });
+      this.resetAllForms();
+    }, 1000);
   }
 }

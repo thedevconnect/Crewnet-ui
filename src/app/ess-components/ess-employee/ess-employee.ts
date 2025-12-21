@@ -9,7 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EmployeeService } from '../../features/employee/services/employee.service';
+import { EmployeeService } from '../../core/services/employee.service';
 import { Employee } from '../../features/employee/models/employee.model';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';

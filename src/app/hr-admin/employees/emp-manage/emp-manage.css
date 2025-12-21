@@ -13,3 +13,23 @@
   display: block;
 }
 
+/* Align input and select heights */
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-select {
+  height: 2.5rem;
+  min-height: 2.5rem;
+}
+
+:host ::ng-deep .p-select .p-select-label {
+  height: 2.5rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+/* Field group alignment */
+.field-group {
+  display: flex;
+  flex-direction: column;
+}
