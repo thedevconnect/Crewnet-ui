@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "oblo": {
+    "crewnet-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "oblo:build:production"
+              "buildTarget": "crewnet-ui:build:production"
             },
             "development": {
-              "buildTarget": "oblo:build:development"
+              "buildTarget": "crewnet-ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -101,3 +101,4 @@
     "analytics": "569c468c-c471-41f9-91f5-a4394091b9ec"
   }
 }
+  

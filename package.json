@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:github": "ng build --configuration production --base-href /Crewnet-ui/",
+    "build:github": "ng build --configuration production --base-href /Crewnet-ui/ && node -e \"require('fs').copyFileSync('public/404.html', 'dist/crewnet-ui/browser/404.html')\"",
+    "deploy": "npm run build:github && npx angular-cli-ghpages --dir=dist/crewnet-ui/browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
