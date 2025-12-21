@@ -1,18 +1,21 @@
 <div class="employee-management-container">
 
-    <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
-    <div style="text-align: end;">
-        <p-button label="Add Employee" icon="pi pi-plus" (click)="showDialog()"
-            styleClass="bg-[#1976D2] hover:bg-[#1565C0] text-white font-medium px-6 py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border-0">
-        </p-button>
+    <!-- PAGE HEADER -->
+    <div class="page-header-section">
+        <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
+        <div class="flex justify-end">
+            <p-button label="Add Employee" icon="pi pi-plus" (click)="showDialog()" [raised]="true">
+            </p-button>
+        </div>
     </div>
 
+    <!-- TOAST AND CONFIRMATION DIALOG -->
     <p-toast></p-toast>
     <p-confirmDialog></p-confirmDialog>
 
     <!-- VIEW EMPLOYEE DRAWER -->
     <p-drawer [(visible)]="viewDialogVisible" position="right" [modal]="true" [dismissible]="false"
-        [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="employee-drawer">
+        [style]="{ width: '820px', maxWidth: '100vw' }">
 
         <!-- DRAWER HEADER -->
         <ng-template pTemplate="header">
@@ -34,7 +37,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="field-group">
                         <label class="font-semibold">Employee Code</label>
-                        <p>{{ selectedEmployee()?.employee_code }}</p>
+                        <p>{{ selectedEmployee()?.employeeCode }}</p>
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Status</label>
@@ -56,11 +59,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="field-group">
                         <label class="font-semibold">First Name</label>
-                        <p>{{ selectedEmployee()?.first_name }}</p>
+                        <p>{{ selectedEmployee()?.firstName }}</p>
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Last Name</label>
-                        <p>{{ selectedEmployee()?.last_name }}</p>
+                        <p>{{ selectedEmployee()?.lastName }}</p>
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Gender</label>
@@ -68,7 +71,7 @@
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Date of Birth</label>
-                        <p>{{ formatDate(selectedEmployee()?.date_of_birth) }}</p>
+                        <p>{{ formatDate(selectedEmployee()?.dateOfBirth) }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -82,7 +85,7 @@
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Mobile Number</label>
-                        <p>{{ selectedEmployee()?.mobile_number }}</p>
+                        <p>{{ selectedEmployee()?.mobileNumber }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -100,11 +103,11 @@
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Employment Type</label>
-                        <p>{{ selectedEmployee()?.employment_type }}</p>
+                        <p>{{ selectedEmployee()?.employmentType }}</p>
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Joining Date</label>
-                        <p>{{ formatDate(selectedEmployee()?.joining_date) }}</p>
+                        <p>{{ formatDate(selectedEmployee()?.joiningDate) }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -122,7 +125,7 @@
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">First Login</label>
-                        <p>{{ selectedEmployee()?.first_login === 1 ? 'Yes' : 'No' }}</p>
+                        <p>{{ selectedEmployee()?.firstLogin === true || selectedEmployee()?.firstLogin === 1 ? 'Yes' : 'No' }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -132,11 +135,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="field-group">
                         <label class="font-semibold">Created At</label>
-                        <p>{{ formatDateTime(selectedEmployee()?.created_at) }}</p>
+                        <p>{{ formatDateTime(selectedEmployee()?.createdAt) }}</p>
                     </div>
                     <div class="field-group">
                         <label class="font-semibold">Updated At</label>
-                        <p>{{ formatDateTime(selectedEmployee()?.updated_at) }}</p>
+                        <p>{{ formatDateTime(selectedEmployee()?.updatedAt) }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -180,13 +183,13 @@
                         <p-menu #actionMenu [model]="getActionMenuItems(employee)" [popup]="true" [appendTo]="'body'">
                         </p-menu>
                     </td>
-                    <td>{{ employee.employee_code }}</td>
-                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td>{{ employee.employeeCode }}</td>
+                    <td>{{ employee.firstName }} {{ employee.lastName }}</td>
                     <td>{{ employee.email }}</td>
-                    <td>{{ employee.mobile_number }}</td>
+                    <td>{{ employee.mobileNumber }}</td>
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.designation }}</td>
-                    <td>{{ employee.employment_type }}</td>
+                    <td>{{ employee.employmentType }}</td>
                     <td>{{ employee.role }}</td>
                     <td>
                         <span [ngClass]="{
@@ -197,7 +200,7 @@
                             {{ employee.status }}
                         </span>
                     </td>
-                    <td>{{ formatDate(employee.joining_date) }}</td>
+                    <td>{{ formatDate(employee.joiningDate) }}</td>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
@@ -361,13 +364,13 @@
         <!-- DRAWER FOOTER -->
         <ng-template pTemplate="footer">
             <div class="drawer-footer">
-                <p-button label="Cancel" severity="secondary" (click)="closeDrawer()" styleClass="footer-btn-secondary">
+                <p-button label="Cancel" icon="pi pi-times" (click)="closeDrawer()" styleClass="footer-btn-cancel">
                 </p-button>
-                <p-button label="Reset" severity="secondary" (click)="resetAllForms()"
-                    styleClass="footer-btn-secondary">
+                <p-button label="Reset" icon="pi pi-refresh" (click)="resetAllForms()" styleClass="footer-btn-reset">
                 </p-button>
                 <p-button [label]="drawerMode() === 'add' ? 'Add Employee' : 'Update Employee'"
-                    (click)="OnSubmitModal()" [loading]="isSubmitting()" styleClass="footer-btn-primary">
+                    [icon]="drawerMode() === 'add' ? 'pi pi-plus' : 'pi pi-check'" (click)="OnSubmitModal()"
+                    [loading]="isSubmitting()" styleClass="footer-btn-submit">
                 </p-button>
             </div>
         </ng-template>

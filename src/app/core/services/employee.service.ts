@@ -38,7 +38,7 @@ export interface EmployeeQueryParams {
 export class EmployeeService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = 'http://localhost:3000/api';
-  private readonly apiUrl = `${this.baseUrl}/employees`;
+  private readonly apiUrl = `${this.baseUrl}/employees-onboarding`;
 
   getAll(params?: EmployeeQueryParams): Observable<{ employees: any[]; total?: number; page?: number; limit?: number }> {
     let httpParams = new HttpParams();

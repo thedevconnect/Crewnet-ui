@@ -165,7 +165,7 @@ export class HrEmployees implements OnInit {
 
       firstName: ['', [Validators.required, Validators.maxLength(100)]],
       lastName: ['', [Validators.required, Validators.maxLength(100)]],
-      gender: [null, Validators.required],
+      gender: ['Male', Validators.required],
       dateOfBirth: [null, Validators.required],
 
       email: ['', [Validators.required, Validators.email]],
@@ -176,10 +176,10 @@ export class HrEmployees implements OnInit {
 
       department: [null, Validators.required],
       designation: [null, Validators.required],
-      employmentType: [null, Validators.required],
+      employmentType: ['Full Time', Validators.required],
       joiningDate: [new Date(), Validators.required],
 
-      role: [null, Validators.required],
+      role: ['ESS', Validators.required],
       username: [{ value: '', disabled: true }],
       firstLogin: [true]
     });
@@ -250,7 +250,7 @@ export class HrEmployees implements OnInit {
 
   deleteEmployee(employee: any): void {
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete ${employee.first_name} ${employee.last_name}?`,
+      message: `Are you sure you want to delete ${employee.firstName || employee.first_name} ${employee.lastName || employee.last_name}?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
@@ -278,25 +278,26 @@ export class HrEmployees implements OnInit {
   }
 
   private populateForm(employee: any): void {
-    const dateOfBirth = employee.date_of_birth ? new Date(employee.date_of_birth) : null;
-    const joiningDate = employee.joining_date ? new Date(employee.joining_date) : new Date();
+    // Support both camelCase (from API) and snake_case (legacy)
+    const dateOfBirth = employee.dateOfBirth || employee.date_of_birth ? new Date(employee.dateOfBirth || employee.date_of_birth) : null;
+    const joiningDate = employee.joiningDate || employee.joining_date ? new Date(employee.joiningDate || employee.joining_date) : new Date();
 
     this.employeeForm.patchValue({
-      employeeCode: employee.employee_code || '',
-      status: employee.status === 'ACTIVE' ? 'Active' : 'Inactive',
-      firstName: employee.first_name || '',
-      lastName: employee.last_name || '',
+      employeeCode: employee.employeeCode || employee.employee_code || '',
+      status: (employee.status === 'ACTIVE' || employee.status === 'Active') ? 'Active' : 'Inactive',
+      firstName: employee.firstName || employee.first_name || '',
+      lastName: employee.lastName || employee.last_name || '',
       gender: employee.gender || null,
       dateOfBirth: dateOfBirth,
       email: employee.email || '',
-      mobileNumber: employee.mobile_number || '',
+      mobileNumber: employee.mobileNumber || employee.mobile_number || '',
       department: employee.department || null,
       designation: employee.designation || null,
-      employmentType: employee.employment_type || null,
+      employmentType: employee.employmentType || employee.employment_type || null,
       joiningDate: joiningDate,
       role: employee.role || null,
       username: employee.username || '',
-      firstLogin: employee.first_login === 1 || employee.first_login === true
+      firstLogin: employee.firstLogin === true || employee.firstLogin === 1 || employee.first_login === 1 || employee.first_login === true
     });
   }
 
@@ -341,6 +342,9 @@ export class HrEmployees implements OnInit {
   resetAllForms(): void {
     this.employeeForm.reset({
       status: 'Active',
+      gender: 'Male',
+      role: 'ESS',
+      employmentType: 'Full Time',
       joiningDate: new Date(),
       firstLogin: true
     });
@@ -361,8 +365,49 @@ export class HrEmployees implements OnInit {
       return;
     }
 
-    this.isSubmitting.set(true);
     const formValue = this.employeeForm.getRawValue();
+    const isAddMode = this.drawerMode() === 'add';
+    const selectedEmp = this.selectedEmployee();
+    const employeeName = isAddMode 
+      ? `${formValue.firstName} ${formValue.lastName}` 
+      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${selectedEmp?.lastName || selectedEmp?.last_name}`;
+
+    // Show confirmation dialog
+    this.confirmationService.confirm({
+      message: isAddMode
+        ? `Are you sure you want to add employee "${employeeName}"?`
+        : `Are you sure you want to update employee "${employeeName}"?`,
+      header: isAddMode ? 'Confirm Add Employee' : 'Confirm Update Employee',
+      icon: isAddMode ? 'pi pi-user-plus' : 'pi pi-pencil',
+      acceptButtonStyleClass: 'p-button-primary',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      accept: () => {
+        this.submitEmployee(formValue);
+      },
+      reject: () => {
+        // User cancelled - show info toast
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelled',
+          detail: isAddMode ? 'Employee addition cancelled.' : 'Employee update cancelled.'
+        });
+      }
+    });
+  }
+
+  private submitEmployee(formValue: any): void {
+    this.isSubmitting.set(true);
+
+    // Helper function to format date to YYYY-MM-DD
+    const formatDateOnly = (date: any): string | null => {
+      if (!date) return null;
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
 
     // Transform form data to API format
     const payload = {
@@ -371,13 +416,13 @@ export class HrEmployees implements OnInit {
       first_name: formValue.firstName,
       last_name: formValue.lastName,
       gender: formValue.gender,
-      date_of_birth: formValue.dateOfBirth ? new Date(formValue.dateOfBirth).toISOString() : null,
+      date_of_birth: formatDateOnly(formValue.dateOfBirth),
       email: formValue.email,
       mobile_number: formValue.mobileNumber,
       department: formValue.department,
       designation: formValue.designation,
       employment_type: formValue.employmentType,
-      joining_date: formValue.joiningDate ? new Date(formValue.joiningDate).toISOString() : null,
+      joining_date: formatDateOnly(formValue.joiningDate),
       role: formValue.role,
       username: formValue.username,
       first_login: formValue.firstLogin ? 1 : 0
@@ -392,7 +437,8 @@ export class HrEmployees implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Employee added successfully!'
+            detail: `Employee "${formValue.firstName} ${formValue.lastName}" added successfully!`,
+            life: 3000
           });
           this.resetAllForms();
           this.loadEmployees();
@@ -403,7 +449,8 @@ export class HrEmployees implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: error.error?.message || 'Failed to add employee'
+            detail: error.error?.message || 'Failed to add employee',
+            life: 5000
           });
         }
       });
@@ -418,7 +465,8 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
-              detail: 'Employee updated successfully!'
+              detail: `Employee "${formValue.firstName} ${formValue.lastName}" updated successfully!`,
+              life: 3000
             });
             this.resetAllForms();
             this.loadEmployees();
@@ -429,7 +477,8 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: error.error?.message || 'Failed to update employee'
+              detail: error.error?.message || 'Failed to update employee',
+              life: 5000
             });
           }
         });
