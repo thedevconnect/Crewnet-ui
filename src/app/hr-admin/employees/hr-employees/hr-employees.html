@@ -35,11 +35,11 @@
             <!-- EMPLOYEE IDENTITY -->
             <p-panel header="Employee Identity" [toggleable]="true" [collapsed]="false">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Employee Code</label>
                         <p>{{ selectedEmployee()?.employeeCode }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Status</label>
                         <p>
                             <span [ngClass]="{
@@ -57,19 +57,19 @@
             <!-- PERSONAL DETAILS -->
             <p-panel header="Personal Details" [toggleable]="true" [collapsed]="false">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">First Name</label>
                         <p>{{ selectedEmployee()?.firstName }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Last Name</label>
                         <p>{{ selectedEmployee()?.lastName }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Gender</label>
                         <p>{{ selectedEmployee()?.gender }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Date of Birth</label>
                         <p>{{ formatDate(selectedEmployee()?.dateOfBirth) }}</p>
                     </div>
@@ -79,11 +79,11 @@
             <!-- CONTACT DETAILS -->
             <p-panel header="Contact Details" [toggleable]="true" [collapsed]="false">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Email</label>
                         <p>{{ selectedEmployee()?.email }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Mobile Number</label>
                         <p>{{ selectedEmployee()?.mobileNumber }}</p>
                     </div>
@@ -93,19 +93,19 @@
             <!-- JOB DETAILS -->
             <p-panel header="Job Details" [toggleable]="true" [collapsed]="false">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Department</label>
                         <p>{{ selectedEmployee()?.department }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Designation</label>
                         <p>{{ selectedEmployee()?.designation }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Employment Type</label>
                         <p>{{ selectedEmployee()?.employmentType }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Joining Date</label>
                         <p>{{ formatDate(selectedEmployee()?.joiningDate) }}</p>
                     </div>
@@ -115,17 +115,18 @@
             <!-- SYSTEM ACCESS -->
             <p-panel header="System Access" [toggleable]="true" [collapsed]="false">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Role</label>
                         <p>{{ selectedEmployee()?.role }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Username</label>
                         <p>{{ selectedEmployee()?.username }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">First Login</label>
-                        <p>{{ selectedEmployee()?.firstLogin === true || selectedEmployee()?.firstLogin === 1 ? 'Yes' : 'No' }}</p>
+                        <p>{{ selectedEmployee()?.firstLogin === true || selectedEmployee()?.firstLogin === 1 ? 'Yes' :
+                            'No' }}</p>
                     </div>
                 </div>
             </p-panel>
@@ -133,11 +134,11 @@
             <!-- TIMESTAMPS -->
             <p-panel header="System Information" [toggleable]="true" [collapsed]="true">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Created At</label>
                         <p>{{ formatDateTime(selectedEmployee()?.createdAt) }}</p>
                     </div>
-                    <div class="field-group">
+                    <div>
                         <label class="font-semibold">Updated At</label>
                         <p>{{ formatDateTime(selectedEmployee()?.updatedAt) }}</p>
                     </div>
@@ -235,14 +236,14 @@
 
             <!-- EMPLOYEE IDENTITY -->
             <p-panel header="Employee Identity" [toggleable]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Employee Code *</label>
                         <input pInputText formControlName="employeeCode" readonly />
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Status *</label>
                         <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
                             optionValue="value" placeholder="Select Status" styleClass="w-full">
@@ -254,29 +255,29 @@
 
             <!-- PERSONAL DETAILS -->
             <p-panel header="Personal Details" [toggleable]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>First Name *</label>
                         <input pInputText formControlName="firstName" />
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Last Name *</label>
                         <input pInputText formControlName="lastName" />
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Gender *</label>
                         <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
                             optionValue="value" placeholder="Select Gender" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Date of Birth *</label>
                         <p-datepicker formControlName="dateOfBirth" dateFormat="yy-mm-dd" [showIcon]="true"
-                            styleClass="w-full">
+                            styleClass="w-full" appendTo="body" placeholder="Select date">
                         </p-datepicker>
                     </div>
 
@@ -285,14 +286,14 @@
 
             <!-- CONTACT DETAILS -->
             <p-panel header="Contact Details" [toggleable]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Email *</label>
                         <input pInputText formControlName="email" />
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Mobile Number *</label>
                         <input pInputText formControlName="mobileNumber" />
                     </div>
@@ -302,33 +303,33 @@
 
             <!-- JOB DETAILS -->
             <p-panel header="Job Details" [toggleable]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Department *</label>
                         <p-select formControlName="department" [options]="departmentOptions" optionLabel="label"
                             optionValue="value" [filter]="true" placeholder="Select Department" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Designation *</label>
                         <p-select formControlName="designation" [options]="designationOptions" optionLabel="label"
                             optionValue="value" [filter]="true" placeholder="Select Designation" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Employment Type *</label>
                         <p-select formControlName="employmentType" [options]="employmentTypeOptions" optionLabel="label"
                             optionValue="value" placeholder="Select Type" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Joining Date *</label>
                         <p-datepicker formControlName="joiningDate" dateFormat="yy-mm-dd" [showIcon]="true"
-                            styleClass="w-full">
+                            styleClass="w-full" appendTo="body" placeholder="Select date">
                         </p-datepicker>
                     </div>
 
@@ -337,21 +338,22 @@
 
             <!-- SYSTEM ACCESS -->
             <p-panel header="System Access" [toggleable]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div style="display: flex; flex-direction: column; gap: 0.25rem;"
+                    style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Role *</label>
                         <p-select formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value"
                             placeholder="Select Role" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div class="field-group">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <label>Username</label>
                         <input pInputText formControlName="username" readonly />
                     </div>
 
-                    <div class="flex items-center gap-2 md:col-span-2">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
                         <label for="firstLogin">Force password change on first login</label>
                     </div>
@@ -363,7 +365,7 @@
 
         <!-- DRAWER FOOTER -->
         <ng-template pTemplate="footer">
-            <div class="drawer-footer">
+            <div style=" text-align: end; display: flex; flex-direction: row; gap: 0.25rem;" class="drawer-footer">
                 <p-button label="Cancel" icon="pi pi-times" (click)="closeDrawer()" styleClass="footer-btn-cancel">
                 </p-button>
                 <p-button label="Reset" icon="pi pi-refresh" (click)="resetAllForms()" styleClass="footer-btn-reset">

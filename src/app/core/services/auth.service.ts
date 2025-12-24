@@ -143,7 +143,7 @@ export class AuthService {
         if (params?.page) url += `page=${params.page}&`;
         if (params?.limit) url += `limit=${params.limit}&`;
         if (params?.search) url += `search=${params.search}&`;
-        
+
         return this.http.get<ApiResponse<{ users: User[]; total: number; page: number; limit: number }>>(url).pipe(
             catchError((error) => {
                 console.error('Get users error:', error);

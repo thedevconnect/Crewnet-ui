@@ -24,7 +24,7 @@ interface RecentActivity {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HrDashboard {
-  protected readonly stats = signal<StatCard[]>([
+  stats = signal<StatCard[]>([
     {
       title: 'Total Employees',
       value: 247,
@@ -62,7 +62,7 @@ export class HrDashboard {
     },
   ]);
 
-  protected readonly recentActivities = signal<RecentActivity[]>([
+  recentActivities = signal<RecentActivity[]>([
     {
       id: '1',
       employee: 'Rahul Sharma',
@@ -100,7 +100,7 @@ export class HrDashboard {
     },
   ]);
 
-  protected readonly upcomingBirthdays = signal([
+  upcomingBirthdays = signal([
     {
       name: 'Sanjay Gupta',
       date: 'Dec 2',
@@ -118,11 +118,13 @@ export class HrDashboard {
     },
   ]);
 
-  protected readonly departmentStats = signal([
+  departmentStats = signal([
     { name: 'Engineering', present: 45, total: 50, percentage: 90 },
     { name: 'Sales', present: 28, total: 30, percentage: 93 },
     { name: 'Marketing', present: 18, total: 20, percentage: 90 },
     { name: 'HR', present: 8, total: 10, percentage: 80 },
     { name: 'Finance', present: 12, total: 15, percentage: 80 },
   ]);
+
 }
+

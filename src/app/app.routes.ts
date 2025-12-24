@@ -15,23 +15,11 @@ import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
 
 export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full', },
+  { path: 'login', component: Login, },
+  { path: 'register', component: Register, },
   {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full',
-  },
-  {
-    path: 'login',
-    component: Login,
-  },
-  {
-    path: 'register',
-    component: Register,
-  },
-  {
-    path: '',
-    component: Layout,
-    canActivate: [authGuard],
+    path: '', component: Layout, canActivate: [authGuard],
     children: [
       // HR Admin Routes
       {
@@ -57,8 +45,5 @@ export const routes: Routes = [
       { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full', },
     ],
   },
-  {
-    path: '**',
-    redirectTo: '/hr-admin/dashboard',
-  },
+  { path: '**', redirectTo: '/hr-admin/dashboard', },
 ];
