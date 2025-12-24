@@ -1,23 +1,31 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
+import { Observable, catchError, throwError, map, of } from 'rxjs';
 
 export interface TodayStatusResponse {
-  canSwipeIn: boolean;
-  canSwipeOut: boolean;
-  attendance?: {
-    id: number;
-    swipeIn?: string;
-    swipeOut?: string;
-    date: string;
-    status?: string;
-  };
+  success: boolean;
+  status: 'NOT_SWIPED' | 'IN' | 'OUT';
+  swipe_in_time?: string;
+  swipe_out_time?: string | null;
+  attendance_date?: string;
+  employee_id?: number;
+  id?: number;
+  message?: string;
 }
 
 export interface AttendanceResponse {
   success: boolean;
   message: string;
-  data?: any;
+  data?: {
+    id: number;
+    employee_id: number;
+    attendance_date: string;
+    swipe_in_time: string;
+    swipe_out_time: string | null;
+    status: 'IN' | 'OUT';
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 @Injectable({
@@ -26,11 +34,10 @@ export interface AttendanceResponse {
 export class AttendanceService {
 
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3000/api';
-  private readonly apiUrl = `${this.baseUrl}/attendance`;
+  private readonly baseUrl = 'http://localhost:3000';
 
-  swipeIn(): Observable<AttendanceResponse> {
-    return this.http.post<AttendanceResponse>(`${this.apiUrl}/swipe-in`, {}).pipe(
+  swipeIn(employeeId: number): Observable<AttendanceResponse> {
+    return this.http.post<AttendanceResponse>(`${this.baseUrl}/attendance/swipe-in`, { employeeId }).pipe(
       catchError(error => {
         console.error('Swipe In error:', error);
         return throwError(() => ({
@@ -41,8 +48,8 @@ export class AttendanceService {
     );
   }
 
-  swipeOut(): Observable<AttendanceResponse> {
-    return this.http.post<AttendanceResponse>(`${this.apiUrl}/swipe-out`, {}).pipe(
+  swipeOut(employeeId: number): Observable<AttendanceResponse> {
+    return this.http.post<AttendanceResponse>(`${this.baseUrl}/attendance/swipe-out`, { employeeId }).pipe(
       catchError(error => {
         console.error('Swipe Out error:', error);
         return throwError(() => ({
@@ -53,36 +60,28 @@ export class AttendanceService {
     );
   }
 
-  getTodayStatus(): Observable<TodayStatusResponse> {
-    return this.http.get<{ success: boolean; data: TodayStatusResponse }>(`${this.apiUrl}/today-status`).pipe(
-      map(response => {
-        // Handle both response formats: {success, data} or direct data
-        if (response && 'data' in response) {
-          return response.data || response as any;
-        }
-        return response as any;
-      }),
+  getTodayStatus(employeeId: number): Observable<TodayStatusResponse> {
+    return this.http.get<TodayStatusResponse>(`${this.baseUrl}/attendance/today/${employeeId}`).pipe(
       catchError(error => {
         console.error('Get Today Status error:', error);
         
-        // Handle 404 - endpoint not found
+        // Handle 404 - no attendance record for today (treat as NOT_SWIPED)
         if (error.status === 404) {
-          console.warn('Attendance endpoint not found. Backend may not have this route implemented yet.');
-          // Return default response that allows actions
-          return throwError(() => ({
-            canSwipeIn: true,
-            canSwipeOut: false,
-            message: 'Attendance endpoint not available. Please check backend configuration.'
-          }));
+          // Return NOT_SWIPED status instead of throwing error
+          return of({
+            success: true,
+            status: 'NOT_SWIPED' as const,
+            message: 'No attendance record found for today'
+          });
         }
         
-        return throwError(() => ({
-          canSwipeIn: false,
-          canSwipeOut: false,
+        // Handle other errors - return NOT_SWIPED status
+        return of({
+          success: false,
+          status: 'NOT_SWIPED' as const,
           message: error.error?.message || error.message || 'Failed to fetch attendance status.'
-        }));
+        });
       })
     );
   }
 }
-

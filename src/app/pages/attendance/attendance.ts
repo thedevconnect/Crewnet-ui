@@ -1,7 +1,8 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { AttendanceService, TodayStatusResponse } from '../../core/services/attendance.service';
-import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
+import { AuthService } from '../../core/services/auth.service';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
@@ -9,7 +10,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-attendance-page',
   standalone: true,
-  imports: [CommonModule, Button, Card, ToastModule, DatePipe],
+  imports: [CommonModule, ButtonModule, CardModule, ToastModule, DatePipe],
   templateUrl: './attendance.html',
   styleUrl: './attendance.css',
   providers: [MessageService]
@@ -17,6 +18,7 @@ import { MessageService } from 'primeng/api';
 export class Attendance implements OnInit, OnDestroy {
 
   attendanceService = inject(AttendanceService);
+  authService = inject(AuthService);
   messageService = inject(MessageService);
 
   loadingSwipeIn = signal(false);
@@ -24,38 +26,30 @@ export class Attendance implements OnInit, OnDestroy {
   loadingStatus = signal(false);
 
   todayStatus = signal<TodayStatusResponse | null>(null);
-  
+
   // Timer functionality
   elapsedTime = signal<string>('00:00:00');
   private timerInterval: any = null;
   private swipeInTime: Date | null = null;
-  
-  // Current date and time
-  currentDate = signal<Date>(new Date());
+
+  // Current time and date
   currentTime = signal<string>('00:00:00');
+  currentDate = signal<Date>(new Date());
   private timeInterval: any = null;
-  
-  // Geolocation
-  geolocationBlocked = signal<boolean>(false);
-  
-  // Recent swipes
-  recentSwipes = signal<any[] | null>(null);
 
   ngOnInit(): void {
     this.loadTodayStatus();
     this.startTimeUpdate();
-    this.checkGeolocation();
-    this.loadRecentSwipes();
   }
-  
-  startTimeUpdate() {
+
+  startTimeUpdate(): void {
     this.updateTime();
     this.timeInterval = setInterval(() => {
       this.updateTime();
     }, 1000);
   }
-  
-  updateTime() {
+
+  updateTime(): void {
     const now = new Date();
     this.currentDate.set(now);
     const hours = String(now.getHours()).padStart(2, '0');
@@ -63,105 +57,51 @@ export class Attendance implements OnInit, OnDestroy {
     const seconds = String(now.getSeconds()).padStart(2, '0');
     this.currentTime.set(`${hours}:${minutes}:${seconds}`);
   }
-  
-  checkGeolocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          this.geolocationBlocked.set(false);
-        },
-        (error) => {
-          if (error.code === error.PERMISSION_DENIED) {
-            this.geolocationBlocked.set(true);
-          }
-        }
-      );
+
+  getEmployeeId(): number {
+    const user = this.authService.getCurrentUser()();
+    if (user && user.id) {
+      return parseInt(user.id, 10);
     }
-  }
-  
-  requestGeolocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          this.geolocationBlocked.set(false);
-          window.location.reload();
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Permission Denied',
-            detail: 'Please allow geolocation access in your browser settings.'
-          });
-        }
-      );
-    }
-  }
-  
-  loadRecentSwipes() {
-    // Mock data - replace with actual API call
-    this.recentSwipes.set([]);
+    // Default fallback - should be handled properly in production
+    return 123;
   }
 
-  loadTodayStatus() {
+  loadTodayStatus(): void {
     this.loadingStatus.set(true);
-    this.attendanceService.getTodayStatus().subscribe({
+    const employeeId = this.getEmployeeId();
+
+    this.attendanceService.getTodayStatus(employeeId).subscribe({
       next: (res: TodayStatusResponse) => {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
-        
+
         // Start timer if swipe in is done but swipe out is not
-        if (res.attendance?.swipeIn && !res.attendance?.swipeOut) {
-          this.startTimer(new Date(res.attendance.swipeIn));
+        if (res.swipe_in_time && !res.swipe_out_time) {
+          this.startTimer(new Date(res.swipe_in_time));
         } else {
           this.stopTimer();
         }
       },
       error: (error: any) => {
         console.error('Error loading attendance status:', error);
-        
-        // Set status from error response if available (for 404 with default response)
-        if (error.canSwipeIn !== undefined) {
-          this.todayStatus.set({
-            canSwipeIn: error.canSwipeIn,
-            canSwipeOut: error.canSwipeOut || false
-          });
-          
-          // Show warning instead of error for 404
-          if (error.message && error.message.includes('not available')) {
-            this.messageService.add({
-              severity: 'warn',
-              summary: 'Warning',
-              detail: error.message,
-              life: 5000
-            });
-          }
-        } else {
-          // Set default status for other errors
-          this.todayStatus.set({
-            canSwipeIn: false,
-            canSwipeOut: false
-          });
-          
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: error.message || 'Failed to load attendance status. Please try again.'
-          });
-        }
-        
+        // This should not happen now as 404 is handled in service
+        // But keep as fallback
+        this.todayStatus.set({
+          success: true,
+          status: 'NOT_SWIPED' as const,
+          message: 'No attendance record found for today'
+        });
         this.loadingStatus.set(false);
       }
     });
   }
 
-  doSwipeIn() {
-    if (!this.todayStatus()?.canSwipeIn) {
-      return;
-    }
-
+  doSwipeIn(): void {
     this.loadingSwipeIn.set(true);
+    const employeeId = this.getEmployeeId();
 
-    this.attendanceService.swipeIn().subscribe({
+    this.attendanceService.swipeIn(employeeId).subscribe({
       next: (res: any) => {
         this.messageService.add({
           severity: 'success',
@@ -184,14 +124,11 @@ export class Attendance implements OnInit, OnDestroy {
     });
   }
 
-  doSwipeOut() {
-    if (!this.todayStatus()?.canSwipeOut) {
-      return;
-    }
-
+  doSwipeOut(): void {
     this.loadingSwipeOut.set(true);
+    const employeeId = this.getEmployeeId();
 
-    this.attendanceService.swipeOut().subscribe({
+    this.attendanceService.swipeOut(employeeId).subscribe({
       next: (res: any) => {
         this.messageService.add({
           severity: 'success',
@@ -213,56 +150,11 @@ export class Attendance implements OnInit, OnDestroy {
       complete: () => this.loadingSwipeOut.set(false)
     });
   }
-  // Swipe related variables
-  startX = 0;
-  currentX = 0;
-  dragging = false;
-  activeType: 'IN' | 'OUT' | null = null;
 
-  // Start swipe
-  startDrag(event: any, type: 'IN' | 'OUT') {
-    this.dragging = true;
-    this.startX = event.clientX;
-    this.activeType = type;
-  }
-
-  // During swipe
-  onDrag(event: any) {
-    if (!this.dragging) return;
-    this.currentX = event.clientX - this.startX;
-  }
-
-  // End swipe
-  endDrag() {
-    if (!this.dragging) return;
-
-    // 👉 Swipe IN (Right swipe)
-    if (this.currentX > 120 && this.activeType === 'IN') {
-      if (this.todayStatus()?.canSwipeIn) {
-        this.doSwipeIn();
-      }
-    }
-
-    // 👉 Swipe OUT (Left swipe)
-    if (this.currentX < -120 && this.activeType === 'OUT') {
-      if (this.todayStatus()?.canSwipeOut) {
-        this.doSwipeOut();
-      }
-    }
-
-    this.resetSwipe();
-  }
-
-  resetSwipe() {
-    this.dragging = false;
-    this.currentX = 0;
-    this.activeType = null;
-  }
-
-  startTimer(swipeInTime: Date) {
+  startTimer(swipeInTime: Date): void {
     this.swipeInTime = swipeInTime;
     this.stopTimer(); // Clear any existing timer
-    
+
     this.timerInterval = setInterval(() => {
       if (this.swipeInTime) {
         const now = new Date();
@@ -270,7 +162,7 @@ export class Attendance implements OnInit, OnDestroy {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        
+
         this.elapsedTime.set(
           `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
         );
@@ -278,7 +170,7 @@ export class Attendance implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  stopTimer() {
+  stopTimer(): void {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
@@ -288,9 +180,9 @@ export class Attendance implements OnInit, OnDestroy {
 
   getTotalDuration(): string {
     const status = this.todayStatus();
-    if (status?.attendance?.swipeIn && status?.attendance?.swipeOut) {
-      const swipeIn = new Date(status.attendance.swipeIn);
-      const swipeOut = new Date(status.attendance.swipeOut);
+    if (status?.swipe_in_time && status?.swipe_out_time) {
+      const swipeIn = new Date(status.swipe_in_time);
+      const swipeOut = new Date(status.swipe_out_time);
       const diff = swipeOut.getTime() - swipeIn.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -299,11 +191,11 @@ export class Attendance implements OnInit, OnDestroy {
     return '-';
   }
 
-  ngOnDestroy() {
+
+  ngOnDestroy(): void {
     this.stopTimer();
     if (this.timeInterval) {
       clearInterval(this.timeInterval);
     }
   }
 }
-
