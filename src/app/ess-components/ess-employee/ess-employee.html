@@ -1,4 +1,4 @@
-<div class="space-y-4">
+<div class="employee-page-container">
   <div class="employee-list-container">
     <div class="employee-card">
       <!-- Header Section -->
@@ -28,7 +28,7 @@
               <th>Department</th>
               <th>Status</th>
               <th pSortableColumn="joiningDate">Joining Date <p-sortIcon field="joiningDate"></p-sortIcon></th>
-              <th class="text-center">Actions</th>
+              <th class="table-action-header">Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-e>
@@ -43,24 +43,21 @@
                 </span>
               </td>
               <td>{{ e.joiningDate }}</td>
-              <td class="text-center">
+              <td class="table-action-cell">
                 <button type="button" #actionButton class="action-button"
                   (click)="actionPanel.toggle($event, actionButton)">
-                  <i class="pi pi-ellipsis-v text-xl"></i>
+                  <i class="pi pi-ellipsis-v action-icon"></i>
                 </button>
                 <p-popover #actionPanel>
-                  <div class="flex flex-col">
-                    <button (click)="onView(e); actionPanel.hide()" title="View"
-                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
-                      <i class="pi pi-eye mr-2"></i> View
+                  <div class="action-menu">
+                    <button (click)="onView(e); actionPanel.hide()" title="View" class="action-menu-item">
+                      <i class="pi pi-eye action-menu-icon"></i> View
                     </button>
-                    <button (click)="onEdit(e); actionPanel.hide()" title="Edit"
-                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left">
-                      <i class="pi pi-pencil mr-2"></i> Edit
+                    <button (click)="onEdit(e); actionPanel.hide()" title="Edit" class="action-menu-item">
+                      <i class="pi pi-pencil action-menu-icon"></i> Edit
                     </button>
-                    <button (click)="onDelete(e); actionPanel.hide()" title="Delete"
-                      class="px-4 py-2 hover:bg-gray-100 text-left w-full text-left text-red-600">
-                      <i class="pi pi-trash mr-2"></i> Delete
+                    <button (click)="onDelete(e); actionPanel.hide()" title="Delete" class="action-menu-item action-menu-item-delete">
+                      <i class="pi pi-trash action-menu-icon"></i> Delete
                     </button>
                   </div>
                 </p-popover>
@@ -75,77 +72,77 @@
   <p-drawer [visible]="drawerVisible()" [position]="'right'" [modal]="true"
     [style]="{ width: '60%', 'max-width': '100%', 'overflow-y': 'auto' }" (onHide)="onDrawerClose()">
     <ng-template pTemplate="header">
-      <div class="flex items-center gap-2">
-        <span class="font-semibold text-2xl">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ?
+      <div class="drawer-header">
+        <span class="drawer-title">{{ drawerMode() === 'add' ? 'Add Employee' : drawerMode() === 'edit' ?
           'Edit Employee' : 'View Employee' }}</span>
-        <i class="pi pi-user text-blue-500 text-xl"></i>
+        <i class="pi pi-user drawer-icon"></i>
       </div>
     </ng-template>
     <ng-template pTemplate="content">
-      <form [formGroup]="employeeForm" (ngSubmit)="onFormSubmit()" class="flex flex-col gap-6 p-4">
-        <div class="bg-white rounded-lg border border-gray-200">
-          <div class="bg-gradient-to-r from-indigo-50 to-blue-50 px-5 py-3 border-b border-gray-200">
-            <h4 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-              <i class="pi pi-info-circle text-indigo-600"></i> Employee Details
+      <form [formGroup]="employeeForm" (ngSubmit)="onFormSubmit()" class="employee-form">
+        <div class="form-section">
+          <div class="form-section-header">
+            <h4 class="form-section-title">
+              <i class="pi pi-info-circle form-section-icon"></i> Employee Details
             </h4>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
-            <div>
-              <label class="font-medium text-sm">Name<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="name" class="w-full"
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Name<span class="required-asterisk">*</span></label>
+              <input pInputText formControlName="name" class="form-input"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched"
                 placeholder="Enter Employee Name" />
               @if (drawerMode() !== 'view' && employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Name is required.</small>
+              <small class="form-error">Name is required.</small>
               }
             </div>
 
-            <div>
-              <label class="font-medium text-sm">Email<span class="text-red-500">*</span></label>
-              <input pInputText formControlName="email" class="w-full"
+            <div class="form-field">
+              <label class="form-label">Email<span class="required-asterisk">*</span></label>
+              <input pInputText formControlName="email" class="form-input"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched"
                 placeholder="Enter Email" />
               @if (drawerMode() !== 'view' && employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched)
               {
-              <small class="text-red-500 text-xs mt-1 block">Email is required or invalid format.</small>
+              <small class="form-error">Email is required or invalid format.</small>
               }
             </div>
 
-            <div>
-              <label class="font-medium text-sm">Phone</label>
-              <input pInputText formControlName="phone" class="w-full" placeholder="Enter Phone Number" />
+            <div class="form-field">
+              <label class="form-label">Phone</label>
+              <input pInputText formControlName="phone" class="form-input" placeholder="Enter Phone Number" />
             </div>
 
-            <div>
-              <label class="font-medium text-sm">Department<span class="text-red-500">*</span></label>
+            <div class="form-field">
+              <label class="form-label">Department<span class="required-asterisk">*</span></label>
               <p-select [options]="departments" optionLabel="label" optionValue="value" formControlName="department"
-                placeholder="Select Department" [filter]="true" [showClear]="true" class="w-full"
+                placeholder="Select Department" [filter]="true" [showClear]="true" class="form-select"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched"></p-select>
               @if (drawerMode() !== 'view' && employeeForm.get('department')?.invalid &&
               employeeForm.get('department')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Department is required.</small>
+              <small class="form-error">Department is required.</small>
               }
             </div>
 
-            <div>
-              <label class="font-medium text-sm">Status<span class="text-red-500">*</span></label>
+            <div class="form-field">
+              <label class="form-label">Status<span class="required-asterisk">*</span></label>
               <p-select [options]="statuses" optionLabel="label" optionValue="value" formControlName="status"
-                placeholder="Select Status" [filter]="true" class="w-full"></p-select>
+                placeholder="Select Status" [filter]="true" class="form-select"></p-select>
             </div>
 
-            <div>
-              <label class="font-medium text-sm">Joining Date<span class="text-red-500">*</span></label>
-              <input pInputText type="date" formControlName="joiningDate" class="w-full"
+            <div class="form-field">
+              <label class="form-label">Joining Date<span class="required-asterisk">*</span></label>
+              <input pInputText type="date" formControlName="joiningDate" class="form-input"
                 [class.p-invalid]="drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched" />
               @if (drawerMode() !== 'view' && employeeForm.get('joiningDate')?.invalid &&
               employeeForm.get('joiningDate')?.touched) {
-              <small class="text-red-500 text-xs mt-1 block">Joining Date is required.</small>
+              <small class="form-error">Joining Date is required.</small>
               }
             </div>
           </div>
         </div>
 
-        <div class="flex justify-end gap-3 mt-4">
+        <div class="form-actions">
           @if (drawerMode() === 'add') {
           <p-button label="Reset" severity="secondary" icon="pi pi-refresh" type="button"
             (click)="employeeForm.reset()"></p-button>
