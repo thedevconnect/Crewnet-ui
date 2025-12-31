@@ -10,25 +10,32 @@ import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-leaves',
-  imports: [SelectModule, ButtonModule, DrawerModule, DatePickerModule, DatePickerModule, InputTextModule, FormsModule, ReactiveFormsModule, ToastModule, MessageService],
+  imports: [
+    SelectModule,
+    ButtonModule,
+    DrawerModule,
+    DatePickerModule,
+    DatePickerModule,
+    InputTextModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ToastModule,
+    MessageService,
+  ],
   templateUrl: './leaves.html',
   //styleUrls: ['./leaves.css'],
   standalone: true,
 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class Leaves {
-
-
   leaveDrawerVisible = false;
   leaveTypes = [
     { label: 'Casual Leave', value: 'CL' },
     { label: 'Sick Leave', value: 'SL' },
-    { label: 'Paid Leave', value: 'PL' }
+    { label: 'Paid Leave', value: 'PL' },
   ];
   openLeaveDrawer() {
     this.leaveDrawerVisible = true;
   }
-
 }
