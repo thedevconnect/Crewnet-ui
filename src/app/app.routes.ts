@@ -35,6 +35,7 @@ export const routes: Routes = [
         path: 'ess',
         children: [
           { path: 'dashboard', component: EssDashboard },
+          { path: 'HrEmployees', component: HrEmployees },
           { path: 'attendance', component: Attendance },
           { path: 'leaves', component: Leaves },
         ],

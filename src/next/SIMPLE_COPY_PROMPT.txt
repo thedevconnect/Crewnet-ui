@@ -1,0 +1,82 @@
+Mujhe OBLO project ka complete design system implement karna hai mere naye Angular project mein.
+
+**Requirements:**
+
+1. **Dependencies Install:**
+   - PrimeNG 20.3.0, PrimeFlex 4.0.0, PrimeIcons
+   - Tailwind CSS 4.1.17
+   - @primeng/themes, @primeuix/themes
+   - ngx-toastr, sweetalert2
+   - ExcelJS, jsPDF, file-saver
+   - Chart.js, ng2-charts
+
+2. **Global Styles (styles.scss):**
+   - Tailwind CSS import
+   - Custom styles: button-styling (#1976D2), orange-button, custom-skeleton
+   - Roboto font family
+
+3. **App Config (app.config.ts):**
+   - PrimeNG Aura theme
+   - Toastr, Animations, HttpClient providers
+   - ConfigService APP_INITIALIZER
+
+4. **Shared Services Create:**
+   - UserService: sidebarState signal, user management
+   - ConfigService: loadConfig, apiUrl getter
+   - AuthService: isLoggedIn method
+   - AuthGuard: canActivate route guard
+   - FileUploadService: file handling utilities
+   - LoadingService: loading state management
+   - ExcelService: excel export/import
+
+5. **Directives Create:**
+   - OnlyNumberDirective, OnlyStringDirective, NumberDecimalDirective
+   - SortableDirective, OpenDatePickerDirective
+
+6. **Core Components:**
+   - **Applayout**: Main container with sidebar toggle, router-outlet, footer
+     * Sidebar component (left, collapsible)
+     * Header component (sticky top)
+     * Main content area (bg: #F1F5F9)
+     * Footer (bottom)
+     * Global Toast, ConfirmDialog
+   
+   - **Sidebar**: Collapsible navigation
+     * w-64 when open, w-16 when closed
+     * Blue color (#1976D2)
+     * Logo (full/icon based on state)
+     * Multi-level menu
+     * Hover menu popup when collapsed
+     * Menu from UserService/API
+   
+   - **Header**: Sticky top bar
+     * Sidebar toggle button
+     * District dropdown
+     * Role dropdown  
+     * User avatar + menu
+     * Responsive design
+
+7. **Table Template Component:**
+   - Pagination
+   - Column sorting
+   - Global search
+   - Custom templates
+   - Skeleton loading
+   - Responsive design
+
+8. **Routes Setup:**
+   - app.routes.ts with Applayout wrapper
+   - AuthGuard on protected routes
+   - Login route (unprotected)
+
+9. **Config File:**
+   - assets/config.json with apiUrl, baseUrl, elockerUrl, appTitle
+
+**Design Specs:**
+- Primary Color: #1976D2
+- Sidebar: #1976D2 (open: 256px, closed: 64px)
+- Background: #F1F5F9
+- Header: White, sticky, 64px height
+
+Pehle current project structure check karo, phir step-by-step sab implement karo. Har step complete hone ke baad verify karo.
+

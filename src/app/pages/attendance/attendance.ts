@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/api';
   standalone: true,
   imports: [CommonModule, ButtonModule, CardModule, ToastModule, DatePipe],
   templateUrl: './attendance.html',
-  styleUrl: './attendance.css',
+  styleUrl: './attendance.scss',
   providers: [MessageService]
 })
 export class Attendance implements OnInit, OnDestroy {

@@ -36,7 +36,7 @@ interface RoleOption {
     Header
   ],
   templateUrl: './layout.html',
-  styleUrl: './layout.css',
+  styleUrl: './layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [MessageService, ConfirmationService]
 })

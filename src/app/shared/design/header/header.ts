@@ -41,7 +41,7 @@ interface RoleOption {
   imports: [CommonModule, FormsModule, AvatarModule, TooltipModule, MenuModule, SelectModule],
   standalone: true,
   templateUrl: './header.html',
-  styleUrl: './header.css',
+  styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Header implements OnInit {

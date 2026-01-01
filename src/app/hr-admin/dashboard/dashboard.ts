@@ -20,7 +20,7 @@ interface RecentActivity {
   selector: 'app-hr-dashboard',
   imports: [],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HrDashboard {

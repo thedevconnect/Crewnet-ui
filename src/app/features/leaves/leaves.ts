@@ -7,10 +7,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { DatePickerModule } from 'primeng/datepicker';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-leaves',
-  imports: [SelectModule, ButtonModule, DrawerModule, DatePickerModule, DatePickerModule, InputTextModule, FormsModule, ReactiveFormsModule, ToastModule, MessageService],
+  imports: [SelectModule, ButtonModule, DrawerModule, DatePickerModule, DatePickerModule, InputTextModule, FormsModule, ReactiveFormsModule, ToastModule, CommonModule],
+  providers: [MessageService],
   templateUrl: './leaves.html',
   //styleUrls: ['./leaves.css'],
   standalone: true,
