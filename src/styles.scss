@@ -1,0 +1,85 @@
+<<<<<<< HEAD:src/styles.css
+/* Global styles - Tailwind CSS is imported via src/tailwind.css */
+=======
+@import "tailwindcss";
+
+.arial {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.custom-skeleton {
+  background-color: #e2e8f0 !important;
+}
+
+.button-styling {
+  background-color: #1976D2;
+  cursor: pointer;
+}
+
+.orange-button {
+  background-color: #1976D2 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  .pi {
+    font-size: 11px !important;
+  }
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+}
+
+/* PrimeNG Component Protection */
+[class*="p-"] {
+  box-sizing: border-box;
+}
+
+/* Specific protection for PrimeNG form components */
+.p-inputtext,
+.p-select,
+.p-select-trigger,
+.p-select-label,
+.p-datepicker,
+.p-datepicker-trigger,
+.p-button,
+.p-button-label,
+.p-checkbox,
+.p-checkbox-box,
+.p-card,
+.p-card-header,
+.p-card-body,
+.p-card-footer,
+.p-drawer,
+.p-panel,
+.p-panel-header,
+.p-panel-content,
+.p-table,
+.p-toast {
+  /* Prevent Tailwind from resetting these */
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+/* Ensure PrimeNG buttons maintain their styling */
+.p-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure PrimeNG cards maintain their structure */
+.p-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-card-body {
+  flex: 1 1 auto;
+}
+
+>>>>>>> 33e1cc0456e09d8fdcbc6a080f547631646dcb95:src/styles.scss

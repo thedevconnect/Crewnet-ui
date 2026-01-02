@@ -43,7 +43,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     SelectModule,
   ],
   templateUrl: './ess-employee.html',
-  styleUrl: './ess-employee.css',
+  styleUrl: './ess-employee.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ConfirmationService, MessageService],
 })

@@ -9,7 +9,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   selector: 'app-root',
   imports: [RouterOutlet, ToastModule, ConfirmDialogModule],
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  styleUrl: './app.scss',
   providers: [MessageService, ConfirmationService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

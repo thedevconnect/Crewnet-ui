@@ -1,0 +1,132 @@
+// Register Styles - Using Tailwind utilities where possible
+.register-container {
+  @apply min-h-screen flex items-center justify-center p-4;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.register-card {
+  @apply bg-white rounded-2xl shadow-xl w-full max-w-[480px] p-10;
+}
+
+.register-header {
+  @apply text-center mb-8;
+}
+
+.logo {
+  @apply flex justify-center mb-4;
+}
+
+.register-header h1 {
+  @apply text-3xl font-bold text-gray-800 mb-2 m-0;
+}
+
+.register-header p {
+  @apply text-gray-500 text-sm m-0;
+}
+
+.register-form {
+  @apply flex flex-col gap-5;
+}
+
+.error-message {
+  @apply flex items-center gap-2 p-3 rounded-lg text-sm;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.form-group {
+  @apply flex flex-col gap-2;
+}
+
+.form-group label {
+  @apply text-sm font-medium text-gray-700;
+}
+
+.form-group input {
+  @apply px-4 py-3 border border-gray-300 rounded-lg text-sm transition-all w-full;
+  
+  &:focus {
+    @apply outline-none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &.error {
+    @apply border-red-600;
+    
+    &:focus {
+      @apply border-red-600;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+  }
+}
+
+.field-error {
+  @apply text-xs text-red-600 mt-1 block;
+}
+
+.password-input-wrapper {
+  @apply relative flex items-center;
+}
+
+.password-input-wrapper input {
+  @apply pr-11;
+}
+
+.password-toggle {
+  @apply absolute right-3 flex items-center justify-center p-1 bg-transparent border-none text-gray-500 cursor-pointer rounded transition-all;
+  
+  &:hover {
+    @apply text-blue-600 bg-gray-100;
+  }
+  
+  &:focus {
+    @apply outline-none text-blue-600;
+  }
+}
+
+.register-button {
+  @apply flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-colors mt-2;
+  
+  &:hover:not(:disabled) {
+    @apply bg-blue-700;
+  }
+  
+  &:disabled {
+    @apply bg-blue-300 cursor-not-allowed;
+  }
+}
+
+.spinner {
+  @apply w-4 h-4 border-2 border-white/30 border-t-white rounded-full;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.register-footer {
+  @apply mt-6 text-center text-sm text-gray-500;
+  
+  a {
+    @apply text-blue-600 no-underline font-medium;
+    
+    &:hover {
+      @apply text-blue-700;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    @apply p-6;
+  }
+
+  .register-header h1 {
+    @apply text-2xl;
+  }
+}

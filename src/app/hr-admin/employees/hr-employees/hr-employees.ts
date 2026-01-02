@@ -53,7 +53,7 @@ import { EmployeeService } from '../../../core/services/employee.service';
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-employees.html',
-  styleUrls: ['./hr-employees.css']
+  styleUrls: ['./hr-employees.scss']
 })
 export class HrEmployees implements OnInit {
   protected readonly breadcrumbItems = computed<MenuItem[]>(() => [
