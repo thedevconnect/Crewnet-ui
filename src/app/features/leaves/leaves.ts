@@ -2,10 +2,10 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
-import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
+import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
@@ -14,13 +14,12 @@ import { DatePickerModule } from 'primeng/datepicker';
     SelectModule,
     ButtonModule,
     DrawerModule,
-    DatePickerModule,
-    DatePickerModule,
     InputTextModule,
     FormsModule,
     ReactiveFormsModule,
     ToastModule,
-    MessageService,
+    CommonModule,
+    DatePickerModule,
   ],
   templateUrl: './leaves.html',
   //styleUrls: ['./leaves.css'],
