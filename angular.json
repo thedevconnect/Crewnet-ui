@@ -30,12 +30,8 @@
             ],
             "styles": [
               "node_modules/primeicons/primeicons.css",
-<<<<<<< HEAD
               "src/tailwind.css",
               "src/styles.css"
-=======
-              "src/styles.scss"
->>>>>>> 33e1cc0456e09d8fdcbc6a080f547631646dcb95
             ]
           },
           "configurations": {
@@ -95,12 +91,8 @@
             ],
             "styles": [
               "node_modules/primeicons/primeicons.css",
-<<<<<<< HEAD
               "src/tailwind.css",
               "src/styles.css"
-=======
-              "src/styles.scss"
->>>>>>> 33e1cc0456e09d8fdcbc6a080f547631646dcb95
             ]
           }
         }
