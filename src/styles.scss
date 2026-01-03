@@ -1,7 +1,6 @@
-<<<<<<< HEAD:src/styles.css
-/* Global styles - Tailwind CSS is imported via src/tailwind.css */
-=======
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .arial {
   font-family: Arial, Helvetica, sans-serif;
@@ -24,6 +23,7 @@ body {
   background-color: #1976D2 !important;
   color: #ffffff !important;
   font-size: 11px !important;
+
   .pi {
     font-size: 11px !important;
   }
@@ -81,5 +81,3 @@ body {
 .p-card-body {
   flex: 1 1 auto;
 }
-
->>>>>>> 33e1cc0456e09d8fdcbc6a080f547631646dcb95:src/styles.scss

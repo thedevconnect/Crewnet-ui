@@ -1,90 +1,129 @@
-<<<<<<< HEAD
-<p>leaves</p>
-<button pButton label="Add Leave" icon="pi pi-plus" class="p-button-success" (click)="openLeaveDrawer()">
-</button>
-
-
-<!-- Sidebar Drawer for Adding Leave -->
-<div
-  class="fixed inset-0 z-50 flex justify-end"
-  *ngIf="leaveDrawerVisible"
->
-  <div
-    class="fixed inset-0 bg-black opacity-40"
-    (click)="leaveDrawerVisible = false"
-    tabindex="-1"
-    aria-hidden="true"
-  ></div>
-  <aside
-    class="relative bg-white w-full md:w-[480px] h-full shadow-xl flex flex-col"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Add Leave"
-  >
-    <div class="py-4 px-6 border-b flex justify-between items-center">
-      <span class="text-lg font-semibold">Add Leave</span>
-      <button
-        class="p-1 rounded-full hover:bg-gray-100 transition"
-        (click)="leaveDrawerVisible = false"
-        type="button"
-        aria-label="Close"
-      >
-        <i class="pi pi-times text-xl"></i>
-      </button>
+<div class="leaves-management-container">
+  <!-- PAGE HEADER -->
+  <div class="page-header-section mb-4">
+    <div class="flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-gray-800">Leaves</h2>
+      <p-button label="Add Leave" icon="pi pi-plus" (click)="openLeaveDrawer()" [raised]="true">
+      </p-button>
     </div>
+  </div>
 
-    <!-- FORM -->
-    <form class="mt-4 px-6 flex-1 overflow-y-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- TOAST -->
+  <p-toast></p-toast>
 
-            <!-- Leave Type -->
-            <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">
-                    Leave Type *
-                </label>
-                <p-select [options]="leaveTypes" placeholder="Select Leave Type" class="w-full">
-                </p-select>
-            </div>
+  <!-- LEAVE DRAWER -->
+  <p-drawer [(visible)]="leaveDrawerVisible" position="right" [modal]="true" [dismissible]="false"
+    [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="leave-drawer">
 
-            <!-- Leave Reason -->
-            <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">
-                    Reason *
-                </label>
-                <input pInputText placeholder="Enter reason" class="w-full" />
-            </div>
+    <!-- DRAWER HEADER -->
+    <ng-template pTemplate="header">
+      <div class="flex items-center justify-between px-4 py-3 border-b">
+        <div class="flex items-center gap-2">
+          <i [class]="headerIcon() + ' text-primary'"></i>
+          <span class="text-lg font-semibold">{{ header() }}</span>
+        </div>
+      </div>
+    </ng-template>
 
-            <!-- From Date -->
-            <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">
-                    From Date *
-                </label>
-                <p-datepicker dateFormat="dd/mm/yy" class="w-full">
-                </p-datepicker>
-            </div>
+    <!-- DRAWER BODY -->
+    <form [formGroup]="leaveForm" class="flex flex-col gap-6 p-4">
 
-            <!-- To Date -->
-            <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">
-                    To Date *
-                </label>
-                <p-datepicker dateFormat="dd/mm/yy" class="w-full">
-                </p-datepicker>
-            </div>
+      <!-- LEAVE INFORMATION -->
+      <p-panel header="Leave Information" [toggleable]="true">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Leave Type *</label>
+            <p-select formControlName="leaveType" [options]="leaveTypes" optionLabel="label" optionValue="value"
+              placeholder="Select Leave Type" styleClass="w-full">
+            </p-select>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Status *</label>
+            <p-select formControlName="status" [options]="statuses" optionLabel="label" optionValue="value"
+              placeholder="Select Status" styleClass="w-full">
+            </p-select>
+          </div>
 
         </div>
+      </p-panel>
 
-        <!-- Footer Buttons -->
-        <div class="flex justify-end gap-3 mt-6">
-            <button pButton label="Cancel" class="p-button-text" (click)="leaveDrawerVisible=false" type="button">
-            </button>
+      <!-- DATE INFORMATION -->
+      <p-panel header="Date Information" [toggleable]="true">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <button pButton label="Save Leave" class="p-button-success" type="submit">
-            </button>
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">From Date *</label>
+            <p-datepicker formControlName="fromDate" dateFormat="yy-mm-dd" [showIcon]="true" styleClass="w-full"
+              appendTo="body" placeholder="Select From Date">
+            </p-datepicker>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">To Date *</label>
+            <p-datepicker formControlName="toDate" dateFormat="yy-mm-dd" [showIcon]="true" styleClass="w-full"
+              appendTo="body" placeholder="Select To Date">
+            </p-datepicker>
+          </div>
+
         </div>
+      </p-panel>
+
+      <!-- ADDITIONAL DETAILS -->
+      <p-panel header="Additional Details" [toggleable]="true">
+        <div class="grid grid-cols-1 gap-4">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Reason *</label>
+            <textarea pInputTextarea formControlName="reason" rows="4" class="w-full"
+              placeholder="Enter reason for leave"></textarea>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-medium text-gray-700">Attachment</label>
+            <p-fileUpload 
+              mode="basic" 
+              name="attachment" 
+              [auto]="false"
+              [multiple]="false"
+              accept="image/*,.pdf,.doc,.docx"
+              [maxFileSize]="5000000"
+              (onSelect)="onFileSelect($event)"
+              (onRemove)="onFileRemove()"
+              chooseLabel="Choose File"
+              [showUploadButton]="false"
+              [showCancelButton]="false"
+              styleClass="w-full">
+            </p-fileUpload>
+            @if (selectedFile()) {
+            <div class="mt-2 flex items-center gap-2 text-sm text-gray-600">
+              <i class="pi pi-file text-primary"></i>
+              <span>{{ selectedFile()?.name }}</span>
+              <button type="button" (click)="onFileRemove()" class="text-red-600 hover:text-red-700">
+                <i class="pi pi-times"></i>
+              </button>
+            </div>
+            }
+          </div>
+
+        </div>
+      </p-panel>
+
     </form>
-  </aside>
+
+    <!-- DRAWER FOOTER -->
+    <ng-template pTemplate="footer">
+      <div class="text-end flex flex-row gap-2 p-4 border-t drawer-footer">
+        <p-button label="Cancel" icon="pi pi-times" (click)="closeLeaveDrawer()" styleClass="footer-btn-cancel">
+        </p-button>
+        <p-button label="Reset" icon="pi pi-refresh" (click)="resetLeaveForm()" styleClass="footer-btn-reset">
+        </p-button>
+        <p-button label="Add Leave" icon="pi pi-plus" (click)="onSubmitLeaveForm()" [loading]="isSubmitting()"
+          styleClass="footer-btn-submit">
+        </p-button>
+      </div>
+    </ng-template>
+
+  </p-drawer>
 </div>
-=======
-<p>casual leave</p>
->>>>>>> 33e1cc0456e09d8fdcbc6a080f547631646dcb95

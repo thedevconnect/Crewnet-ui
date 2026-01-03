@@ -225,57 +225,37 @@
                     <i [class]="headerIcon() + ' text-primary'"></i>
                     <span class="text-lg font-semibold">{{ header() }}</span>
                 </div>
-                <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="closeDrawer()"
+                <!-- <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="closeDrawer()"
                     severity="secondary">
-                </p-button>
+                </p-button> -->
             </div>
         </ng-template>
 
         <!-- DRAWER BODY -->
         <form [formGroup]="employeeForm" class="flex flex-col gap-6 p-4">
-
-            <!-- EMPLOYEE IDENTITY -->
-            <p-panel header="Employee Identity" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Employee Code *</label>
-                        <input pInputText formControlName="employeeCode" readonly />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Status *</label>
-                        <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
-                            optionValue="value" placeholder="Select Status" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                </div>
-            </p-panel>
-
             <!-- PERSONAL DETAILS -->
             <p-panel header="Personal Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>First Name *</label>
-                        <input pInputText formControlName="firstName" />
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">First Name *</label>
+                        <input pInputText formControlName="firstName" class="w-full" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Last Name *</label>
-                        <input pInputText formControlName="lastName" />
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Last Name *</label>
+                        <input pInputText formControlName="lastName" class="w-full" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Gender *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Gender *</label>
                         <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
                             optionValue="value" placeholder="Select Gender" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Date of Birth *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Date of Birth *</label>
                         <p-datepicker formControlName="dateOfBirth" dateFormat="yy-mm-dd" [showIcon]="true"
                             styleClass="w-full" appendTo="body" placeholder="Select date">
                         </p-datepicker>
@@ -284,18 +264,39 @@
                 </div>
             </p-panel>
 
-            <!-- CONTACT DETAILS -->
-            <p-panel header="Contact Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Email *</label>
-                        <input pInputText formControlName="email" />
+            <!-- EMPLOYEE IDENTITY -->
+            <p-panel header="Employee Identity" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Employee Code *</label>
+                        <input pInputText formControlName="employeeCode" readonly class="w-full" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Mobile Number *</label>
-                        <input pInputText formControlName="mobileNumber" />
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Status *</label>
+                        <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
+                            optionValue="value" placeholder="Select Status" styleClass="w-full">
+                        </p-select>
+                    </div>
+
+                </div>
+            </p-panel>
+
+
+            <!-- CONTACT DETAILS -->
+            <p-panel header="Contact Details" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Email *</label>
+                        <input pInputText formControlName="email" class="w-full" />
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Mobile Number *</label>
+                        <input pInputText formControlName="mobileNumber" [maxlength]="11" [minlength]="10" class="w-full" />
                     </div>
 
                 </div>
@@ -303,31 +304,31 @@
 
             <!-- JOB DETAILS -->
             <p-panel header="Job Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Department *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Department *</label>
                         <p-select formControlName="department" [options]="departmentOptions" optionLabel="label"
                             optionValue="value" [filter]="true" placeholder="Select Department" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Designation *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Designation *</label>
                         <p-select formControlName="designation" [options]="designationOptions" optionLabel="label"
                             optionValue="value" [filter]="true" placeholder="Select Designation" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Employment Type *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Employment Type *</label>
                         <p-select formControlName="employmentType" [options]="employmentTypeOptions" optionLabel="label"
                             optionValue="value" placeholder="Select Type" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Joining Date *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Joining Date *</label>
                         <p-datepicker formControlName="joiningDate" dateFormat="yy-mm-dd" [showIcon]="true"
                             styleClass="w-full" appendTo="body" placeholder="Select date">
                         </p-datepicker>
@@ -338,24 +339,26 @@
 
             <!-- SYSTEM ACCESS -->
             <p-panel header="System Access" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;"
-                    style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Role *</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Role *</label>
                         <p-select formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value"
                             placeholder="Select Role" styleClass="w-full">
                         </p-select>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Username</label>
-                        <input pInputText formControlName="username" readonly />
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-gray-700">Username</label>
+                        <input pInputText formControlName="username" readonly class="w-full" />
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
-                        <label for="firstLogin">Force password change on first login</label>
+                    <div class="flex flex-col gap-1 md:col-span-2">
+                        <div class="flex items-center gap-2">
+                            <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
+                            <label for="firstLogin" class="text-sm font-medium text-gray-700 cursor-pointer">Force
+                                password change on first login</label>
+                        </div>
                     </div>
 
                 </div>

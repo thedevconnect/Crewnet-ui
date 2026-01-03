@@ -72,7 +72,7 @@ export class HrEmployees implements OnInit {
   selectedEmployee = signal<any>(null);
   drawerMode = signal<'add' | 'edit'>('add');
 
-  header = signal(' Add New Employee');
+  header = signal(' Add New Employee11');
   headerIcon = signal('pi pi-user-plus');
 
 
@@ -169,9 +169,7 @@ export class HrEmployees implements OnInit {
       dateOfBirth: [null, Validators.required],
 
       email: ['', [Validators.required, Validators.email]],
-      mobileNumber: [
-        '',
-        [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]
+      mobileNumber: ['', [Validators.pattern(/^[0-9]{10,11}$/)]
       ],
 
       department: [null, Validators.required],
@@ -368,8 +366,8 @@ export class HrEmployees implements OnInit {
     const formValue = this.employeeForm.getRawValue();
     const isAddMode = this.drawerMode() === 'add';
     const selectedEmp = this.selectedEmployee();
-    const employeeName = isAddMode 
-      ? `${formValue.firstName} ${formValue.lastName}` 
+    const employeeName = isAddMode
+      ? `${formValue.firstName} ${formValue.lastName}`
       : `${selectedEmp?.firstName || selectedEmp?.first_name} ${selectedEmp?.lastName || selectedEmp?.last_name}`;
 
     // Show confirmation dialog
