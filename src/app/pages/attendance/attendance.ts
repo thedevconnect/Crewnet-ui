@@ -37,6 +37,16 @@ export class Attendance implements OnInit, OnDestroy {
   currentDate = signal<Date>(new Date());
   private timeInterval: any = null;
 
+  // Attendance entries tracking
+  attendanceEntries = signal<Array<{
+    id: number;
+    type: 'IN' | 'OUT';
+    time: string;
+    count: number;
+    duration?: string;
+  }>>([]);
+  private entryCounter = 0;
+
   ngOnInit(): void {
     this.loadTodayStatus();
     this.startTimeUpdate();
@@ -76,6 +86,9 @@ export class Attendance implements OnInit, OnDestroy {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
 
+        // Initialize entries from status
+        this.initializeEntries(res);
+
         // Start timer if swipe in is done but swipe out is not
         if (res.swipe_in_time && !res.swipe_out_time) {
           this.startTimer(new Date(res.swipe_in_time));
@@ -93,13 +106,50 @@ export class Attendance implements OnInit, OnDestroy {
           message: 'No attendance record found for today'
         });
         this.loadingStatus.set(false);
+        this.attendanceEntries.set([]);
       }
     });
+  }
+
+  initializeEntries(status: TodayStatusResponse): void {
+    const entries: Array<{ id: number; type: 'IN' | 'OUT'; time: string; count: number; duration?: string }> = [];
+
+    if (status.swipe_in_time) {
+      this.entryCounter++;
+      entries.push({
+        id: this.entryCounter,
+        type: 'IN',
+        time: status.swipe_in_time,
+        count: 1
+      });
+    }
+
+    if (status.swipe_out_time && status.swipe_in_time) {
+      this.entryCounter++;
+      const inTime = new Date(status.swipe_in_time);
+      const outTime = new Date(status.swipe_out_time);
+      const diff = outTime.getTime() - inTime.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const duration = `${hours}h ${minutes}m ${seconds}s`;
+
+      entries.unshift({
+        id: this.entryCounter,
+        type: 'OUT',
+        time: status.swipe_out_time,
+        count: 1,
+        duration
+      });
+    }
+
+    this.attendanceEntries.set(entries);
   }
 
   doSwipeIn(): void {
     this.loadingSwipeIn.set(true);
     const employeeId = this.getEmployeeId();
+    const swipeInTime = new Date();
 
     this.attendanceService.swipeIn(employeeId).subscribe({
       next: (res: any) => {
@@ -108,8 +158,11 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe In Successful!'
         });
+        // Add entry
+        this.entryCounter++;
+        this.addAttendanceEntry('IN', swipeInTime.toISOString());
         // Start timer immediately
-        this.startTimer(new Date());
+        this.startTimer(swipeInTime);
         this.loadTodayStatus();
       },
       error: (error: any) => {
@@ -125,8 +178,18 @@ export class Attendance implements OnInit, OnDestroy {
   }
 
   doSwipeOut(): void {
+    if (this.todayStatus()?.status !== 'IN') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please swipe in first!'
+      });
+      return;
+    }
+
     this.loadingSwipeOut.set(true);
     const employeeId = this.getEmployeeId();
+    const swipeOutTime = new Date();
 
     this.attendanceService.swipeOut(employeeId).subscribe({
       next: (res: any) => {
@@ -135,20 +198,52 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe Out Successful!'
         });
+        // Calculate duration from last swipe in
+        const lastSwipeIn = this.attendanceEntries().filter(e => e.type === 'IN').pop();
+        let duration = '';
+        if (lastSwipeIn) {
+          const inTime = new Date(lastSwipeIn.time);
+          const diff = swipeOutTime.getTime() - inTime.getTime();
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          duration = `${hours}h ${minutes}m ${seconds}s`;
+        }
+        // Add entry
+        this.entryCounter++;
+        this.addAttendanceEntry('OUT', swipeOutTime.toISOString(), duration);
         // Stop timer
         this.stopTimer();
+        // Reload status to update UI
         this.loadTodayStatus();
       },
       error: (error: any) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.message || 'Swipe Out Failed! Please try again.'
+          detail: error.error || error.message || 'Swipe Out Failed! Please try again.'
         });
         this.loadingSwipeOut.set(false);
       },
-      complete: () => this.loadingSwipeOut.set(false)
+      complete: () => {
+        this.loadingSwipeOut.set(false);
+      }
     });
+  }
+
+  addAttendanceEntry(type: 'IN' | 'OUT', time: string, duration?: string): void {
+    const entries = this.attendanceEntries();
+    const existingCount = entries.filter(e => e.type === type).length;
+    this.attendanceEntries.set([
+      {
+        id: this.entryCounter,
+        type,
+        time,
+        count: existingCount + 1,
+        duration
+      },
+      ...entries
+    ]);
   }
 
   startTimer(swipeInTime: Date): void {
@@ -178,6 +273,32 @@ export class Attendance implements OnInit, OnDestroy {
     this.swipeInTime = null;
   }
 
+  getElapsedHours(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[0] || '00';
+  }
+
+  getElapsedMinutes(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[1] || '00';
+  }
+
+  getElapsedSeconds(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[2] || '00';
+  }
+
+  formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
+
   getTotalDuration(): string {
     const status = this.todayStatus();
     if (status?.swipe_in_time && status?.swipe_out_time) {
@@ -186,7 +307,8 @@ export class Attendance implements OnInit, OnDestroy {
       const diff = swipeOut.getTime() - swipeIn.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      return `${hours}h ${minutes}m`;
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      return `${hours}h ${minutes}m ${seconds}s`;
     }
     return '-';
   }
