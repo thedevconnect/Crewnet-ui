@@ -158,18 +158,26 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe In Successful!'
         });
+        // Update status immediately to change button
+        this.todayStatus.set({
+          success: true,
+          status: 'IN',
+          swipe_in_time: swipeInTime.toISOString(),
+          swipe_out_time: null
+        });
         // Add entry
         this.entryCounter++;
         this.addAttendanceEntry('IN', swipeInTime.toISOString());
         // Start timer immediately
         this.startTimer(swipeInTime);
+        // Reload status to get full data
         this.loadTodayStatus();
       },
       error: (error: any) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.message || 'Swipe In Failed! Please try again.'
+          detail: error.error || error.message || 'Swipe In Failed! Please try again.'
         });
         this.loadingSwipeIn.set(false);
       },
@@ -250,6 +258,17 @@ export class Attendance implements OnInit, OnDestroy {
     this.swipeInTime = swipeInTime;
     this.stopTimer(); // Clear any existing timer
 
+    // Update immediately
+    const now = new Date();
+    const diff = now.getTime() - swipeInTime.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    this.elapsedTime.set(
+      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    );
+
+    // Then update every second
     this.timerInterval = setInterval(() => {
       if (this.swipeInTime) {
         const now = new Date();
@@ -271,6 +290,7 @@ export class Attendance implements OnInit, OnDestroy {
       this.timerInterval = null;
     }
     this.swipeInTime = null;
+    this.elapsedTime.set('00:00:00');
   }
 
   getElapsedHours(): string {

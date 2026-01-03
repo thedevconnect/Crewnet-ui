@@ -13,7 +13,13 @@
         <div class="p-8">
           <div class="flex flex-col items-center gap-6">
             <!-- Large Time Display -->
-            <div class="text-6xl font-bold text-gray-800">{{ elapsedTime() || currentTime() }}</div>
+            <div class="text-6xl font-bold text-gray-800">
+              @if (todayStatus()?.status === 'IN' && elapsedTime() !== '00:00:00') {
+                {{ elapsedTime() }}
+              } @else {
+                {{ currentTime() }}
+              }
+            </div>
 
             <!-- Swipe Button (Only One at a Time) -->
             <div class="w-full flex justify-center">
