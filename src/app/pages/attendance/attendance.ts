@@ -5,12 +5,13 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';  
 
 @Component({
   selector: 'app-attendance-page',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, ToastModule, DatePipe],
+  imports: [CommonModule, ButtonModule, CardModule, ToastModule, TooltipModule, DatePipe],
   templateUrl: './attendance.html',
   styleUrl: './attendance.scss',
   providers: [MessageService]
@@ -37,19 +38,26 @@ export class Attendance implements OnInit, OnDestroy {
   currentDate = signal<Date>(new Date());
   private timeInterval: any = null;
 
-  // Attendance entries tracking
-  attendanceEntries = signal<Array<{
+  // Attendance records from API
+  attendanceRecords = signal<Array<{
     id: number;
-    type: 'IN' | 'OUT';
-    time: string;
-    count: number;
+    employee_id: number;
+    swipe_in_time: string;
+    swipe_out_time?: string | null;
     duration?: string;
+    status: 'IN' | 'OUT';
   }>>([]);
-  private entryCounter = 0;
+  totalTime = signal<string>('0h 0m');
 
   ngOnInit(): void {
-    this.loadTodayStatus();
+    // Initialize with default NOT_SWIPED status
+    this.todayStatus.set({
+      success: true,
+      status: 'NOT_SWIPED' as const,
+      message: 'Ready to swipe in'
+    });
     this.startTimeUpdate();
+    // Don't call API on page load - only on Swipe In button click
   }
 
   startTimeUpdate(): void {
@@ -71,10 +79,26 @@ export class Attendance implements OnInit, OnDestroy {
   getEmployeeId(): number {
     const user = this.authService.getCurrentUser()();
     if (user && user.id) {
-      return parseInt(user.id, 10);
+      const employeeId = parseInt(user.id, 10);
+      if (isNaN(employeeId)) {
+        console.error('Invalid employee ID from user:', user.id);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Invalid employee ID. Please contact administrator.'
+        });
+        return 0; // Return 0 to trigger error
+      }
+      return employeeId;
     }
-    // Default fallback - should be handled properly in production
-    return 123;
+    // If no user, show error
+    console.error('No user found in auth service');
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'User not authenticated. Please login again.'
+    });
+    return 0; // Return 0 to trigger error
   }
 
   loadTodayStatus(): void {
@@ -86,69 +110,63 @@ export class Attendance implements OnInit, OnDestroy {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
 
-        // Initialize entries from status
-        this.initializeEntries(res);
+        // Update records from API response
+        if (res.records && res.records.length > 0) {
+          this.attendanceRecords.set(res.records);
+        } else {
+          this.attendanceRecords.set([]);
+        }
+
+        // Update total time
+        if (res.total_time?.formatted) {
+          this.totalTime.set(res.total_time.formatted);
+        } else {
+          this.totalTime.set('0h 0m');
+        }
 
         // Start timer if swipe in is done but swipe out is not
-        if (res.swipe_in_time && !res.swipe_out_time) {
+        if (res.status === 'IN' && res.swipe_in_time) {
           this.startTimer(new Date(res.swipe_in_time));
         } else {
           this.stopTimer();
+          this.elapsedTime.set('00:00:00');
         }
       },
       error: (error: any) => {
         console.error('Error loading attendance status:', error);
-        // This should not happen now as 404 is handled in service
-        // But keep as fallback
         this.todayStatus.set({
           success: true,
           status: 'NOT_SWIPED' as const,
           message: 'No attendance record found for today'
         });
         this.loadingStatus.set(false);
-        this.attendanceEntries.set([]);
+        this.attendanceRecords.set([]);
+        this.totalTime.set('0h 0m');
+        this.stopTimer();
+        this.elapsedTime.set('00:00:00');
       }
     });
   }
 
-  initializeEntries(status: TodayStatusResponse): void {
-    const entries: Array<{ id: number; type: 'IN' | 'OUT'; time: string; count: number; duration?: string }> = [];
-
-    if (status.swipe_in_time) {
-      this.entryCounter++;
-      entries.push({
-        id: this.entryCounter,
-        type: 'IN',
-        time: status.swipe_in_time,
-        count: 1
-      });
-    }
-
-    if (status.swipe_out_time && status.swipe_in_time) {
-      this.entryCounter++;
-      const inTime = new Date(status.swipe_in_time);
-      const outTime = new Date(status.swipe_out_time);
-      const diff = outTime.getTime() - inTime.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      const duration = `${hours}h ${minutes}m ${seconds}s`;
-
-      entries.unshift({
-        id: this.entryCounter,
-        type: 'OUT',
-        time: status.swipe_out_time,
-        count: 1,
-        duration
-      });
-    }
-
-    this.attendanceEntries.set(entries);
+  refreshAttendance(): void {
+    this.loadTodayStatus();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Refreshed',
+      detail: 'Attendance data refreshed'
+    });
   }
+
 
   doSwipeIn(): void {
     this.loadingSwipeIn.set(true);
     const employeeId = this.getEmployeeId();
+    
+    if (!employeeId || employeeId === 0) {
+      this.loadingSwipeIn.set(false);
+      return;
+    }
+    
     const swipeInTime = new Date();
 
     this.attendanceService.swipeIn(employeeId).subscribe({
@@ -158,6 +176,8 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe In Successful!'
         });
+        // Reset timer first
+        this.stopTimer();
         // Update status immediately to change button
         this.todayStatus.set({
           success: true,
@@ -165,19 +185,32 @@ export class Attendance implements OnInit, OnDestroy {
           swipe_in_time: swipeInTime.toISOString(),
           swipe_out_time: null
         });
-        // Add entry
-        this.entryCounter++;
-        this.addAttendanceEntry('IN', swipeInTime.toISOString());
-        // Start timer immediately
+        // Start timer immediately with fresh start
         this.startTimer(swipeInTime);
         // Reload status to get full data
         this.loadTodayStatus();
       },
       error: (error: any) => {
+        let errorMessage = 'Swipe In Failed! Please try again.';
+        
+        if (error.status === 404) {
+          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+          // Special handling for "Employee not found"
+          if (error.error.error === 'Employee not found') {
+            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
+          }
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error || error.message || 'Swipe In Failed! Please try again.'
+          detail: errorMessage
         });
         this.loadingSwipeIn.set(false);
       },
@@ -197,7 +230,11 @@ export class Attendance implements OnInit, OnDestroy {
 
     this.loadingSwipeOut.set(true);
     const employeeId = this.getEmployeeId();
-    const swipeOutTime = new Date();
+    
+    if (!employeeId || employeeId === 0) {
+      this.loadingSwipeOut.set(false);
+      return;
+    }
 
     this.attendanceService.swipeOut(employeeId).subscribe({
       next: (res: any) => {
@@ -206,30 +243,33 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe Out Successful!'
         });
-        // Calculate duration from last swipe in
-        const lastSwipeIn = this.attendanceEntries().filter(e => e.type === 'IN').pop();
-        let duration = '';
-        if (lastSwipeIn) {
-          const inTime = new Date(lastSwipeIn.time);
-          const diff = swipeOutTime.getTime() - inTime.getTime();
-          const hours = Math.floor(diff / (1000 * 60 * 60));
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-          duration = `${hours}h ${minutes}m ${seconds}s`;
-        }
-        // Add entry
-        this.entryCounter++;
-        this.addAttendanceEntry('OUT', swipeOutTime.toISOString(), duration);
-        // Stop timer
+        // Stop timer and reset to 00:00:00
         this.stopTimer();
+        this.elapsedTime.set('00:00:00');
         // Reload status to update UI
         this.loadTodayStatus();
       },
       error: (error: any) => {
+        let errorMessage = 'Swipe Out Failed! Please try again.';
+        
+        if (error.status === 404) {
+          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+          // Special handling for "Employee not found"
+          if (error.error.error === 'Employee not found') {
+            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
+          }
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error || error.message || 'Swipe Out Failed! Please try again.'
+          detail: errorMessage
         });
         this.loadingSwipeOut.set(false);
       },
@@ -239,20 +279,6 @@ export class Attendance implements OnInit, OnDestroy {
     });
   }
 
-  addAttendanceEntry(type: 'IN' | 'OUT', time: string, duration?: string): void {
-    const entries = this.attendanceEntries();
-    const existingCount = entries.filter(e => e.type === type).length;
-    this.attendanceEntries.set([
-      {
-        id: this.entryCounter,
-        type,
-        time,
-        count: existingCount + 1,
-        duration
-      },
-      ...entries
-    ]);
-  }
 
   startTimer(swipeInTime: Date): void {
     this.swipeInTime = swipeInTime;

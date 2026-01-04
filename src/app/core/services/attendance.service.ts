@@ -2,6 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError, map, of } from 'rxjs';
 
+export interface AttendanceRecord {
+  id: number;
+  employee_id: number;
+  swipe_in_time: string;
+  swipe_out_time?: string | null;
+  duration?: string;
+  status: 'IN' | 'OUT';
+}
+
 export interface TodayStatusResponse {
   success: boolean;
   status: 'NOT_SWIPED' | 'IN' | 'OUT';
@@ -11,6 +20,10 @@ export interface TodayStatusResponse {
   employee_id?: number;
   id?: number;
   message?: string;
+  records?: AttendanceRecord[];
+  total_time?: {
+    formatted: string;
+  };
 }
 
 export interface AttendanceResponse {
