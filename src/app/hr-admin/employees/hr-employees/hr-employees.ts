@@ -512,9 +512,7 @@ export class HrEmployees implements OnInit {
     const selectedEmp = this.selectedEmployee();
     const employeeName = isAddMode
       ? `${formValue.firstName} ${formValue.lastName}`
-      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${
-          selectedEmp?.lastName || selectedEmp?.last_name
-        }`;
+      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${selectedEmp?.lastName || selectedEmp?.last_name}`;
 
     // Show confirmation dialog
     this.confirmationService.confirm({

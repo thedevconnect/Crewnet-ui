@@ -62,7 +62,11 @@ export class AuthService {
             .pipe(
                 tap((response) => {
                     if (response.success && response.token && response.user) {
+                        // Store token in localStorage
                         localStorage.setItem('oblo_token', response.token);
+                        // Store user info in localStorage
+                        localStorage.setItem('oblo_user', JSON.stringify(response.user));
+                        // Update signal
                         this.currentUser.set(response.user);
                     }
                 }),
@@ -125,6 +129,7 @@ export class AuthService {
 
     logout(): void {
         localStorage.removeItem('oblo_token');
+        localStorage.removeItem('oblo_user');
         this.currentUser.set(null);
         this.router.navigate(['/login']);
     }
@@ -132,7 +137,19 @@ export class AuthService {
     loadUser(): void {
         const token = this.getToken();
         if (token) {
-            // Token exists, but we need user ID to fetch profile
+            // Try to load user from localStorage first
+            const userStr = localStorage.getItem('oblo_user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr) as User;
+                    this.currentUser.set(user);
+                    return;
+                } catch (error) {
+                    console.error('Error parsing user from localStorage:', error);
+                    localStorage.removeItem('oblo_user');
+                }
+            }
+            // If user not in localStorage, fetch from API if we have user ID
             // This can be extracted from token if JWT, or stored separately
             // For now, we'll leave it as is
         }

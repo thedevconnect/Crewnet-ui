@@ -5,12 +5,13 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { MessageService } from 'primeng/api';  
 
 @Component({
   selector: 'app-attendance-page',
   standalone: true,
-  imports: [CommonModule, ButtonModule, CardModule, ToastModule, DatePipe],
+  imports: [CommonModule, ButtonModule, CardModule, ToastModule, TooltipModule, DatePipe],
   templateUrl: './attendance.html',
   styleUrl: './attendance.scss',
   providers: [MessageService]
@@ -37,9 +38,26 @@ export class Attendance implements OnInit, OnDestroy {
   currentDate = signal<Date>(new Date());
   private timeInterval: any = null;
 
+  // Attendance records from API
+  attendanceRecords = signal<Array<{
+    id: number;
+    employee_id: number;
+    swipe_in_time: string;
+    swipe_out_time?: string | null;
+    duration?: string;
+    status: 'IN' | 'OUT';
+  }>>([]);
+  totalTime = signal<string>('0h 0m');
+
   ngOnInit(): void {
-    this.loadTodayStatus();
+    // Initialize with default NOT_SWIPED status
+    this.todayStatus.set({
+      success: true,
+      status: 'NOT_SWIPED' as const,
+      message: 'Ready to swipe in'
+    });
     this.startTimeUpdate();
+    // Don't call API on page load - only on Swipe In button click
   }
 
   startTimeUpdate(): void {
@@ -61,10 +79,26 @@ export class Attendance implements OnInit, OnDestroy {
   getEmployeeId(): number {
     const user = this.authService.getCurrentUser()();
     if (user && user.id) {
-      return parseInt(user.id, 10);
+      const employeeId = parseInt(user.id, 10);
+      if (isNaN(employeeId)) {
+        console.error('Invalid employee ID from user:', user.id);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Invalid employee ID. Please contact administrator.'
+        });
+        return 0; // Return 0 to trigger error
+      }
+      return employeeId;
     }
-    // Default fallback - should be handled properly in production
-    return 123;
+    // If no user, show error
+    console.error('No user found in auth service');
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'User not authenticated. Please login again.'
+    });
+    return 0; // Return 0 to trigger error
   }
 
   loadTodayStatus(): void {
@@ -76,30 +110,64 @@ export class Attendance implements OnInit, OnDestroy {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
 
+        // Update records from API response
+        if (res.records && res.records.length > 0) {
+          this.attendanceRecords.set(res.records);
+        } else {
+          this.attendanceRecords.set([]);
+        }
+
+        // Update total time
+        if (res.total_time?.formatted) {
+          this.totalTime.set(res.total_time.formatted);
+        } else {
+          this.totalTime.set('0h 0m');
+        }
+
         // Start timer if swipe in is done but swipe out is not
-        if (res.swipe_in_time && !res.swipe_out_time) {
+        if (res.status === 'IN' && res.swipe_in_time) {
           this.startTimer(new Date(res.swipe_in_time));
         } else {
           this.stopTimer();
+          this.elapsedTime.set('00:00:00');
         }
       },
       error: (error: any) => {
         console.error('Error loading attendance status:', error);
-        // This should not happen now as 404 is handled in service
-        // But keep as fallback
         this.todayStatus.set({
           success: true,
           status: 'NOT_SWIPED' as const,
           message: 'No attendance record found for today'
         });
         this.loadingStatus.set(false);
+        this.attendanceRecords.set([]);
+        this.totalTime.set('0h 0m');
+        this.stopTimer();
+        this.elapsedTime.set('00:00:00');
       }
     });
   }
 
+  refreshAttendance(): void {
+    this.loadTodayStatus();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Refreshed',
+      detail: 'Attendance data refreshed'
+    });
+  }
+
+
   doSwipeIn(): void {
     this.loadingSwipeIn.set(true);
     const employeeId = this.getEmployeeId();
+    
+    if (!employeeId || employeeId === 0) {
+      this.loadingSwipeIn.set(false);
+      return;
+    }
+    
+    const swipeInTime = new Date();
 
     this.attendanceService.swipeIn(employeeId).subscribe({
       next: (res: any) => {
@@ -108,15 +176,41 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe In Successful!'
         });
-        // Start timer immediately
-        this.startTimer(new Date());
+        // Reset timer first
+        this.stopTimer();
+        // Update status immediately to change button
+        this.todayStatus.set({
+          success: true,
+          status: 'IN',
+          swipe_in_time: swipeInTime.toISOString(),
+          swipe_out_time: null
+        });
+        // Start timer immediately with fresh start
+        this.startTimer(swipeInTime);
+        // Reload status to get full data
         this.loadTodayStatus();
       },
       error: (error: any) => {
+        let errorMessage = 'Swipe In Failed! Please try again.';
+        
+        if (error.status === 404) {
+          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+          // Special handling for "Employee not found"
+          if (error.error.error === 'Employee not found') {
+            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
+          }
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.message || 'Swipe In Failed! Please try again.'
+          detail: errorMessage
         });
         this.loadingSwipeIn.set(false);
       },
@@ -125,8 +219,22 @@ export class Attendance implements OnInit, OnDestroy {
   }
 
   doSwipeOut(): void {
+    if (this.todayStatus()?.status !== 'IN') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please swipe in first!'
+      });
+      return;
+    }
+
     this.loadingSwipeOut.set(true);
     const employeeId = this.getEmployeeId();
+    
+    if (!employeeId || employeeId === 0) {
+      this.loadingSwipeOut.set(false);
+      return;
+    }
 
     this.attendanceService.swipeOut(employeeId).subscribe({
       next: (res: any) => {
@@ -135,26 +243,58 @@ export class Attendance implements OnInit, OnDestroy {
           summary: 'Success',
           detail: res.message || 'Swipe Out Successful!'
         });
-        // Stop timer
+        // Stop timer and reset to 00:00:00
         this.stopTimer();
+        this.elapsedTime.set('00:00:00');
+        // Reload status to update UI
         this.loadTodayStatus();
       },
       error: (error: any) => {
+        let errorMessage = 'Swipe Out Failed! Please try again.';
+        
+        if (error.status === 404) {
+          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+          // Special handling for "Employee not found"
+          if (error.error.error === 'Employee not found') {
+            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
+          }
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.message || 'Swipe Out Failed! Please try again.'
+          detail: errorMessage
         });
         this.loadingSwipeOut.set(false);
       },
-      complete: () => this.loadingSwipeOut.set(false)
+      complete: () => {
+        this.loadingSwipeOut.set(false);
+      }
     });
   }
+
 
   startTimer(swipeInTime: Date): void {
     this.swipeInTime = swipeInTime;
     this.stopTimer(); // Clear any existing timer
 
+    // Update immediately
+    const now = new Date();
+    const diff = now.getTime() - swipeInTime.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    this.elapsedTime.set(
+      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+    );
+
+    // Then update every second
     this.timerInterval = setInterval(() => {
       if (this.swipeInTime) {
         const now = new Date();
@@ -176,6 +316,33 @@ export class Attendance implements OnInit, OnDestroy {
       this.timerInterval = null;
     }
     this.swipeInTime = null;
+    this.elapsedTime.set('00:00:00');
+  }
+
+  getElapsedHours(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[0] || '00';
+  }
+
+  getElapsedMinutes(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[1] || '00';
+  }
+
+  getElapsedSeconds(): string {
+    const time = this.elapsedTime();
+    const parts = time.split(':');
+    return parts[2] || '00';
+  }
+
+  formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   }
 
   getTotalDuration(): string {
@@ -186,7 +353,8 @@ export class Attendance implements OnInit, OnDestroy {
       const diff = swipeOut.getTime() - swipeIn.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      return `${hours}h ${minutes}m`;
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      return `${hours}h ${minutes}m ${seconds}s`;
     }
     return '-';
   }
