@@ -1,33 +1,6 @@
 <div class="layout-wrapper">
-  <!-- Sidebar -->
-  <aside class="sidebar" [class.sidebar-expanded]="sidebarOpen()" [class.sidebar-collapsed]="!sidebarOpen()">
-
-    <!-- Logo Section with Company Name -->
-    <div class="sidebar-logo">
-      <a [routerLink]="getDashboardRoute()" class="logo-link">
-        <img src="assets/img/OBLO.png" alt="oblo Logo" class="logo-image">
-        @if (sidebarOpen()) {
-        <span class="logo-text"> </span>
-        }
-      </a>
-    </div>
-
-    <!-- Menu -->
-    <nav class="sidebar-nav">
-      @for (menu of menuItemsWithSubmenu(); track menu.menu) {
-      <div class="menu-item-wrapper">
-        <!-- Menu Link -->
-        <a [routerLink]="menu.route" routerLinkActive="menu-item-active" class="menu-button"
-          [class.justify-center]="!sidebarOpen()" [class.justify-start]="sidebarOpen()">
-          <i [class]="'pi ' + menu.icon"></i>
-          @if (sidebarOpen()) {
-          <span>{{ menu.menu }}</span>
-          }
-        </a>
-      </div>
-      }
-    </nav>
-  </aside>
+  <!-- Sidebar Component -->
+  <app-sidebar [sidebarOpen]="sidebarOpen()" />
 
   <!-- Main Content Area -->
   <div class="main-content-area" [class.sidebar-closed]="!sidebarOpen()">

@@ -1,0 +1,45 @@
+<div class="w-full h-screen flex bg-white overflow-hidden">
+  <!-- Sidebar -->
+  <app-sidebar 
+    [isSidebarOpen]="isSidebarOpen()" 
+    (toggleSidebar)="toggleSidebar()">
+  </app-sidebar>
+  
+  <!-- Mobile Overlay - Sidebar open होने पर background overlay -->
+  @if (isSidebarOpen()) {
+    <div class="fixed inset-0 bg-black/40 z-30 md:hidden" (click)="toggleSidebar()"></div>
+  }
+  
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col h-screen transition-all duration-300 overflow-x-hidden" 
+    [ngClass]="{
+      'md:ml-64': isSidebarOpen(),
+      'md:ml-16': !isSidebarOpen(),
+      'ml-0': true
+    }">
+    
+    <!-- Header Component -->
+    <app-header 
+      [isSidebarOpen]="isSidebarOpen()" 
+      (toggleSidebar)="toggleSidebar()"
+      class="sticky top-0 z-40">
+    </app-header>
+
+    <!-- Main Content - Router Outlet -->
+    <main class="flex-1 overflow-y-auto bg-[#F1F5F9]">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 text-gray-600 text-sm py-3 px-4 md:px-6 shadow-sm">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
+        <span>© 2025 Your Company Name</span>
+        <span class="text-blue-600 hover:underline cursor-pointer">Privacy · Terms</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Global PrimeNG Components -->
+  <p-confirmdialog></p-confirmdialog>
+  <p-toast position="top-right"></p-toast>
+</div>

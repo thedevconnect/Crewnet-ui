@@ -1,11 +1,6 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 import { MessageService, MenuItem } from 'primeng/api';
 
@@ -19,13 +14,15 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { PanelModule } from 'primeng/panel';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
-import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import { ConfirmationService } from 'primeng/api';
 import { BreadcrumbModule as PrimeNgBreadcrumbModule } from 'primeng/breadcrumb';
+
+// Table Template Component
+import { TableTemplate, TableColumn } from '../../../table-template/table-template';
 
 import { EmployeeService } from '../../../core/services/employee.service';
 
@@ -44,21 +41,20 @@ import { EmployeeService } from '../../../core/services/employee.service';
     PanelModule,
     SelectModule,
     DatePickerModule,
-    TableModule,
     DialogModule,
     ConfirmDialogModule,
     TooltipModule,
     MenuModule,
-    PrimeNgBreadcrumbModule,
+    TableTemplate,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-employees.html',
-  styleUrls: ['./hr-employees.scss']
+  styleUrls: ['./hr-employees.scss'],
 })
 export class HrEmployees implements OnInit {
   protected readonly breadcrumbItems = computed<MenuItem[]>(() => [
     { label: 'Dashboard', routerLink: '/dashboard' },
-    { label: 'Employees' }
+    { label: 'Employees' },
   ]);
 
   private employeeService = inject(EmployeeService);
@@ -75,6 +71,38 @@ export class HrEmployees implements OnInit {
   header = signal(' Add New Employee');
   headerIcon = signal('pi pi-user-plus');
 
+  // Table Template Properties
+  @ViewChild('actionTemplate') actionTemplate!: TemplateRef<any>;
+  @ViewChild('statusTemplate') statusTemplate!: TemplateRef<any>;
+
+  tableColumns: TableColumn[] = [
+    { key: 'actions', header: '', isCustom: true, isVisible: true, isSortable: false },
+    { key: 'employeeCode', header: 'Employee Code', isSortable: true, isVisible: true },
+    { key: 'firstName', header: 'First Name', isSortable: true, isVisible: true },
+    { key: 'lastName', header: 'Last Name', isSortable: true, isVisible: true },
+    { key: 'email', header: 'Email', isSortable: true, isVisible: true },
+    { key: 'mobileNumber', header: 'Mobile', isSortable: true, isVisible: true },
+    { key: 'department', header: 'Department', isSortable: true, isVisible: true },
+    { key: 'designation', header: 'Designation', isSortable: true, isVisible: true },
+    { key: 'joiningDate', header: 'Joining Date', isSortable: true, isVisible: true },
+    { key: 'status', header: 'Status', isSortable: true, isVisible: true },
+    { key: 'username', header: 'Username', isSortable: true, isVisible: true },
+    { key: 'firstLogin', header: 'First Login', isSortable: true, isVisible: true },
+    { key: 'createdAt', header: 'Created At', isSortable: true, isVisible: true },
+    { key: 'updatedAt', header: 'Updated At', isSortable: true, isVisible: true },
+  ];
+
+  // Pagination and Search
+  currentPage = signal(1);
+  pageSize = signal(10);
+  totalCount = signal(0);
+  searchText = signal('');
+  sortColumn = signal<string | null>(null);
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  // Filtered and paginated data
+  filteredEmployees = signal<any[]>([]);
+  paginatedEmployees = signal<any[]>([]);
 
   showEmployeeIdentity = signal(true);
   showPersonalDetails = signal(true);
@@ -86,43 +114,63 @@ export class HrEmployees implements OnInit {
 
   statusOptions = [
     { label: 'Active', value: 'Active' },
-    { label: 'Inactive', value: 'Inactive' }
+    { label: 'Inactive', value: 'Inactive' },
   ];
 
   genderOptions = [
     { label: 'Male', value: 'Male' },
     { label: 'Female', value: 'Female' },
-    { label: 'Other', value: 'Other' }
+    { label: 'Other', value: 'Other' },
   ];
 
   departmentOptions = [
     { label: 'IT', value: 'IT' },
     { label: 'HR', value: 'HR' },
-    { label: 'Sales', value: 'Sales' }
+    { label: 'Sales', value: 'Sales' },
   ];
 
   designationOptions = [
     { label: 'Developer', value: 'Developer' },
     { label: 'Manager', value: 'Manager' },
-    { label: 'Analyst', value: 'Analyst' }
+    { label: 'HR Manager', value: 'HR Manager' },
+    { label: 'Accountant', value: 'Accountant' },
+    { label: 'Marketing', value: 'Marketing' },
+    { label: 'Sales', value: 'Sales' },
+    { label: 'Operations', value: 'Operations' },
+    { label: 'Sales', value: 'Sales' },
+    { label: 'Operations', value: 'Operations' },
+    { label: 'Other', value: 'Other' },
+    { label: 'Analyst', value: 'Analyst' },
+    { label: 'Developer', value: 'Developer' },
   ];
 
   employmentTypeOptions = [
     { label: 'Full Time', value: 'Full Time' },
     { label: 'Contract', value: 'Contract' },
-    { label: 'Intern', value: 'Intern' }
+    { label: 'Intern', value: 'Intern' },
+    { label: 'Part Time', value: 'Part Time' },
+    { label: 'Freelancer', value: 'Freelancer' },
+    { label: 'Remote', value: 'Remote' },
+    { label: 'Temporary', value: 'Temporary' },
+    { label: 'Seasonal', value: 'Seasonal' },
+    { label: 'Project Based', value: 'Project Based' },
+    { label: 'Other', value: 'Other' },
   ];
 
   roleOptions = [
     { label: 'ESS', value: 'ESS' },
     { label: 'HR Admin', value: 'HR Admin' },
     { label: 'HR Manager', value: 'HR Manager' },
+    { label: 'ESS', value: 'ESS' },
+    { label: 'Other', value: 'Other' },
+    { label: 'HR Admin', value: 'HR Admin' },
+    { label: 'HR Manager', value: 'HR Manager' },
+    { label: 'Accountant', value: 'Accountant' },
+    { label: 'Marketing', value: 'Marketing' },
+    { label: 'Software Engineer', value: 'Software Engineer' },
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    private messageService: MessageService
-  ) { }
+  constructor(private fb: FormBuilder, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -134,14 +182,33 @@ export class HrEmployees implements OnInit {
     this.employeeService.getAll().subscribe({
       next: (response) => {
         if (response.employees && Array.isArray(response.employees)) {
-          this.employees.set(response.employees);
+          // Transform data for table
+          const transformedData = response.employees.map((emp: any, index: number) => ({
+            ...emp,
+            id: emp.id || index,
+            name: `${emp.firstName || emp.first_name || ''} ${
+              emp.lastName || emp.last_name || ''
+            }`.trim(),
+            employeeCode: emp.employeeCode || emp.employee_code || '',
+            mobileNumber: emp.mobileNumber || emp.mobile_number || '',
+            employmentType: emp.employmentType || emp.employment_type || '',
+            joiningDate: this.formatDate(emp.joiningDate || emp.joining_date || ''),
+            status: emp.status || 'ACTIVE',
+          }));
+
+          this.employees.set(transformedData);
+          this.totalCount.set(transformedData.length);
+          this.applyFiltersAndPagination();
+
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Employees loaded successfully'
+            detail: 'Employees loaded successfully',
           });
         } else {
           this.employees.set([]);
+          this.totalCount.set(0);
+          this.paginatedEmployees.set([]);
         }
         this.loading.set(false);
       },
@@ -150,12 +217,82 @@ export class HrEmployees implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error?.message || 'Failed to load employees'
+          detail: error.error?.message || 'Failed to load employees',
         });
         this.loading.set(false);
         this.employees.set([]);
-      }
+        this.totalCount.set(0);
+        this.paginatedEmployees.set([]);
+      },
     });
+  }
+
+  // Apply filters, sorting, and pagination
+  applyFiltersAndPagination(): void {
+    let filtered = [...this.employees()];
+
+    // Apply search filter
+    const search = this.searchText().toLowerCase();
+    if (search) {
+      filtered = filtered.filter(
+        (emp) =>
+          (emp.name || '').toLowerCase().includes(search) ||
+          (emp.email || '').toLowerCase().includes(search) ||
+          (emp.employeeCode || '').toLowerCase().includes(search) ||
+          (emp.department || '').toLowerCase().includes(search) ||
+          (emp.designation || '').toLowerCase().includes(search)
+      );
+    }
+
+    // Apply sorting
+    const sortCol = this.sortColumn();
+    if (sortCol) {
+      filtered.sort((a, b) => {
+        const aVal = this.getNestedValue(a, sortCol);
+        const bVal = this.getNestedValue(b, sortCol);
+        const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+        return this.sortDirection() === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    this.totalCount.set(filtered.length);
+
+    // Apply pagination
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    this.paginatedEmployees.set(filtered.slice(start, end));
+  }
+
+  getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((o, p) => o?.[p], obj) || '';
+  }
+
+  // Table Template Event Handlers
+  onPageChange(page: number): void {
+    this.currentPage.set(page);
+    this.applyFiltersAndPagination();
+  }
+
+  onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.applyFiltersAndPagination();
+  }
+
+  onSearchChange(search: string): void {
+    this.searchText.set(search);
+    this.currentPage.set(1);
+    this.applyFiltersAndPagination();
+  }
+
+  onSortChange(event: { column: string; direction: 'asc' | 'desc' }): void {
+    this.sortColumn.set(event.column);
+    this.sortDirection.set(event.direction);
+    this.applyFiltersAndPagination();
+  }
+
+  onRefresh(): void {
+    this.loadEmployees();
   }
 
   private initForm(): void {
@@ -169,10 +306,7 @@ export class HrEmployees implements OnInit {
       dateOfBirth: [null, Validators.required],
 
       email: ['', [Validators.required, Validators.email]],
-      mobileNumber: [
-        '',
-        [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]
-      ],
+      mobileNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
 
       department: [null, Validators.required],
       designation: [null, Validators.required],
@@ -181,19 +315,15 @@ export class HrEmployees implements OnInit {
 
       role: ['ESS', Validators.required],
       username: [{ value: '', disabled: true }],
-      firstLogin: [true]
+      firstLogin: [true],
     });
 
-    this.employeeForm.get('email')?.valueChanges.subscribe(email => {
+    this.employeeForm.get('email')?.valueChanges.subscribe((email) => {
       if (email && email.includes('@')) {
-        this.employeeForm.patchValue(
-          { username: email.split('@')[0] },
-          { emitEvent: false }
-        );
+        this.employeeForm.patchValue({ username: email.split('@')[0] }, { emitEvent: false });
       }
     });
   }
-
 
   showDialog(): void {
     this.drawerMode.set('add');
@@ -225,17 +355,17 @@ export class HrEmployees implements OnInit {
         icon: 'pi pi-eye',
         command: () => {
           this.viewEmployee(employee);
-        }
+        },
       },
       {
         label: 'Edit',
         icon: 'pi pi-pencil',
         command: () => {
           this.editEmployee(employee);
-        }
+        },
       },
       {
-        separator: true
+        separator: true,
       },
       {
         label: 'Delete',
@@ -243,14 +373,16 @@ export class HrEmployees implements OnInit {
         styleClass: 'text-red-600',
         command: () => {
           this.deleteEmployee(employee);
-        }
-      }
+        },
+      },
     ];
   }
 
   deleteEmployee(employee: any): void {
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete ${employee.firstName || employee.first_name} ${employee.lastName || employee.last_name}?`,
+      message: `Are you sure you want to delete ${employee.firstName || employee.first_name} ${
+        employee.lastName || employee.last_name
+      }?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
@@ -260,7 +392,7 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
-              detail: response.message || 'Employee deleted successfully'
+              detail: response.message || 'Employee deleted successfully',
             });
             this.loadEmployees();
           },
@@ -269,22 +401,28 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: error.error?.message || 'Failed to delete employee'
+              detail: error.error?.message || 'Failed to delete employee',
             });
-          }
+          },
         });
-      }
+      },
     });
   }
 
   private populateForm(employee: any): void {
     // Support both camelCase (from API) and snake_case (legacy)
-    const dateOfBirth = employee.dateOfBirth || employee.date_of_birth ? new Date(employee.dateOfBirth || employee.date_of_birth) : null;
-    const joiningDate = employee.joiningDate || employee.joining_date ? new Date(employee.joiningDate || employee.joining_date) : new Date();
+    const dateOfBirth =
+      employee.dateOfBirth || employee.date_of_birth
+        ? new Date(employee.dateOfBirth || employee.date_of_birth)
+        : null;
+    const joiningDate =
+      employee.joiningDate || employee.joining_date
+        ? new Date(employee.joiningDate || employee.joining_date)
+        : new Date();
 
     this.employeeForm.patchValue({
       employeeCode: employee.employeeCode || employee.employee_code || '',
-      status: (employee.status === 'ACTIVE' || employee.status === 'Active') ? 'Active' : 'Inactive',
+      status: employee.status === 'ACTIVE' || employee.status === 'Active' ? 'Active' : 'Inactive',
       firstName: employee.firstName || employee.first_name || '',
       lastName: employee.lastName || employee.last_name || '',
       gender: employee.gender || null,
@@ -297,7 +435,11 @@ export class HrEmployees implements OnInit {
       joiningDate: joiningDate,
       role: employee.role || null,
       username: employee.username || '',
-      firstLogin: employee.firstLogin === true || employee.firstLogin === 1 || employee.first_login === 1 || employee.first_login === true
+      firstLogin:
+        employee.firstLogin === true ||
+        employee.firstLogin === 1 ||
+        employee.first_login === 1 ||
+        employee.first_login === true,
     });
   }
 
@@ -312,19 +454,19 @@ export class HrEmployees implements OnInit {
   toggle(section: string): void {
     switch (section) {
       case 'showEmployeeIdentity':
-        this.showEmployeeIdentity.update(v => !v);
+        this.showEmployeeIdentity.update((v) => !v);
         break;
       case 'showPersonalDetails':
-        this.showPersonalDetails.update(v => !v);
+        this.showPersonalDetails.update((v) => !v);
         break;
       case 'showContactDetails':
-        this.showContactDetails.update(v => !v);
+        this.showContactDetails.update((v) => !v);
         break;
       case 'showJobDetails':
-        this.showJobDetails.update(v => !v);
+        this.showJobDetails.update((v) => !v);
         break;
       case 'showSystemAccess':
-        this.showSystemAccess.update(v => !v);
+        this.showSystemAccess.update((v) => !v);
         break;
     }
   }
@@ -346,7 +488,7 @@ export class HrEmployees implements OnInit {
       role: 'ESS',
       employmentType: 'Full Time',
       joiningDate: new Date(),
-      firstLogin: true
+      firstLogin: true,
     });
     // Disable employee code field after reset (for add mode)
     this.employeeForm.get('employeeCode')?.disable();
@@ -360,7 +502,7 @@ export class HrEmployees implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Validation Error',
-        detail: 'Please fill all required fields correctly.'
+        detail: 'Please fill all required fields correctly.',
       });
       return;
     }
@@ -368,9 +510,11 @@ export class HrEmployees implements OnInit {
     const formValue = this.employeeForm.getRawValue();
     const isAddMode = this.drawerMode() === 'add';
     const selectedEmp = this.selectedEmployee();
-    const employeeName = isAddMode 
-      ? `${formValue.firstName} ${formValue.lastName}` 
-      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${selectedEmp?.lastName || selectedEmp?.last_name}`;
+    const employeeName = isAddMode
+      ? `${formValue.firstName} ${formValue.lastName}`
+      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${
+          selectedEmp?.lastName || selectedEmp?.last_name
+        }`;
 
     // Show confirmation dialog
     this.confirmationService.confirm({
@@ -390,9 +534,9 @@ export class HrEmployees implements OnInit {
         this.messageService.add({
           severity: 'info',
           summary: 'Cancelled',
-          detail: isAddMode ? 'Employee addition cancelled.' : 'Employee update cancelled.'
+          detail: isAddMode ? 'Employee addition cancelled.' : 'Employee update cancelled.',
         });
-      }
+      },
     });
   }
 
@@ -425,7 +569,7 @@ export class HrEmployees implements OnInit {
       joining_date: formatDateOnly(formValue.joiningDate),
       role: formValue.role,
       username: formValue.username,
-      first_login: formValue.firstLogin ? 1 : 0
+      first_login: formValue.firstLogin ? 1 : 0,
     };
 
     if (this.drawerMode() === 'add') {
@@ -438,7 +582,7 @@ export class HrEmployees implements OnInit {
             severity: 'success',
             summary: 'Success',
             detail: `Employee "${formValue.firstName} ${formValue.lastName}" added successfully!`,
-            life: 3000
+            life: 3000,
           });
           this.resetAllForms();
           this.loadEmployees();
@@ -450,9 +594,9 @@ export class HrEmployees implements OnInit {
             severity: 'error',
             summary: 'Error',
             detail: error.error?.message || 'Failed to add employee',
-            life: 5000
+            life: 5000,
           });
-        }
+        },
       });
     } else {
       // Update existing employee
@@ -466,7 +610,7 @@ export class HrEmployees implements OnInit {
               severity: 'success',
               summary: 'Success',
               detail: `Employee "${formValue.firstName} ${formValue.lastName}" updated successfully!`,
-              life: 3000
+              life: 3000,
             });
             this.resetAllForms();
             this.loadEmployees();
@@ -478,9 +622,9 @@ export class HrEmployees implements OnInit {
               severity: 'error',
               summary: 'Error',
               detail: error.error?.message || 'Failed to update employee',
-              life: 5000
+              life: 5000,
             });
-          }
+          },
         });
       }
     }
@@ -500,7 +644,7 @@ export class HrEmployees implements OnInit {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 }

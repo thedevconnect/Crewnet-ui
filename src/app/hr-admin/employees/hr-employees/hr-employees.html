@@ -1,382 +1,377 @@
-<div class="employee-management-container">
+<div class="bg-[#FFFFFF] min-h-screen p-4 sm:p-6 lg:p-0">
 
-    <!-- PAGE HEADER -->
-    <div class="page-header-section">
+
+    <div class="bg-white  overflow-hidden">
+        <div class="flex items-center justify-between p-3 sm:p-3 border-b border-gray-200">
+            <h2 class="text-base font-semibold text-gray-800">
+                <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
+            </h2>
+            <div class="flex items-center space-x-2">
+                <p-button (click)="showDialog()" label="Add New Lead" icon="pi pi-plus" styleClass="orange-button"
+                    [raised]="true"></p-button>
+            </div>
+        </div>
+
+
+        <!-- 
+<div class="employee-management-container"> -->
+
+        <!-- PAGE HEADER -->
+        <!-- <div class="page-header-section">
         <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
         <div class="flex justify-end">
             <p-button label="Add Employee" icon="pi pi-plus" (click)="showDialog()" [raised]="true">
             </p-button>
         </div>
-    </div>
+    </div> -->
 
-    <!-- TOAST AND CONFIRMATION DIALOG -->
-    <p-toast></p-toast>
-    <p-confirmDialog></p-confirmDialog>
+        <!-- TOAST AND CONFIRMATION DIALOG -->
+        <p-toast></p-toast>
+        <p-confirmDialog></p-confirmDialog>
 
-    <!-- VIEW EMPLOYEE DRAWER -->
-    <p-drawer [(visible)]="viewDialogVisible" position="right" [modal]="true" [dismissible]="false"
-        [style]="{ width: '820px', maxWidth: '100vw' }">
+        <!-- VIEW EMPLOYEE DRAWER -->
+        <p-drawer [(visible)]="viewDialogVisible" position="right" [modal]="true" [dismissible]="false"
+            [style]="{ width: '820px', maxWidth: '100vw' }">
 
-        <!-- DRAWER HEADER -->
-        <ng-template pTemplate="header">
-            <div class="flex items-center justify-between px-4 py-3 border-b">
-                <div class="flex items-center gap-2">
-                    <i class="pi pi-eye text-primary"></i>
-                    <span class="text-lg font-semibold">View Employee Details</span>
-                </div>
-                <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="viewDialogVisible.set(false)"
-                    severity="secondary">
-                </p-button>
-            </div>
-        </ng-template>
-
-        <!-- DRAWER BODY -->
-        <div *ngIf="selectedEmployee()" class="flex flex-col gap-6 p-4">
-            <!-- EMPLOYEE IDENTITY -->
-            <p-panel header="Employee Identity" [toggleable]="true" [collapsed]="false">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">Employee Code</label>
-                        <p>{{ selectedEmployee()?.employeeCode }}</p>
+            <!-- DRAWER HEADER -->
+            <ng-template pTemplate="header">
+                <div class="flex items-center justify-between px-4 py-3 border-b">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-eye text-primary"></i>
+                        <span class="text-lg font-semibold">View Employee Details</span>
                     </div>
-                    <div>
-                        <label class="font-semibold">Status</label>
-                        <p>
-                            <span [ngClass]="{
+                    <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="viewDialogVisible.set(false)"
+                        severity="secondary">
+                    </p-button>
+                </div>
+            </ng-template>
+
+            <!-- DRAWER BODY -->
+            @if (selectedEmployee()) {
+            <div class="flex flex-col gap-6 p-4">
+                <!-- EMPLOYEE IDENTITY -->
+                <p-panel header="Employee Identity" [toggleable]="true" [collapsed]="false">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">Employee Code</label>
+                            <p>{{ selectedEmployee()?.employeeCode }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Status</label>
+                            <p>
+                                <span [ngClass]="{
                                 'status-badge': true,
                                 'status-active': selectedEmployee()?.status === 'ACTIVE',
                                 'status-inactive': selectedEmployee()?.status !== 'ACTIVE'
                             }">
-                                {{ selectedEmployee()?.status }}
-                            </span>
-                        </p>
+                                    {{ selectedEmployee()?.status }}
+                                </span>
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </p-panel>
+                </p-panel>
 
-            <!-- PERSONAL DETAILS -->
-            <p-panel header="Personal Details" [toggleable]="true" [collapsed]="false">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">First Name</label>
-                        <p>{{ selectedEmployee()?.firstName }}</p>
+                <!-- PERSONAL DETAILS -->
+                <p-panel header="Personal Details" [toggleable]="true" [collapsed]="false">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">First Name</label>
+                            <p>{{ selectedEmployee()?.firstName }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Last Name</label>
+                            <p>{{ selectedEmployee()?.lastName }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Gender</label>
+                            <p>{{ selectedEmployee()?.gender }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Date of Birth</label>
+                            <p>{{ formatDate(selectedEmployee()?.dateOfBirth) }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="font-semibold">Last Name</label>
-                        <p>{{ selectedEmployee()?.lastName }}</p>
-                    </div>
-                    <div>
-                        <label class="font-semibold">Gender</label>
-                        <p>{{ selectedEmployee()?.gender }}</p>
-                    </div>
-                    <div>
-                        <label class="font-semibold">Date of Birth</label>
-                        <p>{{ formatDate(selectedEmployee()?.dateOfBirth) }}</p>
-                    </div>
-                </div>
-            </p-panel>
+                </p-panel>
 
-            <!-- CONTACT DETAILS -->
-            <p-panel header="Contact Details" [toggleable]="true" [collapsed]="false">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">Email</label>
-                        <p>{{ selectedEmployee()?.email }}</p>
+                <!-- CONTACT DETAILS -->
+                <p-panel header="Contact Details" [toggleable]="true" [collapsed]="false">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">Email</label>
+                            <p>{{ selectedEmployee()?.email }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Mobile Number</label>
+                            <p>{{ selectedEmployee()?.mobileNumber }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="font-semibold">Mobile Number</label>
-                        <p>{{ selectedEmployee()?.mobileNumber }}</p>
-                    </div>
-                </div>
-            </p-panel>
+                </p-panel>
 
-            <!-- JOB DETAILS -->
-            <p-panel header="Job Details" [toggleable]="true" [collapsed]="false">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">Department</label>
-                        <p>{{ selectedEmployee()?.department }}</p>
+                <!-- JOB DETAILS -->
+                <p-panel header="Job Details" [toggleable]="true" [collapsed]="false">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">Department</label>
+                            <p>{{ selectedEmployee()?.department }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Designation</label>
+                            <p>{{ selectedEmployee()?.designation }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Employment Type</label>
+                            <p>{{ selectedEmployee()?.employmentType }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Joining Date</label>
+                            <p>{{ formatDate(selectedEmployee()?.joiningDate) }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="font-semibold">Designation</label>
-                        <p>{{ selectedEmployee()?.designation }}</p>
-                    </div>
-                    <div>
-                        <label class="font-semibold">Employment Type</label>
-                        <p>{{ selectedEmployee()?.employmentType }}</p>
-                    </div>
-                    <div>
-                        <label class="font-semibold">Joining Date</label>
-                        <p>{{ formatDate(selectedEmployee()?.joiningDate) }}</p>
-                    </div>
-                </div>
-            </p-panel>
+                </p-panel>
 
-            <!-- SYSTEM ACCESS -->
-            <p-panel header="System Access" [toggleable]="true" [collapsed]="false">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">Role</label>
-                        <p>{{ selectedEmployee()?.role }}</p>
+                <!-- SYSTEM ACCESS -->
+                <p-panel header="System Access" [toggleable]="true" [collapsed]="false">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">Role</label>
+                            <p>{{ selectedEmployee()?.role }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Username</label>
+                            <p>{{ selectedEmployee()?.username }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">First Login</label>
+                            <p>{{ selectedEmployee()?.firstLogin === true || selectedEmployee()?.firstLogin === 1 ?
+                                'Yes' :
+                                'No' }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="font-semibold">Username</label>
-                        <p>{{ selectedEmployee()?.username }}</p>
-                    </div>
-                    <div>
-                        <label class="font-semibold">First Login</label>
-                        <p>{{ selectedEmployee()?.firstLogin === true || selectedEmployee()?.firstLogin === 1 ? 'Yes' :
-                            'No' }}</p>
-                    </div>
-                </div>
-            </p-panel>
+                </p-panel>
 
-            <!-- TIMESTAMPS -->
-            <p-panel header="System Information" [toggleable]="true" [collapsed]="true">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="font-semibold">Created At</label>
-                        <p>{{ formatDateTime(selectedEmployee()?.createdAt) }}</p>
+                <!-- TIMESTAMPS -->
+                <p-panel header="System Information" [toggleable]="true" [collapsed]="true">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-semibold">Created At</label>
+                            <p>{{ formatDateTime(selectedEmployee()?.createdAt) }}</p>
+                        </div>
+                        <div>
+                            <label class="font-semibold">Updated At</label>
+                            <p>{{ formatDateTime(selectedEmployee()?.updatedAt) }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="font-semibold">Updated At</label>
-                        <p>{{ formatDateTime(selectedEmployee()?.updatedAt) }}</p>
-                    </div>
-                </div>
-            </p-panel>
-        </div>
-
-        <!-- DRAWER FOOTER -->
-        <ng-template pTemplate="footer">
-            <div style="display: flex; justify-content: end; gap: 1rem; padding: 1rem; border-top: 1px solid #e0e0e0;">
-                <p-button label="Close" severity="secondary" (click)="viewDialogVisible.set(false)">
-                </p-button>
+                </p-panel>
             </div>
-        </ng-template>
-    </p-drawer>
+            }
 
-    <!-- EMPLOYEES TABLE -->
-    <div class="table-container">
-        <p-table [value]="employees()" [loading]="loading()" [paginator]="true" [rows]="10" responsiveLayout="scroll"
-            styleClass="employees-table">
+            <!-- DRAWER FOOTER -->
+            <ng-template pTemplate="footer">
+                <div
+                    style="display: flex; justify-content: end; gap: 1rem; padding: 1rem; border-top: 1px solid #e0e0e0;">
+                    <p-button label="Close" severity="secondary" (click)="viewDialogVisible.set(false)">
+                    </p-button>
+                </div>
+            </ng-template>
+        </p-drawer>
+
+        <!-- EMPLOYEES TABLE - Using Table Template Component -->
+        <app-table-template [data]="paginatedEmployees()" [columns]="tableColumns" [isLoading]="loading()"
+            [currentPage]="currentPage()" [pageSize]="pageSize()" [totalCount]="totalCount()"
+            [searchText]="searchText()" [sortColumn]="sortColumn()" [sortDirection]="sortDirection()"
+            [showRefresh]="true" [actionTemplate]="actionTemplate" [jsonTemplate]="statusTemplate"
+            (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)"
+            (searchChange)="onSearchChange($event)" (sortChange)="onSortChange($event)" (refresh)="onRefresh()">
+
+            <!-- Action Template -->
+            <ng-template #actionTemplate let-item="item" let-index="index">
+                <div class="flex justify-center">
+                    <p-button icon="pi pi-ellipsis-v" [text]="true" [rounded]="true" severity="secondary"
+                        (click)="actionMenu.toggle($event)" [pTooltip]="'Actions'" tooltipPosition="top"
+                        styleClass="action-menu-btn">
+                    </p-button>
+                    <p-menu #actionMenu [model]="getActionMenuItems(item)" [popup]="true" [appendTo]="'body'">
+                    </p-menu>
+                </div>
+            </ng-template>
+
+            <!-- Status Template -->
+            <ng-template #statusTemplate let-item="item" let-index="index">
+                <span [ngClass]="{
+                'status-badge': true,
+                'status-active': item.status === 'ACTIVE' || item.status === 'Active',
+                'status-inactive': item.status !== 'ACTIVE' && item.status !== 'Active'
+            }">
+                    {{ item.status }}
+                </span>
+            </ng-template>
+        </app-table-template>
+
+        <!-- DRAWER -->
+        <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false"
+            [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="employee-drawer">
+
+            <!-- DRAWER HEADER -->
             <ng-template pTemplate="header">
-                <tr>
-                    <th class="text-center">Actions</th>
-                    <th>Employee Code</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th>Department</th>
-                    <th>Designation</th>
-                    <th>Employment Type</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Joining Date</th>
-                </tr>
+                <div class="flex items-center justify-between px-4 py-3 border-b">
+                    <div class="flex items-center gap-2">
+                        <i [class]="headerIcon() + ' text-primary'"></i>
+                        <span class="text-lg font-semibold">{{ header() }}</span>
+                    </div>
+                    <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="closeDrawer()"
+                        severity="secondary">
+                    </p-button>
+                </div>
             </ng-template>
-            <ng-template pTemplate="body" let-employee>
-                <tr>
-                    <td class="text-center">
-                        <p-button icon="pi pi-ellipsis-v" [text]="true" [rounded]="true" severity="secondary"
-                            (click)="actionMenu.toggle($event)" [pTooltip]="'Actions'" tooltipPosition="top"
-                            styleClass="action-menu-btn">
-                        </p-button>
-                        <p-menu #actionMenu [model]="getActionMenuItems(employee)" [popup]="true" [appendTo]="'body'">
-                        </p-menu>
-                    </td>
-                    <td>{{ employee.employeeCode }}</td>
-                    <td>{{ employee.firstName }} {{ employee.lastName }}</td>
-                    <td>{{ employee.email }}</td>
-                    <td>{{ employee.mobileNumber }}</td>
-                    <td>{{ employee.department }}</td>
-                    <td>{{ employee.designation }}</td>
-                    <td>{{ employee.employmentType }}</td>
-                    <td>{{ employee.role }}</td>
-                    <td>
-                        <span [ngClass]="{
-                            'status-badge': true,
-                            'status-active': employee.status === 'ACTIVE',
-                            'status-inactive': employee.status !== 'ACTIVE'
-                        }">
-                            {{ employee.status }}
-                        </span>
-                    </td>
-                    <td>{{ formatDate(employee.joiningDate) }}</td>
-                </tr>
+
+            <!-- DRAWER BODY -->
+            <form [formGroup]="employeeForm" class="flex flex-col gap-6 p-4">
+
+                <!-- EMPLOYEE IDENTITY -->
+                <p-panel header="Employee Identity" [toggleable]="true">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Employee Code *</label>
+                            <input pInputText formControlName="employeeCode" readonly />
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Status *</label>
+                            <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
+                                optionValue="value" placeholder="Select Status" styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                    </div>
+                </p-panel>
+
+                <!-- PERSONAL DETAILS -->
+                <p-panel header="Personal Details" [toggleable]="true">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>First Name *</label>
+                            <input pInputText formControlName="firstName" />
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Last Name *</label>
+                            <input pInputText formControlName="lastName" />
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Gender *</label>
+                            <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
+                                optionValue="value" placeholder="Select Gender" styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Date of Birth *</label>
+                            <p-datepicker formControlName="dateOfBirth" dateFormat="yy-mm-dd" [showIcon]="true"
+                                styleClass="w-full" appendTo="body" placeholder="Select date">
+                            </p-datepicker>
+                        </div>
+
+                    </div>
+                </p-panel>
+
+                <!-- CONTACT DETAILS -->
+                <p-panel header="Contact Details" [toggleable]="true">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Email *</label>
+                            <input pInputText formControlName="email" />
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Mobile Number *</label>
+                            <input pInputText formControlName="mobileNumber" />
+                        </div>
+
+                    </div>
+                </p-panel>
+
+                <!-- JOB DETAILS -->
+                <p-panel header="Job Details" [toggleable]="true">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Department *</label>
+                            <p-select formControlName="department" [options]="departmentOptions" optionLabel="label"
+                                optionValue="value" [filter]="true" placeholder="Select Department" styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Designation *</label>
+                            <p-select formControlName="designation" [options]="designationOptions" optionLabel="label"
+                                optionValue="value" [filter]="true" placeholder="Select Designation"
+                                styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Employment Type *</label>
+                            <p-select formControlName="employmentType" [options]="employmentTypeOptions"
+                                optionLabel="label" optionValue="value" placeholder="Select Type" styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Joining Date *</label>
+                            <p-datepicker formControlName="joiningDate" dateFormat="yy-mm-dd" [showIcon]="true"
+                                styleClass="w-full" appendTo="body" placeholder="Select date">
+                            </p-datepicker>
+                        </div>
+
+                    </div>
+                </p-panel>
+
+                <!-- SYSTEM ACCESS -->
+                <p-panel header="System Access" [toggleable]="true">
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;"
+                        style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Role *</label>
+                            <p-select formControlName="role" [options]="roleOptions" optionLabel="label"
+                                optionValue="value" placeholder="Select Role" styleClass="w-full">
+                            </p-select>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <label>Username</label>
+                            <input pInputText formControlName="username" readonly />
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
+                            <label for="firstLogin">Force password change on first login</label>
+                        </div>
+
+                    </div>
+                </p-panel>
+
+            </form>
+
+            <!-- DRAWER FOOTER -->
+            <ng-template pTemplate="footer">
+                <div style=" text-align: end; display: flex; flex-direction: row; gap: 0.25rem;" class="drawer-footer">
+                    <p-button label="Cancel" icon="pi pi-times" (click)="closeDrawer()" styleClass="footer-btn-cancel">
+                    </p-button>
+                    <p-button label="Reset" icon="pi pi-refresh" (click)="resetAllForms()"
+                        styleClass="footer-btn-reset">
+                    </p-button>
+                    <p-button [label]="drawerMode() === 'add' ? 'Add Employee' : 'Update Employee'"
+                        [icon]="drawerMode() === 'add' ? 'pi pi-plus' : 'pi pi-check'" (click)="OnSubmitModal()"
+                        [loading]="isSubmitting()" styleClass="footer-btn-submit">
+                    </p-button>
+                </div>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="11" class="text-center p-4">
-                        No employees found
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+
+        </p-drawer>
+
     </div>
-
-    <!-- DRAWER -->
-    <p-drawer [(visible)]="visible" position="right" [modal]="true" [dismissible]="false"
-        [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="employee-drawer">
-
-        <!-- DRAWER HEADER -->
-        <ng-template pTemplate="header">
-            <div class="flex items-center justify-between px-4 py-3 border-b">
-                <div class="flex items-center gap-2">
-                    <i [class]="headerIcon() + ' text-primary'"></i>
-                    <span class="text-lg font-semibold">{{ header() }}</span>
-                </div>
-                <p-button icon="pi pi-times" [text]="true" [rounded]="true" (click)="closeDrawer()"
-                    severity="secondary">
-                </p-button>
-            </div>
-        </ng-template>
-
-        <!-- DRAWER BODY -->
-        <form [formGroup]="employeeForm" class="flex flex-col gap-6 p-4">
-
-            <!-- EMPLOYEE IDENTITY -->
-            <p-panel header="Employee Identity" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Employee Code *</label>
-                        <input pInputText formControlName="employeeCode" readonly />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Status *</label>
-                        <p-select formControlName="status" [options]="statusOptions" optionLabel="label"
-                            optionValue="value" placeholder="Select Status" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                </div>
-            </p-panel>
-
-            <!-- PERSONAL DETAILS -->
-            <p-panel header="Personal Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>First Name *</label>
-                        <input pInputText formControlName="firstName" />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Last Name *</label>
-                        <input pInputText formControlName="lastName" />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Gender *</label>
-                        <p-select formControlName="gender" [options]="genderOptions" optionLabel="label"
-                            optionValue="value" placeholder="Select Gender" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Date of Birth *</label>
-                        <p-datepicker formControlName="dateOfBirth" dateFormat="yy-mm-dd" [showIcon]="true"
-                            styleClass="w-full" appendTo="body" placeholder="Select date">
-                        </p-datepicker>
-                    </div>
-
-                </div>
-            </p-panel>
-
-            <!-- CONTACT DETAILS -->
-            <p-panel header="Contact Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Email *</label>
-                        <input pInputText formControlName="email" />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Mobile Number *</label>
-                        <input pInputText formControlName="mobileNumber" />
-                    </div>
-
-                </div>
-            </p-panel>
-
-            <!-- JOB DETAILS -->
-            <p-panel header="Job Details" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Department *</label>
-                        <p-select formControlName="department" [options]="departmentOptions" optionLabel="label"
-                            optionValue="value" [filter]="true" placeholder="Select Department" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Designation *</label>
-                        <p-select formControlName="designation" [options]="designationOptions" optionLabel="label"
-                            optionValue="value" [filter]="true" placeholder="Select Designation" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Employment Type *</label>
-                        <p-select formControlName="employmentType" [options]="employmentTypeOptions" optionLabel="label"
-                            optionValue="value" placeholder="Select Type" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Joining Date *</label>
-                        <p-datepicker formControlName="joiningDate" dateFormat="yy-mm-dd" [showIcon]="true"
-                            styleClass="w-full" appendTo="body" placeholder="Select date">
-                        </p-datepicker>
-                    </div>
-
-                </div>
-            </p-panel>
-
-            <!-- SYSTEM ACCESS -->
-            <p-panel header="System Access" [toggleable]="true">
-                <div style="display: flex; flex-direction: column; gap: 0.25rem;"
-                    style="display: flex; flex-direction: column; gap: 0.25rem;" class="grid grid-cols-1">
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Role *</label>
-                        <p-select formControlName="role" [options]="roleOptions" optionLabel="label" optionValue="value"
-                            placeholder="Select Role" styleClass="w-full">
-                        </p-select>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label>Username</label>
-                        <input pInputText formControlName="username" readonly />
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <p-checkbox formControlName="firstLogin" binary inputId="firstLogin"></p-checkbox>
-                        <label for="firstLogin">Force password change on first login</label>
-                    </div>
-
-                </div>
-            </p-panel>
-
-        </form>
-
-        <!-- DRAWER FOOTER -->
-        <ng-template pTemplate="footer">
-            <div style=" text-align: end; display: flex; flex-direction: row; gap: 0.25rem;" class="drawer-footer">
-                <p-button label="Cancel" icon="pi pi-times" (click)="closeDrawer()" styleClass="footer-btn-cancel">
-                </p-button>
-                <p-button label="Reset" icon="pi pi-refresh" (click)="resetAllForms()" styleClass="footer-btn-reset">
-                </p-button>
-                <p-button [label]="drawerMode() === 'add' ? 'Add Employee' : 'Update Employee'"
-                    [icon]="drawerMode() === 'add' ? 'pi pi-plus' : 'pi pi-check'" (click)="OnSubmitModal()"
-                    [loading]="isSubmitting()" styleClass="footer-btn-submit">
-                </p-button>
-            </div>
-        </ng-template>
-
-    </p-drawer>
-
-</div>

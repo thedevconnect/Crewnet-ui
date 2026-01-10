@@ -1,0 +1,33 @@
+// Header Component Styles
+// Tailwind CSS classes का उपयोग कर रहे हैं, PrimeNG component customization के लिए additional styles
+
+// Header Dropdown Customization
+::ng-deep .header-dropdown {
+  .p-select {
+    height: 32px;
+    
+    .p-select-label {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// User Profile Menu Customization
+::ng-deep .user-profile-menu {
+  min-width: 180px;
+  margin-top: 0.5rem;
+  
+  .p-menu-list {
+    padding: 0.5rem;
+  }
+  
+  .p-menuitem-link {
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    
+    &:hover {
+      background-color: #f3f4f6;
+    }
+  }
+}
