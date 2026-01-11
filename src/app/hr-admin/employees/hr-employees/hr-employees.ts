@@ -108,9 +108,11 @@ export class HrEmployees implements OnInit {
   ];
 
   employmentTypeOptions = [
-    { label: 'Full Time', value: 'Full Time' },
+    { label: 'Full-time', value: 'Full-time' },
+    { label: 'Part-time', value: 'Part-time' },
     { label: 'Contract', value: 'Contract' },
-    { label: 'Intern', value: 'Intern' }
+    { label: 'Intern', value: 'Intern' },
+    { label: 'Temporary', value: 'Temporary' }
   ];
 
   roleOptions = [
@@ -169,12 +171,11 @@ export class HrEmployees implements OnInit {
       dateOfBirth: [null, Validators.required],
 
       email: ['', [Validators.required, Validators.email]],
-      mobileNumber: ['', [Validators.pattern(/^[0-9]{10,11}$/)]
-      ],
+      mobileNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
 
       department: [null, Validators.required],
       designation: [null, Validators.required],
-      employmentType: ['Full Time', Validators.required],
+      employmentType: ['Full-time', Validators.required],
       joiningDate: [new Date(), Validators.required],
 
       role: ['ESS', Validators.required],
