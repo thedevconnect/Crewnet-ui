@@ -1,11 +1,14 @@
 <div class="layout-wrapper">
   <!-- Sidebar -->
-  <aside class="sidebar" [class.sidebar-expanded]="sidebarOpen()" [class.sidebar-collapsed]="!sidebarOpen()">
-
+  <aside
+    class="sidebar"
+    [class.sidebar-expanded]="sidebarOpen()"
+    [class.sidebar-collapsed]="!sidebarOpen()"
+  >
     <!-- Logo Section with Company Name -->
     <div class="sidebar-logo">
       <a [routerLink]="getDashboardRoute()" class="logo-link">
-        <img src="assets/img/OBLO.png" alt="oblo Logo" class="logo-image">
+        <img src="assets/img/OBLO.png" alt="oblo Logo" class="logo-image" />
         @if (sidebarOpen()) {
         <span class="logo-text"> </span>
         }
@@ -17,8 +20,13 @@
       @for (menu of menuItemsWithSubmenu(); track menu.menu) {
       <div class="menu-item-wrapper">
         <!-- Menu Link -->
-        <a [routerLink]="menu.route" routerLinkActive="menu-item-active" class="menu-button"
-          [class.justify-center]="!sidebarOpen()" [class.justify-start]="sidebarOpen()">
+        <a
+          [routerLink]="menu.route"
+          routerLinkActive="menu-item-active"
+          class="menu-button"
+          [class.justify-center]="!sidebarOpen()"
+          [class.justify-start]="sidebarOpen()"
+        >
           <i [class]="'pi ' + menu.icon"></i>
           @if (sidebarOpen()) {
           <span>{{ menu.menu }}</span>
@@ -31,12 +39,17 @@
 
   <!-- Main Content Area -->
   <div class="main-content-area" [class.sidebar-closed]="!sidebarOpen()">
-
     <!-- Header Component - Fixed -->
     @if (userDetails(); as user) {
     <header class="header-fixed">
-      <app-header [user]="user" [sidebarOpen]="sidebarOpen()" [selectedRoleId]="selectedRoleId()" (onLogout)="logout()"
-        (onRoleChange)="onRoleChange($event)" (onToggleSidebar)="toggleSidebar()" />
+      <app-header
+        [user]="user"
+        [sidebarOpen]="sidebarOpen()"
+        [selectedRoleId]="selectedRoleId()"
+        (onLogout)="logout()"
+        (onRoleChange)="onRoleChange($event)"
+        (onToggleSidebar)="toggleSidebar()"
+      />
     </header>
     }
 
@@ -49,9 +62,7 @@
     <footer class="content-footer">
       <div class="footer-content">
         <span>© 2025 sam tyagi Pvt. Ltd.</span>
-        <span class="footer-links">
-          Privacy · Terms
-        </span>
+        <span class="footer-links"> Privacy · Terms </span>
       </div>
     </footer>
   </div>

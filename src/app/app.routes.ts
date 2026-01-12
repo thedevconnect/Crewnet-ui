@@ -13,13 +13,16 @@ import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
 
 // ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
+import { EmpProfileSetup } from './ess-components/emp-profile-setup/emp-profile-setup';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full', },
-  { path: 'login', component: Login, },
-  { path: 'register', component: Register, },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
   {
-    path: '', component: Layout, canActivate: [authGuard],
+    path: '',
+    component: Layout,
+    canActivate: [authGuard],
     children: [
       // HR Admin Routes
       {
@@ -35,16 +38,17 @@ export const routes: Routes = [
         path: 'ess',
         children: [
           { path: 'dashboard', component: EssDashboard },
-          { path: 'HrEmployees', component: HrEmployees },
+          { path: 'emp-profile-setup', component: EmpProfileSetup },
+          { path: 'ess-employee', component: EssEmployee },
           { path: 'attendance', component: Attendance },
           { path: 'leaves', component: Leaves },
         ],
       },
-      { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full', },
-      { path: 'HrEmployees', redirectTo: '/hr-admin/HrEmployees', pathMatch: 'full', },
-      { path: 'attendance', redirectTo: '/hr-admin/attendance', pathMatch: 'full', },
-      { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full', },
+      { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full' },
+      { path: 'HrEmployees', redirectTo: '/hr-admin/HrEmployees', pathMatch: 'full' },
+      { path: 'attendance', redirectTo: '/hr-admin/attendance', pathMatch: 'full' },
+      { path: 'leaves', redirectTo: '/hr-admin/leaves', pathMatch: 'full' },
     ],
   },
-  { path: '**', redirectTo: '/hr-admin/dashboard', },
+  { path: '**', redirectTo: '/hr-admin/dashboard' },
 ];

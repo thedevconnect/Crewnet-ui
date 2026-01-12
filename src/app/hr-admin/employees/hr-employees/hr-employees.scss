@@ -1,32 +1,10 @@
-// Minimal SCSS - Using Tailwind for most styling
-// Only component-specific overrides if needed
-
+/* Action Menu Styles */
 ::ng-deep {
-  // PrimeNG Panel styling
-  .p-panel {
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    
-    .p-panel-header {
-      background-color: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 1rem 1.25rem;
-      font-weight: 600;
-      color: #1f2937;
-    }
-    
-    .p-panel-content {
-      padding: 1.25rem;
-    }
-  }
-
-  // PrimeNG Drawer responsive width
-  .p-drawer {
-    @media (max-width: 768px) {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
+  /* Menu positioning and appearance */
+  .p-menu {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 0.5rem !important;
+    border: 1px solid #e5e7eb !important;
   }
 }
 

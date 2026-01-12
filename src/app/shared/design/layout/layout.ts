@@ -33,12 +33,12 @@ interface RoleOption {
     RouterLinkActive,
     ToastModule,
     ConfirmDialogModule,
-    Header
+    Header,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService],
 })
 export class Layout {
   private readonly authService = inject(AuthService);
@@ -49,25 +49,27 @@ export class Layout {
 
   protected readonly userDetails = computed<UserDetails>(() => {
     const user = this.currentUser();
-    return user ? {
-      name: user.name,
-      email: user.email || '',
-      role: user.role || 'User'
-    } : {
-      name: 'Guest User',
-      email: 'guest@oblo.com',
-      role: 'Guest'
-    };
+    return user
+      ? {
+          name: user.name,
+          email: user.email || '',
+          role: user.role || 'User',
+        }
+      : {
+          name: 'Guest User',
+          email: 'guest@oblo.com',
+          role: 'Guest',
+        };
   });
 
   protected readonly roleList: RoleOption[] = [
+    { rolDes: 'ESS', roleId: 'ess' },
     { rolDes: 'HR Admin', roleId: 'hrAdmin' },
-    { rolDes: 'ESS', roleId: 'ess' }
   ];
 
   protected readonly selectedRoleId = signal<string>('hrAdmin');
 
-  private readonly hrMenuItems: MenuItem[] = [
+  readonly hrMenuItems: MenuItem[] = [
     { menu: 'Dashboard', icon: 'pi-home', route: '/hr-admin/dashboard' },
     { menu: 'Employee Onboarding', icon: 'pi-users', route: '/hr-admin/HrEmployees' },
     { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/hr-admin/leaves' },
@@ -77,11 +79,12 @@ export class Layout {
     { menu: 'Reports', icon: 'pi-file', route: '/hr-admin/reports' },
     { menu: 'Settings', icon: 'pi-cog', route: '/hr-admin/settings' },
     { menu: 'Tickets', icon: 'pi-ticket', route: '/hr-admin/tickets' },
-    { menu: 'Logout', icon: 'pi-sign-out', route: '/hr-admin/logout' }
+    { menu: 'Logout', icon: 'pi-sign-out', route: '/hr-admin/logout' },
   ];
 
-  private readonly essMenuItems: MenuItem[] = [
+  readonly essMenuItems: MenuItem[] = [
     { menu: 'Dashboard', icon: 'pi-home', route: '/ess/dashboard' },
+    { menu: 'Employee Profile Setup', icon: 'pi-user', route: '/ess/emp-profile-setup' },
     { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/ess/leaves' },
     { menu: 'Attendance', icon: 'pi-calendar', route: '/ess/attendance' },
     { menu: 'Shifts', icon: 'pi-clock', route: '/ess/shifts' },
@@ -90,7 +93,7 @@ export class Layout {
     { menu: 'Settings', icon: 'pi-cog', route: '/ess/settings' },
     { menu: 'Tickets', icon: 'pi-ticket', route: '/ess/tickets' },
     { menu: 'Holidays', icon: 'pi-calendar-times', route: '/ess/holidays' },
-    { menu: 'Logout', icon: 'pi-sign-out', route: '/ess/logout' }
+    { menu: 'Logout', icon: 'pi-sign-out', route: '/ess/logout' },
   ];
 
   protected readonly menuItemsWithSubmenu = computed<MenuItem[]>(() => {
@@ -105,11 +108,12 @@ export class Layout {
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update(v => !v);
+    this.sidebarOpen.update((v) => !v);
   }
 
   logout(): void {
-    this.authService.logout();
+    this.router.navigate(['/login']);
+    //    this.authService.logout();
   }
 
   getDashboardRoute(): string {

@@ -1,0 +1,46 @@
+// PrimeNG Panel Styling
+:host ::ng-deep {
+  .p-panel {
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .p-panel-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #1f2937;
+      padding: 0.75rem 1rem;
+    }
+
+    .p-panel-content {
+      padding: 1rem;
+    }
+  }
+
+  // Form validation styling
+  .p-invalid {
+    border-color: #ef4444 !important;
+  }
+
+  .p-inputtext:focus,
+  .p-select:focus-within,
+  .p-datepicker:focus-within {
+    border-color: #1976D2;
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+  }
+
+  // Drawer styling
+  .p-drawer {
+    .p-drawer-content {
+      overflow-y: auto;
+    }
+  }
+
+  // FileUpload styling
+  .p-fileupload {
+    .p-button {
+      font-size: 0.875rem;
+    }
+  }
+}

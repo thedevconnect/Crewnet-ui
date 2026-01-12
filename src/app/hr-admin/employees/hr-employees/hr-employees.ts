@@ -1,11 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 import { MessageService, MenuItem } from 'primeng/api';
 
@@ -53,12 +48,12 @@ import { EmployeeService } from '../../../core/services/employee.service';
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-employees.html',
-  styleUrls: ['./hr-employees.scss']
+  styleUrls: ['./hr-employees.scss'],
 })
 export class HrEmployees implements OnInit {
-  protected readonly breadcrumbItems = computed<MenuItem[]>(() => [
+  breadcrumbItems = computed<MenuItem[]>(() => [
     { label: 'Dashboard', routerLink: '/dashboard' },
-    { label: 'Employees' }
+    { label: 'Employees', title: 'Employees' },
   ]);
 
   private employeeService = inject(EmployeeService);
@@ -75,7 +70,6 @@ export class HrEmployees implements OnInit {
   header = signal(' Add New Employee11');
   headerIcon = signal('pi pi-user-plus');
 
-
   showEmployeeIdentity = signal(true);
   showPersonalDetails = signal(true);
   showContactDetails = signal(true);
@@ -86,25 +80,25 @@ export class HrEmployees implements OnInit {
 
   statusOptions = [
     { label: 'Active', value: 'Active' },
-    { label: 'Inactive', value: 'Inactive' }
+    { label: 'Inactive', value: 'Inactive' },
   ];
 
   genderOptions = [
     { label: 'Male', value: 'Male' },
     { label: 'Female', value: 'Female' },
-    { label: 'Other', value: 'Other' }
+    { label: 'Other', value: 'Other' },
   ];
 
   departmentOptions = [
     { label: 'IT', value: 'IT' },
     { label: 'HR', value: 'HR' },
-    { label: 'Sales', value: 'Sales' }
+    { label: 'Sales', value: 'Sales' },
   ];
 
   designationOptions = [
     { label: 'Developer', value: 'Developer' },
     { label: 'Manager', value: 'Manager' },
-    { label: 'Analyst', value: 'Analyst' }
+    { label: 'Analyst', value: 'Analyst' },
   ];
 
   employmentTypeOptions = [
@@ -112,7 +106,7 @@ export class HrEmployees implements OnInit {
     { label: 'Part-time', value: 'Part-time' },
     { label: 'Contract', value: 'Contract' },
     { label: 'Intern', value: 'Intern' },
-    { label: 'Temporary', value: 'Temporary' }
+    { label: 'Temporary', value: 'Temporary' },
   ];
 
   roleOptions = [
@@ -121,10 +115,7 @@ export class HrEmployees implements OnInit {
     { label: 'HR Manager', value: 'HR Manager' },
   ];
 
-  constructor(
-    private fb: FormBuilder,
-    private messageService: MessageService
-  ) { }
+  constructor(private fb: FormBuilder, private messageService: MessageService) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -140,7 +131,7 @@ export class HrEmployees implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Employees loaded successfully'
+            detail: 'Employees loaded successfully',
           });
         } else {
           this.employees.set([]);
@@ -152,11 +143,11 @@ export class HrEmployees implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error?.message || 'Failed to load employees'
+          detail: error.error?.message || 'Failed to load employees',
         });
         this.loading.set(false);
         this.employees.set([]);
-      }
+      },
     });
   }
 
@@ -180,19 +171,15 @@ export class HrEmployees implements OnInit {
 
       role: ['ESS', Validators.required],
       username: [{ value: '', disabled: true }],
-      firstLogin: [true]
+      firstLogin: [true],
     });
 
-    this.employeeForm.get('email')?.valueChanges.subscribe(email => {
+    this.employeeForm.get('email')?.valueChanges.subscribe((email) => {
       if (email && email.includes('@')) {
-        this.employeeForm.patchValue(
-          { username: email.split('@')[0] },
-          { emitEvent: false }
-        );
+        this.employeeForm.patchValue({ username: email.split('@')[0] }, { emitEvent: false });
       }
     });
   }
-
 
   showDialog(): void {
     this.drawerMode.set('add');
@@ -217,39 +204,12 @@ export class HrEmployees implements OnInit {
     this.visible.set(true);
   }
 
-  getActionMenuItems(employee: any): MenuItem[] {
-    return [
-      {
-        label: 'View',
-        icon: 'pi pi-eye',
-        command: () => {
-          this.viewEmployee(employee);
-        }
-      },
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => {
-          this.editEmployee(employee);
-        }
-      },
-      {
-        separator: true
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        styleClass: 'text-red-600',
-        command: () => {
-          this.deleteEmployee(employee);
-        }
-      }
-    ];
-  }
 
   deleteEmployee(employee: any): void {
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete ${employee.firstName || employee.first_name} ${employee.lastName || employee.last_name}?`,
+      message: `Are you sure you want to delete ${employee.firstName || employee.first_name} ${
+        employee.lastName || employee.last_name
+      }?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
       acceptButtonStyleClass: 'p-button-danger',
@@ -259,7 +219,7 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
-              detail: response.message || 'Employee deleted successfully'
+              detail: response.message || 'Employee deleted successfully',
             });
             this.loadEmployees();
           },
@@ -268,22 +228,28 @@ export class HrEmployees implements OnInit {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: error.error?.message || 'Failed to delete employee'
+              detail: error.error?.message || 'Failed to delete employee',
             });
-          }
+          },
         });
-      }
+      },
     });
   }
 
   private populateForm(employee: any): void {
     // Support both camelCase (from API) and snake_case (legacy)
-    const dateOfBirth = employee.dateOfBirth || employee.date_of_birth ? new Date(employee.dateOfBirth || employee.date_of_birth) : null;
-    const joiningDate = employee.joiningDate || employee.joining_date ? new Date(employee.joiningDate || employee.joining_date) : new Date();
+    const dateOfBirth =
+      employee.dateOfBirth || employee.date_of_birth
+        ? new Date(employee.dateOfBirth || employee.date_of_birth)
+        : null;
+    const joiningDate =
+      employee.joiningDate || employee.joining_date
+        ? new Date(employee.joiningDate || employee.joining_date)
+        : new Date();
 
     this.employeeForm.patchValue({
       employeeCode: employee.employeeCode || employee.employee_code || '',
-      status: (employee.status === 'ACTIVE' || employee.status === 'Active') ? 'Active' : 'Inactive',
+      status: employee.status === 'ACTIVE' || employee.status === 'Active' ? 'Active' : 'Inactive',
       firstName: employee.firstName || employee.first_name || '',
       lastName: employee.lastName || employee.last_name || '',
       gender: employee.gender || null,
@@ -296,7 +262,11 @@ export class HrEmployees implements OnInit {
       joiningDate: joiningDate,
       role: employee.role || null,
       username: employee.username || '',
-      firstLogin: employee.firstLogin === true || employee.firstLogin === 1 || employee.first_login === 1 || employee.first_login === true
+      firstLogin:
+        employee.firstLogin === true ||
+        employee.firstLogin === 1 ||
+        employee.first_login === 1 ||
+        employee.first_login === true,
     });
   }
 
@@ -311,19 +281,19 @@ export class HrEmployees implements OnInit {
   toggle(section: string): void {
     switch (section) {
       case 'showEmployeeIdentity':
-        this.showEmployeeIdentity.update(v => !v);
+        this.showEmployeeIdentity.update((v) => !v);
         break;
       case 'showPersonalDetails':
-        this.showPersonalDetails.update(v => !v);
+        this.showPersonalDetails.update((v) => !v);
         break;
       case 'showContactDetails':
-        this.showContactDetails.update(v => !v);
+        this.showContactDetails.update((v) => !v);
         break;
       case 'showJobDetails':
-        this.showJobDetails.update(v => !v);
+        this.showJobDetails.update((v) => !v);
         break;
       case 'showSystemAccess':
-        this.showSystemAccess.update(v => !v);
+        this.showSystemAccess.update((v) => !v);
         break;
     }
   }
@@ -345,7 +315,7 @@ export class HrEmployees implements OnInit {
       role: 'ESS',
       employmentType: 'Full Time',
       joiningDate: new Date(),
-      firstLogin: true
+      firstLogin: true,
     });
     // Disable employee code field after reset (for add mode)
     this.employeeForm.get('employeeCode')?.disable();
@@ -359,7 +329,7 @@ export class HrEmployees implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Validation Error',
-        detail: 'Please fill all required fields correctly.'
+        detail: 'Please fill all required fields correctly.',
       });
       return;
     }
@@ -369,7 +339,9 @@ export class HrEmployees implements OnInit {
     const selectedEmp = this.selectedEmployee();
     const employeeName = isAddMode
       ? `${formValue.firstName} ${formValue.lastName}`
-      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${selectedEmp?.lastName || selectedEmp?.last_name}`;
+      : `${selectedEmp?.firstName || selectedEmp?.first_name} ${
+          selectedEmp?.lastName || selectedEmp?.last_name
+        }`;
 
     // Show confirmation dialog
     this.confirmationService.confirm({
@@ -389,9 +361,9 @@ export class HrEmployees implements OnInit {
         this.messageService.add({
           severity: 'info',
           summary: 'Cancelled',
-          detail: isAddMode ? 'Employee addition cancelled.' : 'Employee update cancelled.'
+          detail: isAddMode ? 'Employee addition cancelled.' : 'Employee update cancelled.',
         });
-      }
+      },
     });
   }
 
@@ -424,7 +396,7 @@ export class HrEmployees implements OnInit {
       joining_date: formatDateOnly(formValue.joiningDate),
       role: formValue.role,
       username: formValue.username,
-      first_login: formValue.firstLogin ? 1 : 0
+      first_login: formValue.firstLogin ? 1 : 0,
     };
 
     if (this.drawerMode() === 'add') {
@@ -437,7 +409,7 @@ export class HrEmployees implements OnInit {
             severity: 'success',
             summary: 'Success',
             detail: `Employee "${formValue.firstName} ${formValue.lastName}" added successfully!`,
-            life: 3000
+            life: 3000,
           });
           this.resetAllForms();
           this.loadEmployees();
@@ -449,9 +421,9 @@ export class HrEmployees implements OnInit {
             severity: 'error',
             summary: 'Error',
             detail: error.error?.message || 'Failed to add employee',
-            life: 5000
+            life: 5000,
           });
-        }
+        },
       });
     } else {
       // Update existing employee
@@ -465,7 +437,7 @@ export class HrEmployees implements OnInit {
               severity: 'success',
               summary: 'Success',
               detail: `Employee "${formValue.firstName} ${formValue.lastName}" updated successfully!`,
-              life: 3000
+              life: 3000,
             });
             this.resetAllForms();
             this.loadEmployees();
@@ -477,9 +449,9 @@ export class HrEmployees implements OnInit {
               severity: 'error',
               summary: 'Error',
               detail: error.error?.message || 'Failed to update employee',
-              life: 5000
+              life: 5000,
             });
-          }
+          },
         });
       }
     }
@@ -499,7 +471,7 @@ export class HrEmployees implements OnInit {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 }
