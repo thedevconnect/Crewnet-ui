@@ -1,11 +1,20 @@
-import { Component, ChangeDetectionStrategy, signal, inject, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  inject,
+  computed,
+  OnInit,
+} from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Header } from '../header/header';
+import { Sidebar } from '../sidebar/sidebar';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user-service';
 
 interface UserDetails {
   name: string;
@@ -26,86 +35,84 @@ interface RoleOption {
 
 @Component({
   selector: 'app-layout',
+  standalone: true,
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
     ToastModule,
     ConfirmDialogModule,
-    Header
+    Header,
+    Sidebar,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [MessageService, ConfirmationService]
+  providers: [MessageService, ConfirmationService],
 })
-export class Layout {
+export class Layout implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
 
   protected readonly sidebarOpen = signal(true);
   protected readonly currentUser = this.authService.getCurrentUser();
 
   protected readonly userDetails = computed<UserDetails>(() => {
     const user = this.currentUser();
-    return user ? {
-      name: user.name,
-      email: user.email || '',
-      role: user.role || 'User'
-    } : {
-      name: 'Guest User',
-      email: 'guest@oblo.com',
-      role: 'Guest'
-    };
+    return user
+      ? {
+          name: user.name,
+          email: user.email || '',
+          role: user.role || 'User',
+        }
+      : {
+          name: 'Guest User',
+          email: 'guest@oblo.com',
+          role: 'Guest',
+        };
   });
 
   protected readonly roleList: RoleOption[] = [
-    { rolDes: 'HR Admin', roleId: 'hrAdmin' },
-    { rolDes: 'ESS', roleId: 'ess' }
+    { rolDes: 'HR Admin', roleId: '1' },
+    { rolDes: 'Manager', roleId: '2' },
+    { rolDes: 'ESS', roleId: '3' }
   ];
 
-  protected readonly selectedRoleId = signal<string>('hrAdmin');
+  protected readonly selectedRoleId = signal<string>('1'); // Default to Admin
 
-  private readonly hrMenuItems: MenuItem[] = [
-    { menu: 'Dashboard', icon: 'pi-home', route: '/hr-admin/dashboard' },
-    { menu: 'Employee Onboarding', icon: 'pi-users', route: '/hr-admin/HrEmployees' },
-    { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/hr-admin/leaves' },
-    { menu: 'Attendance', icon: 'pi-calendar', route: '/hr-admin/attendance' },
-    { menu: 'Shifts', icon: 'pi-clock', route: '/hr-admin/shifts' },
-    { menu: 'Departments', icon: 'pi-building', route: '/hr-admin/departments' },
-    { menu: 'Reports', icon: 'pi-file', route: '/hr-admin/reports' },
-    { menu: 'Settings', icon: 'pi-cog', route: '/hr-admin/settings' },
-    { menu: 'Tickets', icon: 'pi-ticket', route: '/hr-admin/tickets' },
-    { menu: 'Logout', icon: 'pi-sign-out', route: '/hr-admin/logout' }
-  ];
+  ngOnInit(): void {
+    // Initialize menu data if not present in sessionStorage
+    const savedRoleId = sessionStorage.getItem('selectedRoleId');
+    if (savedRoleId) {
+      this.selectedRoleId.set(savedRoleId);
+    } else {
+      // Set default role and load menu data
+      sessionStorage.setItem('selectedRoleId', '1');
+      const menuData = this.userService.getMenuByRole('1');
+      sessionStorage.setItem('CurrentUserMenu', JSON.stringify(menuData.table1));
+      sessionStorage.setItem('CurrentUserMenusub', JSON.stringify(menuData.table2));
+      sessionStorage.setItem('CurrentUserMenusub_level2', JSON.stringify(menuData.table3));
+      if (menuData.table && menuData.table.length > 0) {
+        sessionStorage.setItem('CurrentUserInfo', JSON.stringify(menuData.table[0]));
+      }
+    }
 
-  private readonly essMenuItems: MenuItem[] = [
-    { menu: 'Dashboard', icon: 'pi-home', route: '/ess/dashboard' },
-    { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/ess/leaves' },
-    { menu: 'Attendance', icon: 'pi-calendar', route: '/ess/attendance' },
-    { menu: 'Shifts', icon: 'pi-clock', route: '/ess/shifts' },
-    { menu: 'Departments', icon: 'pi-building', route: '/ess/departments' },
-    { menu: 'Reports', icon: 'pi-file', route: '/ess/reports' },
-    { menu: 'Settings', icon: 'pi-cog', route: '/ess/settings' },
-    { menu: 'Tickets', icon: 'pi-ticket', route: '/ess/tickets' },
-    { menu: 'Holidays', icon: 'pi-calendar-times', route: '/ess/holidays' },
-    { menu: 'Logout', icon: 'pi-sign-out', route: '/ess/logout' }
-  ];
-
-  protected readonly menuItemsWithSubmenu = computed<MenuItem[]>(() => {
-    const roleId = this.selectedRoleId();
-    return roleId === 'ess' ? this.essMenuItems : this.hrMenuItems;
-  });
+    // Subscribe to UserService events to handle role changes from header
+    this.userService.currentEvent.subscribe((event) => {
+      if (event === 'NAV_BAR') {
+        const roleId = sessionStorage.getItem('selectedRoleId') || '1';
+        this.selectedRoleId.set(roleId);
+      }
+    });
+  }
 
   onRoleChange(roleId: string): void {
     this.selectedRoleId.set(roleId);
-    const route = roleId === 'ess' ? '/ess/dashboard' : '/hr-admin/dashboard';
-    this.router.navigate([route]);
+    // Role change and navigation are handled by Header component
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update(v => !v);
+    this.sidebarOpen.update((v) => !v);
   }
 
   logout(): void {
@@ -113,6 +120,16 @@ export class Layout {
   }
 
   getDashboardRoute(): string {
-    return this.selectedRoleId() === 'ess' ? '/ess/dashboard' : '/hr-admin/dashboard';
+    const roleId = this.selectedRoleId();
+    switch (roleId) {
+      case '1': // HR Admin
+        return '/hr-admin/dashboard';
+      case '2': // Manager
+        return '/hr-admin/dashboard';
+      case '3': // ESS
+        return '/ess/dashboard';
+      default:
+        return '/ess/dashboard';
+    }
   }
 }

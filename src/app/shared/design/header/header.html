@@ -1,24 +1,61 @@
-<!-- Header Content -->
+<!-- Header Content - Matching Screenshot Design -->
 <div class="header-content">
   <div class="header-left">
+    <!-- Logo Section - White text with multicolor letters -->
+    <div class="header-logo">
+      <span class="logo-text">
+        <span class="logo-letter" style="color: #FF9800;">o</span>
+        <span class="logo-letter" style="color: #9C27B0;">b</span>
+        <span class="logo-letter" style="color: #2196F3;">l</span>
+        <span class="logo-letter" style="color: #4CAF50;">o</span>
+      </span>
+    </div>
     <button type="button" (click)="toggleSidebar()" class="sidebar-toggle-btn"
       [pTooltip]="sidebarOpen() ? 'Collapse Sidebar' : 'Expand Sidebar'" tooltipPosition="bottom">
-      <i [class]="sidebarOpen() ? 'pi pi-angle-left' : 'pi pi-angle-right'"></i>
+      <i [class]="sidebarOpen() ? 'pi pi-angle-double-left' : 'pi pi-angle-double-right'"></i>
     </button>
   </div>
 
   <div class="header-right">
+    <!-- Location Dropdown (Abohar) -->
+    <div class="location-dropdown">
+      <p-select 
+        [options]="locationList" 
+        optionLabel="label" 
+        optionValue="value" 
+        [(ngModel)]="selectedLocation"
+        [placeholder]="'Abohar'" 
+        [filter]="false" 
+        appendTo="body" 
+        styleClass="header-location-select">
+      </p-select>
+    </div>
+
+    <!-- Role Dropdown (ESS) -->
     <div class="role-dropdown">
-      <p-select [options]="roleList" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="internalSelectedRoleId"
-        [placeholder]="currentRole() || 'Select Role'" [filter]="false" appendTo="body" styleClass="header-role-select"
+      <p-select 
+        [options]="roleList" 
+        optionLabel="rolDes" 
+        optionValue="roleId" 
+        [(ngModel)]="internalSelectedRoleId"
+        [placeholder]="currentRole() || 'Select Role'" 
+        [filter]="false" 
+        appendTo="body" 
+        styleClass="header-role-select"
         (onChange)="onRoleDropdownChange($event)">
       </p-select>
     </div>
+
+    <!-- User Info -->
     <div class="user-info">
-      <span class="user-name">{{ getUserName() }}</span>
-      <p-avatar size="normal" shape="circle" class="user-avatar" (click)="userMenu.toggle($event)">
+      <p-avatar 
+        size="normal" 
+        shape="circle" 
+        class="user-avatar" 
+        (click)="userMenu.toggle($event)">
         <span class="avatar-initial">{{ getUserInitial() }}</span>
       </p-avatar>
+      <span class="user-name">{{ getUserName() }}</span>
       <p-menu #userMenu [model]="userMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
     </div>
   </div>

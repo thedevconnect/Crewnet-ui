@@ -1,0 +1,100 @@
+<!-- Sidebar Container - Fixed position, dynamic width based on state -->
+<div class="fixed md:static inset-y-0 left-0 z-40 bg-[#1976D2] shadow-lg flex flex-col transition-all duration-300 transform md:translate-x-0"
+  [class.w-64]="isSidebarOpen()" 
+  [class.w-16]="!isSidebarOpen()"
+  [ngClass]="{ '-translate-x-full': !isSidebarOpen(), 'translate-x-0': isSidebarOpen() }">
+  
+  <!-- Logo Section - White background with border -->
+  <div class="flex h-16 items-center justify-center bg-[#FFFFFF] p-2 shadow-lg border-b border-[#1976D2]">
+    <a href="/home" class="cursor-pointer">
+        <img 
+        [src]="isSidebarOpen() ? 'assets/logo-full.png' : 'assets/logo-icon.png'"
+        [class.h-10]="isSidebarOpen()" 
+        [class.h-8]="!isSidebarOpen()" 
+        alt="Logo" 
+        class="mt-2">
+    </a>
+  </div>
+
+  <!-- Navigation Menu - Scrollable area -->
+  <nav class="flex-1 overflow-y-auto custom-scroll mt-2 space-y-1">
+    <ng-container *ngFor="let menu of currentusermenu">
+      <div class="relative group">
+        <!-- Main Menu Button - Submenu वाले menu के लिए -->
+        <button 
+          *ngIf="hasSubmenu(menu.menu)" 
+          (mouseenter)="onHoverMenu(menu.menu, $event)"
+          (mouseleave)="onLeaveMenu()" 
+          (click)="toggleSubmenu(menu.menu, true)"
+          class="flex items-center w-full p-3 font-medium text-white rounded-lg hover:bg-[#3581cc] transition-colors"
+          [ngClass]="{'justify-center': !isSidebarOpen(), 'justify-start': isSidebarOpen()}">
+          <i class="pi pi-prime"></i>
+          <span *ngIf="isSidebarOpen()" class="ml-2">{{ menu.menu }}</span>
+        </button>
+
+        <!-- Submenu Container - Sidebar open होने पर visible -->
+        <div 
+          *ngIf="isSidebarOpen() && hasSubmenu(menu.menu)"
+          class="ml-11 space-y-2 overflow-y-auto transition-all duration-300 ease-in-out"
+          [ngClass]="{
+            'max-h-0 opacity-0': !isSubmenuOpen(menu.menu), 
+            'max-h-[400px] opacity-100': isSubmenuOpen(menu.menu)
+          }">
+          
+          <ng-container *ngFor="let sub of getSubmenus(menu.menu)">
+            <!-- Submenu without formValue - Expandable submenu -->
+            <button 
+              *ngIf="!sub.formValue" 
+              (click)="toggleSubmenu(sub.activity)"
+              class="flex items-center w-full p-2 text-xs text-white rounded-lg hover:bg-[#3581cc] transition-colors">
+              {{ sub.activity }}
+              <i class="pi pi-angle-down ml-auto transition-transform" 
+                [ngClass]="{'rotate-180': isSubmenuOpen(sub.activity)}"></i>
+            </button>
+
+            <!-- Submenu with formValue - Clickable navigation item -->
+            <a 
+              *ngIf="sub.formValue"
+              (click)="action(sub.menu, setSubmenuItem(sub.callingPage, sub.formValue), sub.activity, sub.formValue)"
+              class="block p-2 text-xs text-white rounded-lg hover:bg-[#3581cc] cursor-pointer transition-colors">
+              {{ sub.activity }}
+            </a>
+
+            <!-- Level 2 Submenu - Nested submenu items -->
+            <div 
+              *ngIf="hasSubmenuLevel2(sub.activity)"
+              class="ml-4 space-y-1 overflow-y-auto transition-all duration-300 ease-in-out"
+              [ngClass]="{
+                'max-h-0 opacity-0': !isSubmenuOpen(sub.activity), 
+                'max-h-[400px] opacity-100': isSubmenuOpen(sub.activity)
+              }">
+              <a 
+                *ngFor="let lvl2 of getSubmenuLevel2(sub.activity)"
+                (click)="action(lvl2.menu, setSubmenuItem(lvl2.callingPage, lvl2.formValue), lvl2.activity, lvl2.formValue)"
+                class="block p-2 text-xs text-white rounded-lg hover:bg-[#3581cc] cursor-pointer transition-colors">
+                {{ lvl2.activity }}
+              </a>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </nav>
+</div>
+
+<!-- Floating Hover Submenu - Collapsed sidebar के लिए popup menu -->
+<div 
+  *ngIf="hoveredMenuSubmenus.length && !isSidebarOpen()"
+  class="fixed z-50 bg-white rounded-lg shadow-xl max-h-[400px] overflow-auto border border-gray-200"
+  [ngStyle]="{'top.px': hoverMenuPosition?.top, 'left.px': hoverMenuPosition?.left}" 
+  (mouseenter)="keepHover()"
+  (mouseleave)="clearHover()">
+  <ng-container *ngFor="let sub of hoveredMenuSubmenus">
+    <a 
+      *ngIf="sub.formValue"
+      (click)="action(sub.menu, setSubmenuItem(sub.callingPage, sub.formValue), sub.activity, sub.formValue)"
+      class="block p-3 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer whitespace-nowrap border-b border-gray-100 last:border-b-0 transition-colors">
+      {{ sub.activity }}
+    </a>
+  </ng-container>
+</div>

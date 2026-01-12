@@ -1,0 +1,42 @@
+// Sidebar Component Styles
+// Tailwind CSS classes का primary use है, custom scrollbar और animations के लिए additional styles
+
+// Custom Scrollbar Styling
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+// Smooth transitions for menu expand/collapse
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Hover popup menu styles
+.fixed.z-50 {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
