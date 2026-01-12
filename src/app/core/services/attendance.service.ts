@@ -22,8 +22,12 @@ export interface TodayStatusResponse {
   message?: string;
   records?: AttendanceRecord[];
   total_time?: {
+    hours: number;
+    minutes: number;
     formatted: string;
   };
+  last_swipe_in?: string | null;
+  last_swipe_out?: string | null;
 }
 
 export interface AttendanceResponse {

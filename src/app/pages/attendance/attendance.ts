@@ -6,7 +6,7 @@ import { CardModule } from 'primeng/card';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { MessageService } from 'primeng/api';  
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-attendance-page',
@@ -14,10 +14,9 @@ import { MessageService } from 'primeng/api';
   imports: [CommonModule, ButtonModule, CardModule, ToastModule, TooltipModule, DatePipe],
   templateUrl: './attendance.html',
   styleUrl: './attendance.scss',
-  providers: [MessageService]
+  providers: [MessageService],
 })
 export class Attendance implements OnInit, OnDestroy {
-
   attendanceService = inject(AttendanceService);
   authService = inject(AuthService);
   messageService = inject(MessageService);
@@ -28,342 +27,232 @@ export class Attendance implements OnInit, OnDestroy {
 
   todayStatus = signal<TodayStatusResponse | null>(null);
 
-  // Timer functionality
-  elapsedTime = signal<string>('00:00:00');
+  /** TIMER */
+  elapsedTime = signal('00:00:00');
   private timerInterval: any = null;
   private swipeInTime: Date | null = null;
+  private skipTimerRestart = false; // Flag to prevent timer restart
+  private previousTimeInSeconds = 0; // Previous completed sessions time
 
-  // Current time and date
-  currentTime = signal<string>('00:00:00');
-  currentDate = signal<Date>(new Date());
-  private timeInterval: any = null;
+  /** CLOCK */
+  currentTime = signal('00:00:00');
+  currentDate = signal(new Date());
+  private clockInterval: any = null;
 
-  // Attendance records from API
-  attendanceRecords = signal<Array<{
-    id: number;
-    employee_id: number;
-    swipe_in_time: string;
-    swipe_out_time?: string | null;
-    duration?: string;
-    status: 'IN' | 'OUT';
-  }>>([]);
-  totalTime = signal<string>('0h 0m');
+  /** RECORDS */
+  attendanceRecords = signal<any[]>([]);
+  totalTime = signal('0h 0m');
+
+  /* ---------------------------------- INIT ---------------------------------- */
 
   ngOnInit(): void {
-    // Initialize with default NOT_SWIPED status
-    this.todayStatus.set({
-      success: true,
-      status: 'NOT_SWIPED' as const,
-      message: 'Ready to swipe in'
-    });
-    this.startTimeUpdate();
-    // Don't call API on page load - only on Swipe In button click
+    this.startClock();
+    this.loadTodayStatus(); // 🔥 MUST
   }
 
-  startTimeUpdate(): void {
-    this.updateTime();
-    this.timeInterval = setInterval(() => {
-      this.updateTime();
-    }, 1000);
+  /* ---------------------------------- CLOCK --------------------------------- */
+
+  startClock(): void {
+    this.updateClock();
+    this.clockInterval = setInterval(() => this.updateClock(), 1000);
   }
 
-  updateTime(): void {
+  updateClock(): void {
     const now = new Date();
     this.currentDate.set(now);
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
-    this.currentTime.set(`${hours}:${minutes}:${seconds}`);
+    this.currentTime.set(
+      `${String(now.getHours()).padStart(2, '0')}:` +
+        `${String(now.getMinutes()).padStart(2, '0')}:` +
+        `${String(now.getSeconds()).padStart(2, '0')}`
+    );
   }
+
+  /* -------------------------------- EMPLOYEE -------------------------------- */
 
   getEmployeeId(): number {
     const user = this.authService.getCurrentUser()();
-    if (user && user.id) {
-      const employeeId = parseInt(user.id, 10);
-      if (isNaN(employeeId)) {
-        console.error('Invalid employee ID from user:', user.id);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Invalid employee ID. Please contact administrator.'
-        });
-        return 0; // Return 0 to trigger error
-      }
-      return employeeId;
-    }
-    // If no user, show error
-    console.error('No user found in auth service');
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'User not authenticated. Please login again.'
-    });
-    return 0; // Return 0 to trigger error
+    return user?.id ? Number(user.id) : 0;
   }
 
-  loadTodayStatus(): void {
-    this.loadingStatus.set(true);
-    const employeeId = this.getEmployeeId();
+  /* ----------------------------- LOAD STATUS -------------------------------- */
 
-    this.attendanceService.getTodayStatus(employeeId).subscribe({
+  loadTodayStatus(): void {
+    const empId = this.getEmployeeId();
+    if (!empId) return;
+
+    this.loadingStatus.set(true);
+
+    this.attendanceService.getTodayStatus(empId).subscribe({
       next: (res: TodayStatusResponse) => {
         this.todayStatus.set(res);
         this.loadingStatus.set(false);
 
-        // Update records from API response
-        if (res.records && res.records.length > 0) {
-          this.attendanceRecords.set(res.records);
-        } else {
-          this.attendanceRecords.set([]);
+        this.attendanceRecords.set(res.records || []);
+        this.totalTime.set(res.total_time?.formatted || '0h 0m');
+
+        // Calculate previous time from completed sessions
+        const hours = res.total_time?.hours || 0;
+        const minutes = res.total_time?.minutes || 0;
+        this.previousTimeInSeconds = hours * 3600 + minutes * 60;
+
+        // 🔥 Don't touch timer if we just started it manually
+        if (this.skipTimerRestart) {
+          this.skipTimerRestart = false; // Reset flag after using
+          return;
         }
 
-        // Update total time
-        if (res.total_time?.formatted) {
-          this.totalTime.set(res.total_time.formatted);
-        } else {
-          this.totalTime.set('0h 0m');
-        }
+        // Resume timer if status is IN and we have last_swipe_in time
+        if (res.status === 'IN') {
+          // If timer is already running, keep it
+          if (this.timerInterval) {
+            return;
+          }
 
-        // Start timer if swipe in is done but swipe out is not
-        if (res.status === 'IN' && res.swipe_in_time) {
-          this.startTimer(new Date(res.swipe_in_time));
+          // Start timer using last_swipe_in (most recent swipe in)
+          if (res.last_swipe_in) {
+            this.startTimer(new Date(res.last_swipe_in));
+          }
         } else {
-          this.stopTimer();
-          this.elapsedTime.set('00:00:00');
+          // Status is OUT - show total time and stop timer
+          this.displayTotalTime();
+          if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+          }
+          this.swipeInTime = null;
         }
       },
-      error: (error: any) => {
-        console.error('Error loading attendance status:', error);
-        this.todayStatus.set({
-          success: true,
-          status: 'NOT_SWIPED' as const,
-          message: 'No attendance record found for today'
-        });
+      error: () => {
         this.loadingStatus.set(false);
-        this.attendanceRecords.set([]);
-        this.totalTime.set('0h 0m');
         this.stopTimer();
-        this.elapsedTime.set('00:00:00');
-      }
+      },
     });
   }
 
   refreshAttendance(): void {
     this.loadTodayStatus();
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Refreshed',
-      detail: 'Attendance data refreshed'
-    });
   }
 
+  /* ------------------------------- SWIPE IN --------------------------------- */
 
   doSwipeIn(): void {
-    this.loadingSwipeIn.set(true);
-    const employeeId = this.getEmployeeId();
-    
-    if (!employeeId || employeeId === 0) {
-      this.loadingSwipeIn.set(false);
-      return;
-    }
-    
-    const swipeInTime = new Date();
+    const empId = this.getEmployeeId();
+    if (!empId) return;
 
-    this.attendanceService.swipeIn(employeeId).subscribe({
-      next: (res: any) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: res.message || 'Swipe In Successful!'
-        });
-        // Reset timer first
-        this.stopTimer();
-        // Update status immediately to change button
+    this.loadingSwipeIn.set(true);
+    const swipeTime = new Date();
+
+    this.attendanceService.swipeIn(empId).subscribe({
+      next: () => {
         this.todayStatus.set({
           success: true,
           status: 'IN',
-          swipe_in_time: swipeInTime.toISOString(),
-          swipe_out_time: null
+          swipe_in_time: swipeTime.toISOString(),
+          swipe_out_time: null,
         });
-        // Start timer immediately with fresh start
-        this.startTimer(swipeInTime);
-        // Reload status to get full data
-        this.loadTodayStatus();
+
+        // ✅ Start timer immediately and set flag to prevent restart
+        this.skipTimerRestart = true;
+        this.startTimer(swipeTime);
+
+        // Reload status after brief delay
+        setTimeout(() => {
+          this.loadTodayStatus();
+        }, 500);
       },
-      error: (error: any) => {
-        let errorMessage = 'Swipe In Failed! Please try again.';
-        
-        if (error.status === 404) {
-          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
-        } else if (error.error?.error) {
-          errorMessage = error.error.error;
-          // Special handling for "Employee not found"
-          if (error.error.error === 'Employee not found') {
-            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
-          }
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage
-        });
-        this.loadingSwipeIn.set(false);
-      },
-      complete: () => this.loadingSwipeIn.set(false)
+      complete: () => this.loadingSwipeIn.set(false),
     });
   }
+
+  /* ------------------------------- SWIPE OUT -------------------------------- */
 
   doSwipeOut(): void {
-    if (this.todayStatus()?.status !== 'IN') {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please swipe in first!'
-      });
-      return;
-    }
+    const empId = this.getEmployeeId();
+    if (!empId) return;
 
     this.loadingSwipeOut.set(true);
-    const employeeId = this.getEmployeeId();
-    
-    if (!employeeId || employeeId === 0) {
-      this.loadingSwipeOut.set(false);
-      return;
-    }
 
-    this.attendanceService.swipeOut(employeeId).subscribe({
-      next: (res: any) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: res.message || 'Swipe Out Successful!'
-        });
-        // Stop timer and reset to 00:00:00
-        this.stopTimer();
-        this.elapsedTime.set('00:00:00');
-        // Reload status to update UI
-        this.loadTodayStatus();
-      },
-      error: (error: any) => {
-        let errorMessage = 'Swipe Out Failed! Please try again.';
+    this.attendanceService.swipeOut(empId).subscribe({
+      next: () => {
+        // Stop timer but keep showing total time (don't reset to 00:00:00)
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = null;
+        this.swipeInTime = null;
         
-        if (error.status === 404) {
-          errorMessage = 'Attendance endpoint not found. Please check backend server configuration.';
-        } else if (error.error?.error) {
-          errorMessage = error.error.error;
-          // Special handling for "Employee not found"
-          if (error.error.error === 'Employee not found') {
-            errorMessage = 'Employee not found. Please ensure your employee profile is set up correctly.';
-          }
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorMessage
-        });
-        this.loadingSwipeOut.set(false);
+        // Reload status to get updated total_time
+        setTimeout(() => this.loadTodayStatus(), 400);
       },
-      complete: () => {
-        this.loadingSwipeOut.set(false);
-      }
+      complete: () => this.loadingSwipeOut.set(false),
     });
   }
 
+  /* -------------------------------- TIMER ----------------------------------- */
 
-  startTimer(swipeInTime: Date): void {
-    this.swipeInTime = swipeInTime;
-    this.stopTimer(); // Clear any existing timer
+  startTimer(start: Date): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.swipeInTime = start;
 
-    // Update immediately
-    const now = new Date();
-    const diff = now.getTime() - swipeInTime.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    this.elapsedTime.set(
-      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-    );
+    const tick = () => {
+      if (!this.swipeInTime) return;
+      
+      // Current session elapsed time in milliseconds
+      const currentSessionMs = Date.now() - this.swipeInTime.getTime();
+      const currentSessionSeconds = Math.floor(currentSessionMs / 1000);
+      
+      // Total time = previous completed sessions + current session
+      const totalSeconds = this.previousTimeInSeconds + currentSessionSeconds;
 
-    // Then update every second
-    this.timerInterval = setInterval(() => {
-      if (this.swipeInTime) {
-        const now = new Date();
-        const diff = now.getTime() - this.swipeInTime.getTime();
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
 
-        this.elapsedTime.set(
-          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
-        );
-      }
-    }, 1000);
+      this.elapsedTime.set(
+        `${String(h).padStart(2, '0')}:` +
+          `${String(m).padStart(2, '0')}:` +
+          `${String(s).padStart(2, '0')}`
+      );
+    };
+
+    tick(); // Initial tick
+    this.timerInterval = setInterval(tick, 1000);
   }
 
   stopTimer(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
-    }
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.timerInterval = null;
     this.swipeInTime = null;
+    this.previousTimeInSeconds = 0;
     this.elapsedTime.set('00:00:00');
   }
 
-  getElapsedHours(): string {
-    const time = this.elapsedTime();
-    const parts = time.split(':');
-    return parts[0] || '00';
+  displayTotalTime(): void {
+    // Display the total completed time (when status is OUT)
+    const h = Math.floor(this.previousTimeInSeconds / 3600);
+    const m = Math.floor((this.previousTimeInSeconds % 3600) / 60);
+    const s = this.previousTimeInSeconds % 60;
+
+    this.elapsedTime.set(
+      `${String(h).padStart(2, '0')}:` +
+        `${String(m).padStart(2, '0')}:` +
+        `${String(s).padStart(2, '0')}`
+    );
   }
 
-  getElapsedMinutes(): string {
-    const time = this.elapsedTime();
-    const parts = time.split(':');
-    return parts[1] || '00';
+  /* -------------------------------- FORMAT ---------------------------------- */
+
+  formatTime(date: string): string {
+    const d = new Date(date);
+    return (
+      `${String(d.getHours()).padStart(2, '0')}:` +
+      `${String(d.getMinutes()).padStart(2, '0')}:` +
+      `${String(d.getSeconds()).padStart(2, '0')}`
+    );
   }
 
-  getElapsedSeconds(): string {
-    const time = this.elapsedTime();
-    const parts = time.split(':');
-    return parts[2] || '00';
-  }
-
-  formatTime(dateString: string): string {
-    const date = new Date(dateString);
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-  }
-
-  getTotalDuration(): string {
-    const status = this.todayStatus();
-    if (status?.swipe_in_time && status?.swipe_out_time) {
-      const swipeIn = new Date(status.swipe_in_time);
-      const swipeOut = new Date(status.swipe_out_time);
-      const diff = swipeOut.getTime() - swipeIn.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      return `${hours}h ${minutes}m ${seconds}s`;
-    }
-    return '-';
-  }
-
+  /* -------------------------------- DESTROY --------------------------------- */
 
   ngOnDestroy(): void {
     this.stopTimer();
-    if (this.timeInterval) {
-      clearInterval(this.timeInterval);
-    }
+    if (this.clockInterval) clearInterval(this.clockInterval);
   }
 }
