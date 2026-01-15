@@ -16,55 +16,40 @@
 
       <!-- Table Section -->
       <div class="table-container">
-        <p-table [value]="employees()" [paginator]="true" [rows]="pageSize()" [totalRecords]="totalRecords()"
-          [first]="(currentPage() - 1) * pageSize()" [loading]="loading()" [lazy]="true"
-          (onLazyLoad)="onPageChange($event)" [sortMode]="'single'" [sortField]="sortBy()"
-          [sortOrder]="sortOrder() === 'asc' ? 1 : -1" responsiveLayout="scroll" [tableStyle]="{'min-width': '50rem'}">
-          <ng-template pTemplate="header">
-            <tr>
-              <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-              <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-              <th>Phone</th>
-              <th>Department</th>
-              <th>Status</th>
-              <th pSortableColumn="joiningDate">Joining Date <p-sortIcon field="joiningDate"></p-sortIcon></th>
-              <th class="table-action-header">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-e>
-            <tr>
-              <td>{{ e.name }}</td>
-              <td>{{ e.email }}</td>
-              <td>{{ e.phone }}</td>
-              <td>{{ e.department }}</td>
-              <td>
-                <span class="status-badge" [ngClass]="e.status === 'Active' ? 'status-active' : 'status-inactive'">
-                  {{ e.status }}
-                </span>
-              </td>
-              <td>{{ e.joiningDate }}</td>
-              <td class="table-action-cell">
-                <button type="button" #actionButton class="action-button"
-                  (click)="actionPanel.toggle($event, actionButton)">
-                  <i class="pi pi-ellipsis-v action-icon"></i>
+        <app-table-template 
+          [columns]="columns" 
+          [fetchData]="fetchEmployeesData"
+          [actionTemplate]="actionTemplateRef"
+          [jsonTemplate]="statusTemplateRef">
+        </app-table-template>
+
+        <ng-template #actionTemplateRef let-employee="$implicit">
+          <div class="table-action-cell">
+            <button type="button" #actionButton class="action-button"
+              (click)="actionPanel.toggle($event, actionButton)">
+              <i class="pi pi-ellipsis-v action-icon"></i>
+            </button>
+            <p-popover #actionPanel>
+              <div class="action-menu">
+                <button (click)="onView(employee); actionPanel.hide()" title="View" class="action-menu-item">
+                  <i class="pi pi-eye action-menu-icon"></i> View
                 </button>
-                <p-popover #actionPanel>
-                  <div class="action-menu">
-                    <button (click)="onView(e); actionPanel.hide()" title="View" class="action-menu-item">
-                      <i class="pi pi-eye action-menu-icon"></i> View
-                    </button>
-                    <button (click)="onEdit(e); actionPanel.hide()" title="Edit" class="action-menu-item">
-                      <i class="pi pi-pencil action-menu-icon"></i> Edit
-                    </button>
-                    <button (click)="onDelete(e); actionPanel.hide()" title="Delete" class="action-menu-item action-menu-item-delete">
-                      <i class="pi pi-trash action-menu-icon"></i> Delete
-                    </button>
-                  </div>
-                </p-popover>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+                <button (click)="onEdit(employee); actionPanel.hide()" title="Edit" class="action-menu-item">
+                  <i class="pi pi-pencil action-menu-icon"></i> Edit
+                </button>
+                <button (click)="onDelete(employee); actionPanel.hide()" title="Delete" class="action-menu-item action-menu-item-delete">
+                  <i class="pi pi-trash action-menu-icon"></i> Delete
+                </button>
+              </div>
+            </p-popover>
+          </div>
+        </ng-template>
+
+        <ng-template #statusTemplateRef let-employee="$implicit">
+          <span class="status-badge" [ngClass]="employee.status === 'Active' ? 'status-active' : 'status-inactive'">
+            {{ employee.status }}
+          </span>
+        </ng-template>
       </div>
     </div>
   </div>

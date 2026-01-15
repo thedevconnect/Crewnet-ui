@@ -11,14 +11,18 @@ import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TextareaModule } from 'primeng/textarea';
+import { TemplateRef, ViewChild } from '@angular/core';
+import { TableTemplate, TableColumn } from '../../table-template/table-template';
 import { LeaveService, Leave } from '../../core/services/leave.service';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-leaves',
   imports: [
     SelectModule, ButtonModule, DrawerModule, InputTextModule,
     TextareaModule, PanelModule, ReactiveFormsModule, ToastModule,
-    CommonModule, DatePickerModule, TableModule,
+    CommonModule, DatePickerModule, TableModule, TableTemplate,
   ],
   providers: [MessageService],
   templateUrl: './leaves.html',
@@ -31,13 +35,28 @@ export class Leaves implements OnInit {
   private leaveService = inject(LeaveService);
   private messageService = inject(MessageService);
 
+  @ViewChild('actionTemplateRef') actionTemplateRef!: TemplateRef<any>;
+  @ViewChild(TableTemplate) tableTemplate!: TableTemplate;
+
   leaveDrawerVisible = signal(false);
   isSubmitting = signal(false);
   header = signal('Add New Leave');
   headerIcon = signal('pi pi-calendar-plus');
   editingLeaveId = signal<number | null>(null);
-  leaves = signal<Leave[]>([]);
-  loading = signal(false);
+
+  // Table properties
+  columns: TableColumn[] = [
+    { key: 'id', header: 'ID', isVisible: true },
+    { key: 'fromDate', header: 'From Date', isVisible: true, isSortable: true },
+    { key: 'toDate', header: 'To Date', isVisible: true, isSortable: true },
+    { key: 'sessionFrom', header: 'Session From', isVisible: true },
+    { key: 'sessionTo', header: 'Session To', isVisible: true },
+    { key: 'leaveType', header: 'Leave Type', isVisible: true },
+    { key: 'reason', header: 'Reason', isVisible: true },
+    { key: 'ccTo', header: 'Cc To', isVisible: true },
+    { key: 'createdAt', header: 'Created At', isVisible: true, isSortable: true },
+    { key: 'actions', header: 'Actions', isVisible: true, isCustom: true },
+  ];
 
   leaveTypes = [
     { label: 'Loss of Pay(LoP)', value: 'LoP' },
@@ -63,31 +82,51 @@ export class Leaves implements OnInit {
   });
 
   ngOnInit() {
-    this.loadLeaves();
+    // Table will auto-load via fetchData
   }
 
-  loadLeaves() {
-    this.loading.set(true);
-    this.leaveService.getAll().subscribe({
-      next: (response) => {
+  // Data fetch function for table-template
+  fetchLeavesData = async (params: any) => {
+    return this.leaveService.getAll({
+      page: params.page,
+      limit: params.limit,
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+    }).pipe(
+      map((response) => {
         if (response.success && response.data.leaves) {
-          const mappedLeaves = response.data.leaves.map(apiLeave => 
-            this.leaveService.mapApiResponseToLeave(apiLeave)
-          );
-          this.leaves.set(mappedLeaves);
+          const mappedLeaves = response.data.leaves.map((apiLeave: any) => {
+            const leave = this.leaveService.mapApiResponseToLeave(apiLeave);
+            return {
+              ...leave,
+              fromDate: this.formatDisplayDate(leave.fromDate),
+              toDate: this.formatDisplayDate(leave.toDate),
+              createdAt: this.formatDisplayDate(leave.createdAt),
+            };
+          });
+          return {
+            data: mappedLeaves,
+            total: response.data.pagination?.total || mappedLeaves.length
+          };
         }
-      },
-      error: (error) => {
+        return { data: [], total: 0 };
+      }),
+      catchError((error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: error.error || 'Failed to load leaves'
         });
-      },
-      complete: () => {
-        this.loading.set(false);
-      }
-    });
+        return of({ data: [], total: 0 });
+      })
+    );
+  };
+
+  refreshTableData(): void {
+    if (this.tableTemplate) {
+      this.tableTemplate.loadData();
+    }
   }
 
   openLeaveDrawer() {
@@ -165,7 +204,7 @@ export class Leaves implements OnInit {
             detail: id ? 'Leave updated successfully' : 'Leave created successfully'
           });
           this.closeLeaveDrawer();
-          this.loadLeaves();
+          this.refreshTableData();
         }
       },
       error: (error) => {
@@ -191,7 +230,7 @@ export class Leaves implements OnInit {
               summary: 'Success',
               detail: 'Leave deleted successfully'
             });
-            this.loadLeaves();
+            this.refreshTableData();
           }
         },
         error: (error) => {

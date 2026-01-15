@@ -24,6 +24,10 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { SelectModule } from 'primeng/select';
 import { MenuItem } from 'primeng/api';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { TemplateRef, ViewChild } from '@angular/core';
+import { TableTemplate, TableColumn } from '../../table-template/table-template';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-ess-employee',
@@ -41,6 +45,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     Popover,
     BreadcrumbModule,
     SelectModule,
+    TableTemplate,
   ],
   templateUrl: './ess-employee.html',
   styleUrl: './ess-employee.scss',
@@ -54,20 +59,26 @@ export class EssEmployee implements OnInit {
   private readonly toast = inject(MessageService);
   private readonly fb = inject(FormBuilder);
 
-  protected readonly employees = signal<Employee[]>([]);
-  protected readonly loading = signal<boolean>(false);
-  protected readonly search = signal<string>('');
+  @ViewChild('actionTemplateRef') actionTemplateRef!: TemplateRef<any>;
+  @ViewChild(TableTemplate) tableTemplate!: TableTemplate;
+
   protected readonly selectedEmployee = signal<Employee | null>(null);
   protected readonly viewDialog = signal<boolean>(false);
   protected readonly drawerVisible = signal<boolean>(false);
   protected readonly drawerMode = signal<'add' | 'edit' | 'view'>('add');
   protected readonly employeeToEdit = signal<Employee | null>(null);
-  protected readonly currentPage = signal<number>(1);
-  protected readonly pageSize = signal<number>(10);
-  protected readonly totalRecords = signal<number>(0);
-  protected readonly sortBy = signal<string>('');
-  protected readonly sortOrder = signal<'asc' | 'desc'>('asc');
   protected readonly formLoading = signal<boolean>(false);
+
+  // Table columns
+  protected readonly columns: TableColumn[] = [
+    { key: 'name', header: 'Name', isVisible: true, isSortable: true },
+    { key: 'email', header: 'Email', isVisible: true, isSortable: true },
+    { key: 'phone', header: 'Phone', isVisible: true },
+    { key: 'department', header: 'Department', isVisible: true },
+    { key: 'status', header: 'Status', isVisible: true, isCustom: true },
+    { key: 'joiningDate', header: 'Joining Date', isVisible: true, isSortable: true },
+    { key: 'actions', header: 'Actions', isVisible: true, isCustom: true },
+  ];
 
   protected readonly breadcrumbItems = computed<MenuItem[]>(() => [
     { label: 'Home', routerLink: '/dashboard' },
@@ -88,12 +99,6 @@ export class EssEmployee implements OnInit {
 
   protected employeeForm: FormGroup;
 
-  // Filtering is now done on the server side via API
-  // This computed is kept for any client-side filtering if needed
-  readonly filtered = computed(() => {
-    return this.employees();
-  });
-
   constructor() {
     this.employeeForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
@@ -106,78 +111,43 @@ export class EssEmployee implements OnInit {
   }
 
   ngOnInit() {
-    this.load();
+    // Table will auto-load via fetchData
   }
 
-  load() {
-    this.loading.set(true);
-    const params = {
-      page: this.currentPage(),
-      limit: this.pageSize(),
-      search: this.search() || undefined,
-      sortBy: this.sortBy() || undefined,
-      sortOrder: this.sortOrder() || undefined,
-    };
-
-    this.svc.getAll(params).subscribe({
-      next: (response) => {
-        console.log('Response received in component:', response);
-        console.log('Employees array:', response.employees);
-        console.log('Total records:', response.total);
-
+  // Data fetch function for table-template
+  fetchEmployeesData = async (params: any) => {
+    return this.svc.getAll({
+      page: params.page,
+      limit: params.limit,
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+    }).pipe(
+      map((response) => {
         if (response.employees && Array.isArray(response.employees)) {
-          this.employees.set(response.employees);
-          this.totalRecords.set(response.total || response.employees.length);
-          console.log('Employees set:', this.employees().length);
-        } else {
-          console.warn('No employees array in response:', response);
-          this.employees.set([]);
-          this.totalRecords.set(0);
+          return {
+            data: response.employees,
+            total: response.total || response.employees.length
+          };
         }
-        this.loading.set(false);
-      },
-      error: (error) => {
+        return { data: [], total: 0 };
+      }),
+      catchError((error) => {
         console.error('Error loading employees:', error);
         this.toast.add({
           severity: 'error',
           summary: 'Error',
           detail: error.error?.message || error.message || 'Failed to load employees. Please try again.',
         });
-        this.loading.set(false);
-        this.employees.set([]);
-        this.totalRecords.set(0);
-      },
-    });
-  }
+        return of({ data: [], total: 0 });
+      })
+    );
+  };
 
-  onPageChange(event: any) {
-    if (event.first !== undefined) {
-      this.currentPage.set(Math.floor(event.first / event.rows) + 1);
-      this.pageSize.set(event.rows);
-    } else {
-      this.currentPage.set(event.page + 1); // Fallback for paginator events
-      this.pageSize.set(event.rows);
+  refreshTableData(): void {
+    if (this.tableTemplate) {
+      this.tableTemplate.loadData();
     }
-
-    // Handle sorting from lazy load event
-    if (event.sortField) {
-      this.sortBy.set(event.sortField);
-      this.sortOrder.set(event.sortOrder === 1 ? 'asc' : 'desc');
-    }
-
-    this.load();
-  }
-
-  onSort(event: any) {
-    this.sortBy.set(event.field);
-    this.sortOrder.set(event.order === 1 ? 'asc' : 'desc');
-    this.currentPage.set(1);
-    this.load();
-  }
-
-  onSearch() {
-    this.currentPage.set(1);
-    this.load();
   }
 
   onAdd() {
@@ -250,7 +220,7 @@ export class EssEmployee implements OnInit {
           this.drawerVisible.set(false);
           this.employeeForm.reset();
           this.formLoading.set(false);
-          this.load();
+          this.refreshTableData();
         },
         error: (error) => {
           console.error('Error creating employee:', error);
@@ -275,7 +245,7 @@ export class EssEmployee implements OnInit {
             this.drawerVisible.set(false);
             this.employeeForm.reset();
             this.formLoading.set(false);
-            this.load();
+            this.refreshTableData();
           },
           error: (error) => {
             console.error('Error updating employee:', error);
@@ -304,7 +274,7 @@ export class EssEmployee implements OnInit {
               summary: 'Deleted',
               detail: response.message || `${e.name} removed`,
             });
-            this.load();
+            this.refreshTableData();
           },
           error: (error) => {
             console.error('Error deleting employee:', error);

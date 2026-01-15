@@ -1,4 +1,4 @@
-@if(isLoading) {
+@if(isLoadingValue) {
 <div class="p-4 sm:p-6">
   <div class="flex flex-col space-y-4">
     <div class="flex justify-end">
@@ -29,8 +29,9 @@
   <!-- Search and Refresh Container -->
   <div style=" padding:0px 25px 0px 0px;" class="flex items-center gap-2 w-full md:w-auto">
     <!-- Search -->
+    @if (enableSearch) {
     <div class="relative w-full md:w-64">
-      <input type="text" [(ngModel)]="searchText" (input)="onSearch()" (blur)="onSearch()" placeholder="Search"
+      <input type="text" [(ngModel)]="searchTextValue" (input)="onSearch()" (blur)="onSearch()" placeholder="Search"
         class="w-full pl-10 pr-4 py-2 text-sm rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
         aria-label="Search table">
       <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
@@ -39,13 +40,14 @@
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     </div>
+    }
 
     <!-- Refresh Button -->
     @if (showRefresh) {
-    <button type="button" (click)="onRefreshClick()" [disabled]="isLoading"
+    <button type="button" (click)="onRefreshClick()" [disabled]="isLoadingValue"
       class="flex items-center justify-center p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
       aria-label="Refresh table">
-      <i class="pi pi-refresh text-lg" [ngClass]="{ 'animate-spin': isLoading }"></i>
+      <i class="pi pi-refresh text-lg" [ngClass]="{ 'animate-spin': isLoadingValue }"></i>
     </button>
     }
   </div>
@@ -62,13 +64,13 @@
             <th *ngIf="col.isVisible" [ngClass]="{ 'cursor-pointer': col.isSortable }"
               class="px-6 py-3 text-left text-sm font-semibold text-gray-500 uppercase tracking-wider text-pretty"
               (click)="col.isSortable && onSort(col.key)"
-              [attr.aria-sort]="sortColumn === col.key ? sortDirection : 'none'">
+              [attr.aria-sort]="getSortColumn() === col.key ? getSortDirection() : 'none'">
               @if (col.key === 'checkbox' && headerCheckbox) {
               <ng-container *ngTemplateOutlet="headerCheckbox; context: { col: col }"></ng-container>
               } @else {
               {{ col.header }}
-              @if (sortColumn === col.key) {
-              <span>{{ sortDirection === 'asc' ? ' ↑' : ' ↓' }}</span>
+              @if (getSortColumn() === col.key) {
+              <span>{{ getSortDirection() === 'asc' ? ' ↑' : ' ↓' }}</span>
               }
               }
             </th>
@@ -76,7 +78,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          @for (item of paginatedData; track item.id || $index) {
+          @for (item of dataValue; track item.id || $index) {
           <tr class="hover:bg-[#F9FAFB]">
             @for (col of columns; track $index) {
             <td *ngIf="col.isVisible" class="px-6 py-4 text-sm  text-gray-900 text-justify max-w-[250px] text-pretty ">
@@ -146,7 +148,7 @@
             }
           </tr>
           }
-          @if (paginatedData.length === 0) {
+          @if (dataValue.length === 0) {
           <tr>
             <td [attr.colspan]="visibleColumnsCount" class="text-center py-4 text-gray-500">
               No data found.
@@ -163,7 +165,7 @@
 
 <!-- Card Layout for Mobile -->
 <div class="block md:hidden space-y-4 p-4">
-  @for (item of paginatedData; track item.id || $index) {
+  @for (item of dataValue; track item.id || $index) {
   <div class="border border-gray-200 rounded-md p-4 bg-white overflow-x-auto">
     @if (customTemplate) {
     @for (col of columns; track $index) {
@@ -222,7 +224,7 @@
     }
   </div>
   }
-  @if (paginatedData.length === 0) {
+  @if (dataValue.length === 0) {
   <div class="text-center py-4 text-gray-500">
     No data found.
   </div>
@@ -244,8 +246,8 @@
     </select>
     <!-- Page Info -->
     <div class="text-sm text-gray-600">
-      Showing {{ (currentPage - 1) * pageSize + 1 }} -
-      {{ Math.min(currentPage * pageSize, totalCount) }} of {{ totalCount }}
+      Showing {{ (currentPageValue - 1) * pageSize + 1 }} -
+      {{ Math.min(currentPageValue * pageSize, totalCountValue) }} of {{ totalCountValue }}
     </div>
   </div>
 
@@ -253,23 +255,23 @@
   <!-- Pagination Buttons -->
   <div class="flex items-center space-x-1 overflow-x-auto">
     <button class="p-2 text-gray-400 hover:text-gray-600" (click)="goToFirst()" title="First page"
-      [disabled]="currentPage === 1" aria-label="Go to first page">⟪</button>
-    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPage - 1)" title="Previous page"
-      [disabled]="currentPage === 1" aria-label="Previous page">Previous</button>
+      [disabled]="currentPageValue === 1" aria-label="Go to first page">⟪</button>
+    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPageValue - 1)" title="Previous page"
+      [disabled]="currentPageValue === 1" aria-label="Previous page">Previous</button>
     <span class="flex items-center space-x-1 text-sm">
       @for (page of visiblePages; track page) {
       <button class="px-3 py-1 rounded-md" [ngClass]="{
-            'text-blue-600 bg-blue-100 font-medium': currentPage === page,
-            'text-gray-700 hover:bg-gray-100': currentPage !== page
+            'text-blue-600 bg-blue-100 font-medium': currentPageValue === page,
+            'text-gray-700 hover:bg-gray-100': currentPageValue !== page
           }" (click)="changePage(page)" [attr.aria-label]="'Go to page ' + page">
         {{ page }}
       </button>
       }
     </span>
-    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPage + 1)" title="Next page"
-      [disabled]="currentPage === totalPages" aria-label="Next page">Next</button>
+    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPageValue + 1)" title="Next page"
+      [disabled]="currentPageValue === totalPages" aria-label="Next page">Next</button>
     <button class="p-2 text-gray-400 hover:text-gray-600" (click)="goToLast()" title="Last page"
-      [disabled]="currentPage === totalPages" aria-label="Go to last page">⟫</button>
+      [disabled]="currentPageValue === totalPages" aria-label="Go to last page">⟫</button>
   </div>
 
 

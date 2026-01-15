@@ -26,8 +26,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import { ConfirmationService } from 'primeng/api';
 import { BreadcrumbModule as PrimeNgBreadcrumbModule } from 'primeng/breadcrumb';
+import { TemplateRef, ViewChild } from '@angular/core';
+import { TableTemplate, TableColumn } from '../../../table-template/table-template';
 
 import { EmployeeService } from '../../../core/services/employee.service';
+import { map, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-HrEmployees',
@@ -50,6 +54,7 @@ import { EmployeeService } from '../../../core/services/employee.service';
     TooltipModule,
     MenuModule,
     PrimeNgBreadcrumbModule,
+    TableTemplate,
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './hr-employees.html',
@@ -64,13 +69,32 @@ export class HrEmployees implements OnInit {
   private employeeService = inject(EmployeeService);
   private confirmationService = inject(ConfirmationService);
 
+  @ViewChild('actionTemplateRef') actionTemplateRef!: TemplateRef<any>;
+  @ViewChild('statusTemplateRef') statusTemplateRef!: TemplateRef<any>;
+  @ViewChild(TableTemplate) tableTemplate!: TableTemplate;
+  
+  refreshTable = signal(0);
+
   visible = signal(false);
   viewDialogVisible = signal(false);
   isSubmitting = signal(false);
-  loading = signal(false);
-  employees = signal<any[]>([]);
   selectedEmployee = signal<any>(null);
   drawerMode = signal<'add' | 'edit'>('add');
+  
+  // Table properties
+  columns: TableColumn[] = [
+    { key: 'actions', header: 'Actions', isVisible: true, isCustom: true },
+    { key: 'employeeCode', header: 'Employee Code', isVisible: true, isSortable: true },
+    { key: 'name', header: 'Name', isVisible: true, isSortable: true },
+    { key: 'email', header: 'Email', isVisible: true, isSortable: true },
+    { key: 'mobileNumber', header: 'Mobile', isVisible: true },
+    { key: 'department', header: 'Department', isVisible: true },
+    { key: 'designation', header: 'Designation', isVisible: true },
+    { key: 'employmentType', header: 'Type', isVisible: true },
+    { key: 'role', header: 'Role', isVisible: true },
+    { key: 'jsonDetails', header: 'Status', isVisible: true, isCustom: true },
+    { key: 'joiningDate', header: 'Joining', isVisible: true, isSortable: true },
+  ];
 
   header = signal(' Add New Employee11');
   headerIcon = signal('pi pi-user-plus');
@@ -128,37 +152,46 @@ export class HrEmployees implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadEmployees();
   }
 
-  loadEmployees(): void {
-    this.loading.set(true);
-    this.employeeService.getAll().subscribe({
-      next: (response) => {
+  // Data fetch function for table-template
+  fetchEmployeesData = async (params: any) => {
+    return this.employeeService.getAll({
+      page: params.page,
+      limit: params.limit,
+      search: params.search,
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+    }).pipe(
+      map((response) => {
         if (response.employees && Array.isArray(response.employees)) {
-          this.employees.set(response.employees);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Employees loaded successfully'
-          });
-        } else {
-          this.employees.set([]);
+          // Transform data for table
+          const transformedEmployees = response.employees.map((emp: any) => ({
+            ...emp,
+            name: `${emp.firstName || emp.first_name || ''} ${emp.lastName || emp.last_name || ''}`.trim(),
+            mobileNumber: emp.mobileNumber || emp.mobile_number || '',
+            employeeCode: emp.employeeCode || emp.employee_code || '',
+            joiningDate: this.formatDate(emp.joiningDate || emp.joining_date || ''),
+            employmentType: emp.employmentType || emp.employment_type || '',
+          }));
+          return {
+            data: transformedEmployees,
+            total: response.total || transformedEmployees.length
+          };
         }
-        this.loading.set(false);
-      },
-      error: (error) => {
+        return { data: [], total: 0 };
+      }),
+      catchError((error) => {
         console.error('Error loading employees:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
           detail: error.error?.message || 'Failed to load employees'
         });
-        this.loading.set(false);
-        this.employees.set([]);
-      }
-    });
-  }
+        return of({ data: [], total: 0 });
+      })
+    );
+  };
 
   private initForm(): void {
     this.employeeForm = this.fb.group({
@@ -261,7 +294,7 @@ export class HrEmployees implements OnInit {
               summary: 'Success',
               detail: response.message || 'Employee deleted successfully'
             });
-            this.loadEmployees();
+            this.refreshTableData();
           },
           error: (error) => {
             console.error('Error deleting employee:', error);
@@ -440,7 +473,7 @@ export class HrEmployees implements OnInit {
             life: 3000
           });
           this.resetAllForms();
-          this.loadEmployees();
+          this.refreshTableData();
         },
         error: (error) => {
           console.error('Error creating employee:', error);
@@ -468,7 +501,7 @@ export class HrEmployees implements OnInit {
               life: 3000
             });
             this.resetAllForms();
-            this.loadEmployees();
+            this.refreshTableData();
           },
           error: (error) => {
             console.error('Error updating employee:', error);
@@ -501,5 +534,14 @@ export class HrEmployees implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  refreshTableData(): void {
+    if (this.tableTemplate) {
+      this.tableTemplate.loadData();
+    } else {
+      // Fallback: trigger refresh by updating signal
+      this.refreshTable.update(v => v + 1);
+    }
   }
 }
