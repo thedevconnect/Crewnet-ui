@@ -6,7 +6,8 @@
     </div>
     <div class="grid grid-cols-4 gap-4"> @for(row of skeletonRows; track row){ <p-skeleton height="1.5rem"></p-skeleton>
       <p-skeleton height="1.5rem"></p-skeleton> <p-skeleton height="1.5rem"></p-skeleton> <p-skeleton
-        height="1.5rem"></p-skeleton> } </div>
+        height="1.5rem"></p-skeleton> }
+    </div>
   </div>
 </div>
 } @else {
@@ -256,8 +257,8 @@
   <div class="flex items-center space-x-1 overflow-x-auto">
     <button class="p-2 text-gray-400 hover:text-gray-600" (click)="goToFirst()" title="First page"
       [disabled]="currentPageValue === 1" aria-label="Go to first page">⟪</button>
-    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPageValue - 1)" title="Previous page"
-      [disabled]="currentPageValue === 1" aria-label="Previous page">Previous</button>
+    <button class="p-2 text-gray-400 hover:text-gray-600" (click)="changePage(currentPageValue - 1)"
+      title="Previous page" [disabled]="currentPageValue === 1" aria-label="Previous page">Previous</button>
     <span class="flex items-center space-x-1 text-sm">
       @for (page of visiblePages; track page) {
       <button class="px-3 py-1 rounded-md" [ngClass]="{

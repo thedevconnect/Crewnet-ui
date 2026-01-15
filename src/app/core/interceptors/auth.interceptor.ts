@@ -31,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('oblo_token');
         router.navigate(['/login'], {
           queryParams: { returnUrl: router.url },
-          replaceUrl: true
+          replaceUrl: true,
         });
       }
       return throwError(() => error);

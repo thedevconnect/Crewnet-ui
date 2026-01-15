@@ -20,9 +20,18 @@ import { of } from 'rxjs';
 @Component({
   selector: 'app-leaves',
   imports: [
-    SelectModule, ButtonModule, DrawerModule, InputTextModule,
-    TextareaModule, PanelModule, ReactiveFormsModule, ToastModule,
-    CommonModule, DatePickerModule, TableModule, TableTemplate,
+    SelectModule,
+    ButtonModule,
+    DrawerModule,
+    InputTextModule,
+    TextareaModule,
+    PanelModule,
+    ReactiveFormsModule,
+    ToastModule,
+    CommonModule,
+    DatePickerModule,
+    TableModule,
+    TableTemplate,
   ],
   providers: [MessageService],
   templateUrl: './leaves.html',
@@ -87,40 +96,42 @@ export class Leaves implements OnInit {
 
   // Data fetch function for table-template
   fetchLeavesData = async (params: any) => {
-    return this.leaveService.getAll({
-      page: params.page,
-      limit: params.limit,
-      search: params.search,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
-    }).pipe(
-      map((response) => {
-        if (response.success && response.data.leaves) {
-          const mappedLeaves = response.data.leaves.map((apiLeave: any) => {
-            const leave = this.leaveService.mapApiResponseToLeave(apiLeave);
-            return {
-              ...leave,
-              fromDate: this.formatDisplayDate(leave.fromDate),
-              toDate: this.formatDisplayDate(leave.toDate),
-              createdAt: this.formatDisplayDate(leave.createdAt),
-            };
-          });
-          return {
-            data: mappedLeaves,
-            total: response.data.pagination?.total || mappedLeaves.length
-          };
-        }
-        return { data: [], total: 0 };
-      }),
-      catchError((error) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.error || 'Failed to load leaves'
-        });
-        return of({ data: [], total: 0 });
+    return this.leaveService
+      .getAll({
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+        sortBy: params.sortBy,
+        sortOrder: params.sortOrder,
       })
-    );
+      .pipe(
+        map((response) => {
+          if (response.success && response.data.leaves) {
+            const mappedLeaves = response.data.leaves.map((apiLeave: any) => {
+              const leave = this.leaveService.mapApiResponseToLeave(apiLeave);
+              return {
+                ...leave,
+                fromDate: this.formatDisplayDate(leave.fromDate),
+                toDate: this.formatDisplayDate(leave.toDate),
+                createdAt: this.formatDisplayDate(leave.createdAt),
+              };
+            });
+            return {
+              data: mappedLeaves,
+              total: response.data.pagination?.total || mappedLeaves.length,
+            };
+          }
+          return { data: [], total: 0 };
+        }),
+        catchError((error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error || 'Failed to load leaves',
+          });
+          return of({ data: [], total: 0 });
+        })
+      );
   };
 
   refreshTableData(): void {
@@ -150,7 +161,7 @@ export class Leaves implements OnInit {
       sessionTo: leave.sessionTo,
       leaveType: leave.leaveType,
       reason: leave.reason,
-      ccTo: leave.ccTo || ''
+      ccTo: leave.ccTo || '',
     });
     this.leaveDrawerVisible.set(true);
   }
@@ -167,13 +178,13 @@ export class Leaves implements OnInit {
 
   onSubmitLeaveForm() {
     if (this.leaveForm.invalid) {
-      Object.keys(this.leaveForm.controls).forEach(key => {
+      Object.keys(this.leaveForm.controls).forEach((key) => {
         this.leaveForm.get(key)?.markAsTouched();
       });
       this.messageService.add({
         severity: 'warn',
         summary: 'Validation Error',
-        detail: 'Please fill all required fields'
+        detail: 'Please fill all required fields',
       });
       return;
     }
@@ -187,11 +198,11 @@ export class Leaves implements OnInit {
       sessionTo: formValue.sessionTo!,
       leaveType: formValue.leaveType!,
       reason: formValue.reason!,
-      ccTo: formValue.ccTo || undefined
+      ccTo: formValue.ccTo || undefined,
     };
 
     const id = this.editingLeaveId();
-    const request = id 
+    const request = id
       ? this.leaveService.update(id, leaveData)
       : this.leaveService.create(leaveData);
 
@@ -201,7 +212,7 @@ export class Leaves implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: id ? 'Leave updated successfully' : 'Leave created successfully'
+            detail: id ? 'Leave updated successfully' : 'Leave created successfully',
           });
           this.closeLeaveDrawer();
           this.refreshTableData();
@@ -211,12 +222,12 @@ export class Leaves implements OnInit {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: error.error || (id ? 'Failed to update leave' : 'Failed to create leave')
+          detail: error.error || (id ? 'Failed to update leave' : 'Failed to create leave'),
         });
       },
       complete: () => {
         this.isSubmitting.set(false);
-      }
+      },
     });
   }
 
@@ -228,7 +239,7 @@ export class Leaves implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: 'Success',
-              detail: 'Leave deleted successfully'
+              detail: 'Leave deleted successfully',
             });
             this.refreshTableData();
           }
@@ -237,9 +248,9 @@ export class Leaves implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: error.error || 'Failed to delete leave'
+            detail: error.error || 'Failed to delete leave',
           });
-        }
+        },
       });
     }
   }
@@ -251,6 +262,8 @@ export class Leaves implements OnInit {
   }
 
   private formatDate(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+      date.getDate()
+    ).padStart(2, '0')}`;
   }
 }

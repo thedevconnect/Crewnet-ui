@@ -37,7 +37,9 @@ export interface TableDataFetchResult {
   total: number;
 }
 
-export type DataFetchFunction = (params: TableDataFetchParams) => Promise<TableDataFetchResult> | any;
+export type DataFetchFunction = (
+  params: TableDataFetchParams
+) => Promise<TableDataFetchResult> | any;
 
 @Component({
   selector: 'app-table-template',
@@ -62,12 +64,12 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
   @Input() searchText = '';
   @Input() sortColumn: string | null = null;
   @Input() sortDirection: 'asc' | 'desc' = 'asc';
-  
+
   // New inputs for automatic data fetching
   @Input() fetchData?: DataFetchFunction;
   @Input() dataTransform?: (data: any) => any[];
   @Input() totalTransform?: (response: any) => number;
-  
+
   // Common inputs
   @Input() columns: TableColumn[] = [];
   @Input() pageSize = 10;
@@ -75,7 +77,7 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
   @Input() showRefresh: boolean = true;
   @Input() enableSearch: boolean = true;
   @Input() autoLoad: boolean = true;
-  
+
   // Template inputs
   @Input() actionTemplate!: TemplateRef<any>;
   @Input() customTemplate!: TemplateRef<any>;
@@ -122,18 +124,16 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     // Setup search debouncing
-    this.searchSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(searchText => {
-      this.internalSearchText.set(searchText);
-      if (this.fetchData) {
-        this.loadData();
-      } else {
-        this.searchChange.emit(searchText);
-      }
-    });
+    this.searchSubject
+      .pipe(debounceTime(500), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((searchText) => {
+        this.internalSearchText.set(searchText);
+        if (this.fetchData) {
+          this.loadData();
+        } else {
+          this.searchChange.emit(searchText);
+        }
+      });
 
     // Auto load data if fetchData is provided
     if (this.autoLoad && this.fetchData) {
@@ -192,7 +192,7 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
       };
 
       const result = await this.fetchData(params);
-      
+
       // Handle different response formats
       let data: any[] = [];
       let total = 0;
@@ -209,7 +209,7 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
             console.error('Error loading data:', error);
             this.internalIsLoading.set(false);
             this.updateData([], 0);
-          }
+          },
         });
       } else {
         // Promise or direct data
@@ -228,7 +228,7 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
     if (this.dataTransform) {
       return this.dataTransform(response);
     }
-    
+
     // Default extraction logic
     if (Array.isArray(response)) {
       return response;
@@ -257,7 +257,7 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
     if (this.totalTransform) {
       return this.totalTransform(response);
     }
-    
+
     // Default extraction logic
     if (response?.total) {
       return response.total;
@@ -324,8 +324,6 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
   get visibleColumnsCount(): number {
     return this.columns.filter((col) => col.isVisible).length;
   }
-
-
 
   onRefreshClick(): void {
     if (this.fetchData) {
@@ -405,12 +403,12 @@ export class TableTemplate implements OnInit, OnChanges, OnDestroy {
     if (this.fetchData) {
       const currentSort = this.internalSortColumn();
       const currentDir = this.internalSortDirection();
-      
+
       let newDirection: 'asc' | 'desc' = 'asc';
       if (currentSort === columnKey && currentDir === 'asc') {
         newDirection = 'desc';
       }
-      
+
       this.internalSortColumn.set(columnKey);
       this.internalSortDirection.set(newDirection);
       this.internalPage.set(1);
