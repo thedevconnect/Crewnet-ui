@@ -39,7 +39,7 @@ export const routes: Routes = [
           { path: 'settings', component: HrDashboard }, // Placeholder - replace with actual component
         ],
       },
-      // ESS Routes - Role 3
+      // ESS Routes - Role 2
       {
         path: 'ess',
         children: [
@@ -55,7 +55,7 @@ export const routes: Routes = [
       { path: 'dashboard', redirectTo: '/hr-admin/dashboard', pathMatch: 'full' },
     ],
   },
-  { path: '**', component: Pagenotfound },
+  //{ path: '**', component: Pagenotfound },
 
   // { path: '**', redirectTo: '/hr-admin/dashboard' },
 ];

@@ -27,16 +27,15 @@
         </ng-template>
 
         <div *ngIf="selectedEmployee()" class="flex flex-col gap-6 p-4">
-
             <p-panel header="Employee Identity" [toggleable]="true">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="font-semibold">Employee Code</label>
-                        <p>{{ selectedEmployee()?.employeeCode }}</p>
+                        <label class="font-semibold text-gray-700">Employee Code</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.employeeCode }}</p>
                     </div>
                     <div>
-                        <label class="font-semibold">Status</label>
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+                        <label class="font-semibold text-gray-700">Status</label>
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold mt-1 inline-block" [ngClass]="{
                               'bg-green-100 text-green-700': selectedEmployee()?.status === 'ACTIVE',
                               'bg-red-100 text-red-700': selectedEmployee()?.status !== 'ACTIVE'
                             }">
@@ -48,32 +47,62 @@
 
             <p-panel header="Personal Details" [toggleable]="true">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="font-semibold">First Name</label>
-                        <p>{{ selectedEmployee()?.firstName }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">First Name</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.firstName || selectedEmployee()?.first_name }}</p>
                     </div>
-                    <div><label class="font-semibold">Last Name</label>
-                        <p>{{ selectedEmployee()?.lastName }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">Last Name</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.lastName || selectedEmployee()?.last_name }}</p>
                     </div>
-                    <div><label class="font-semibold">Gender</label>
-                        <p>{{ selectedEmployee()?.gender }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">Gender</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.gender }}</p>
                     </div>
-                    <div><label class="font-semibold">DOB</label>
-                        <p>{{ formatDate(selectedEmployee()?.dateOfBirth) }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">DOB</label>
+                        <p class="text-gray-900 mt-1">{{ formatDate(selectedEmployee()?.dateOfBirth || selectedEmployee()?.date_of_birth) }}</p>
                     </div>
                 </div>
             </p-panel>
 
             <p-panel header="Contact Details" [toggleable]="true">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="font-semibold">Email</label>
-                        <p>{{ selectedEmployee()?.email }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">Email</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.email }}</p>
                     </div>
-                    <div><label class="font-semibold">Mobile</label>
-                        <p>{{ selectedEmployee()?.mobileNumber }}</p>
+                    <div>
+                        <label class="font-semibold text-gray-700">Mobile</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.mobileNumber || selectedEmployee()?.mobile_number }}</p>
                     </div>
                 </div>
             </p-panel>
 
+            <p-panel header="Job Details" [toggleable]="true">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="font-semibold text-gray-700">Department</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.department }}</p>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-700">Designation</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.designation }}</p>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-700">Employment Type</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.employmentType || selectedEmployee()?.employment_type }}</p>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-700">Joining Date</label>
+                        <p class="text-gray-900 mt-1">{{ formatDate(selectedEmployee()?.joiningDate || selectedEmployee()?.joining_date) }}</p>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-700">Role</label>
+                        <p class="text-gray-900 mt-1">{{ selectedEmployee()?.role }}</p>
+                    </div>
+                </div>
+            </p-panel>
         </div>
 
         <ng-template pTemplate="footer">
@@ -86,7 +115,7 @@
     </p-drawer>
 
     <!-- TABLE -->
-    <div class="bg-white rounded-lg border border-gray-200 p-0">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <app-table-template 
             [columns]="columns" 
             [fetchData]="fetchEmployeesData"
@@ -95,20 +124,27 @@
         </app-table-template>
 
         <ng-template #actionTemplateRef let-employee="$implicit">
-            <div class="text-center">
-                <p-button icon="pi pi-ellipsis-v" [text]="true" [rounded]="true"
-                    (click)="actionMenu.toggle($event)">
+            <div class="flex items-center justify-center">
+                <p-button 
+                    icon="pi pi-ellipsis-v" 
+                    [text]="true" 
+                    [rounded]="true"
+                    class="hover:bg-gray-100"
+                    (click)="actionMenu.toggle($event)"
+                    [pTooltip]="'Actions'" 
+                    tooltipPosition="top">
                 </p-button>
                 <p-menu #actionMenu [model]="getActionMenuItems(employee)" [popup]="true"></p-menu>
             </div>
         </ng-template>
 
         <ng-template #statusTemplateRef let-employee="$implicit">
-            <span class="px-2 py-1 rounded-full text-xs font-semibold" [ngClass]="{
-                  'bg-green-100 text-green-700': employee.status === 'ACTIVE' || employee.status === 'Active',
-                  'bg-red-100 text-red-700': employee.status !== 'ACTIVE' && employee.status !== 'Active'
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" [ngClass]="{
+                  'bg-green-100 text-green-800': employee.status === 'ACTIVE' || employee.status === 'Active',
+                  'bg-red-100 text-red-800': employee.status === 'INACTIVE' || employee.status === 'Inactive',
+                  'bg-gray-100 text-gray-800': !employee.status || (employee.status !== 'ACTIVE' && employee.status !== 'Active' && employee.status !== 'INACTIVE' && employee.status !== 'Inactive')
                 }">
-                {{ employee.status }}
+                {{ employee.status || 'N/A' }}
             </span>
         </ng-template>
     </div>
