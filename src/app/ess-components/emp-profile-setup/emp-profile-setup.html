@@ -45,37 +45,93 @@
       <p-panel header="Personal Details" [toggleable]="true" [collapsed]="false">
         <div formGroupName="personalDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Father/Husband Name <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="fatherHusbandName" class="w-full" [class.p-invalid]="isFieldInvalid('personalDetails.fatherHusbandName')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('personalDetails.fatherHusbandName')">{{ getFieldError('personalDetails.fatherHusbandName') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Father/Husband Name <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="fatherHusbandName"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('personalDetails.fatherHusbandName')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('personalDetails.fatherHusbandName')"
+              >{{ getFieldError('personalDetails.fatherHusbandName') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Marital Status <span class="text-red-500">*</span></label>
-            <p-select formControlName="maritalStatus" [options]="maritalStatusOptions" placeholder="Select" class="w-full" [class.p-invalid]="isFieldInvalid('personalDetails.maritalStatus')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('personalDetails.maritalStatus')">{{ getFieldError('personalDetails.maritalStatus') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Marital Status <span class="text-red-500">*</span></label
+            >
+            <p-select
+              formControlName="maritalStatus"
+              [options]="maritalStatusOptions"
+              placeholder="Select"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('personalDetails.maritalStatus')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('personalDetails.maritalStatus')"
+              >{{ getFieldError('personalDetails.maritalStatus') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Blood Group</label>
-            <p-select formControlName="bloodGroup" [options]="bloodGroupOptions" placeholder="Select" class="w-full" />
+            <p-select
+              formControlName="bloodGroup"
+              [options]="bloodGroupOptions"
+              placeholder="Select"
+              class="w-full"
+            />
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Religion</label>
-            <p-select formControlName="religion" [options]="religionOptions" placeholder="Select" class="w-full" />
+            <p-select
+              formControlName="religion"
+              [options]="religionOptions"
+              placeholder="Select"
+              class="w-full"
+            />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Emergency Contact Name <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="emergencyContactName" class="w-full" [class.p-invalid]="isFieldInvalid('personalDetails.emergencyContactName')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('personalDetails.emergencyContactName')">{{ getFieldError('personalDetails.emergencyContactName') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Emergency Contact Name <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="emergencyContactName"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('personalDetails.emergencyContactName')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('personalDetails.emergencyContactName')"
+              >{{ getFieldError('personalDetails.emergencyContactName') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Emergency Contact Number <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="emergencyContactNumber" placeholder="10 digits" class="w-full" [class.p-invalid]="isFieldInvalid('personalDetails.emergencyContactNumber')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('personalDetails.emergencyContactNumber')">{{ getFieldError('personalDetails.emergencyContactNumber') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Emergency Contact Number <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="emergencyContactNumber"
+              placeholder="10 digits"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('personalDetails.emergencyContactNumber')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('personalDetails.emergencyContactNumber')"
+              >{{ getFieldError('personalDetails.emergencyContactNumber') }}</small
+            >
           </div>
         </div>
       </p-panel>
@@ -85,14 +141,34 @@
         <div formGroupName="contactDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Personal Email</label>
-            <input pInputText formControlName="personalEmail" type="email" class="w-full" [class.p-invalid]="isFieldInvalid('contactDetails.personalEmail')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('contactDetails.personalEmail')">{{ getFieldError('contactDetails.personalEmail') }}</small>
+            <input
+              pInputText
+              formControlName="personalEmail"
+              type="email"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('contactDetails.personalEmail')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('contactDetails.personalEmail')"
+              >{{ getFieldError('contactDetails.personalEmail') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Alternate Mobile</label>
-            <input pInputText formControlName="alternateMobile" placeholder="10 digits" class="w-full" [class.p-invalid]="isFieldInvalid('contactDetails.alternateMobile')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('contactDetails.alternateMobile')">{{ getFieldError('contactDetails.alternateMobile') }}</small>
+            <input
+              pInputText
+              formControlName="alternateMobile"
+              placeholder="10 digits"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('contactDetails.alternateMobile')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('contactDetails.alternateMobile')"
+              >{{ getFieldError('contactDetails.alternateMobile') }}</small
+            >
           </div>
         </div>
       </p-panel>
@@ -103,39 +179,95 @@
           <h4 class="font-semibold mb-3 text-gray-700">Permanent Address</h4>
           <div formGroupName="permanentAddress" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">State <span class="text-red-500">*</span></label>
-              <p-select formControlName="state" [options]="stateOptions" placeholder="Select" class="w-full" [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.state')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('addressDetails.permanentAddress.state')">{{ getFieldError('addressDetails.permanentAddress.state') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >State <span class="text-red-500">*</span></label
+              >
+              <p-select
+                formControlName="state"
+                [options]="stateOptions"
+                placeholder="Select"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.state')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('addressDetails.permanentAddress.state')"
+                >{{ getFieldError('addressDetails.permanentAddress.state') }}</small
+              >
             </div>
 
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">City <span class="text-red-500">*</span></label>
-              <input pInputText formControlName="city" class="w-full" [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.city')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('addressDetails.permanentAddress.city')">{{ getFieldError('addressDetails.permanentAddress.city') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >City <span class="text-red-500">*</span></label
+              >
+              <input
+                pInputText
+                formControlName="city"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.city')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('addressDetails.permanentAddress.city')"
+                >{{ getFieldError('addressDetails.permanentAddress.city') }}</small
+              >
             </div>
 
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Pincode <span class="text-red-500">*</span></label>
-              <input pInputText formControlName="pincode" placeholder="6 digits" class="w-full" [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.pincode')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('addressDetails.permanentAddress.pincode')">{{ getFieldError('addressDetails.permanentAddress.pincode') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Pincode <span class="text-red-500">*</span></label
+              >
+              <input
+                pInputText
+                formControlName="pincode"
+                placeholder="6 digits"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.pincode')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('addressDetails.permanentAddress.pincode')"
+                >{{ getFieldError('addressDetails.permanentAddress.pincode') }}</small
+              >
             </div>
 
             <div class="flex flex-col gap-1 md:col-span-2">
-              <label class="text-sm font-medium text-gray-700">Full Address <span class="text-red-500">*</span></label>
-              <textarea pTextarea formControlName="fullAddress" rows="3" class="w-full" [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.fullAddress')"></textarea>
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('addressDetails.permanentAddress.fullAddress')">{{ getFieldError('addressDetails.permanentAddress.fullAddress') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Full Address <span class="text-red-500">*</span></label
+              >
+              <textarea
+                pTextarea
+                formControlName="fullAddress"
+                rows="3"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('addressDetails.permanentAddress.fullAddress')"
+              ></textarea>
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('addressDetails.permanentAddress.fullAddress')"
+                >{{ getFieldError('addressDetails.permanentAddress.fullAddress') }}</small
+              >
             </div>
           </div>
 
           <div class="mb-3">
-            <p-checkbox [binary]="true" (onChange)="toggleSameAsPermanent($event)" label="Same as Permanent Address" />
+            <p-checkbox
+              [binary]="true"
+              (onChange)="toggleSameAsPermanent($event)"
+              label="Same as Permanent Address"
+            />
           </div>
 
           <h4 class="font-semibold mb-3 text-gray-700">Current Address</h4>
           <div formGroupName="currentAddress" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700">State</label>
-              <p-select formControlName="state" [options]="stateOptions" placeholder="Select" class="w-full" />
+              <p-select
+                formControlName="state"
+                [options]="stateOptions"
+                placeholder="Select"
+                class="w-full"
+              />
             </div>
 
             <div class="flex flex-col gap-1">
@@ -160,15 +292,40 @@
       <p-panel header="Identity & Statutory" [toggleable]="true">
         <div formGroupName="identityDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Aadhar Number <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="aadharNumber" placeholder="12 digits" class="w-full" [class.p-invalid]="isFieldInvalid('identityDetails.aadharNumber')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('identityDetails.aadharNumber')">{{ getFieldError('identityDetails.aadharNumber') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Aadhar Number <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="aadharNumber"
+              placeholder="12 digits"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('identityDetails.aadharNumber')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('identityDetails.aadharNumber')"
+              >{{ getFieldError('identityDetails.aadharNumber') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">PAN Number <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="panNumber" placeholder="ABCDE1234F" style="text-transform: uppercase" class="w-full" [class.p-invalid]="isFieldInvalid('identityDetails.panNumber')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('identityDetails.panNumber')">{{ getFieldError('identityDetails.panNumber') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >PAN Number <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="panNumber"
+              placeholder="ABCDE1234F"
+              style="text-transform: uppercase"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('identityDetails.panNumber')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('identityDetails.panNumber')"
+              >{{ getFieldError('identityDetails.panNumber') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
@@ -187,27 +344,69 @@
       <p-panel header="Bank Details" [toggleable]="true">
         <div formGroupName="bankDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Bank Name <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="bankName" class="w-full" [class.p-invalid]="isFieldInvalid('bankDetails.bankName')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.bankName')">{{ getFieldError('bankDetails.bankName') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Bank Name <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="bankName"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('bankDetails.bankName')"
+            />
+            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.bankName')">{{
+              getFieldError('bankDetails.bankName')
+            }}</small>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Account Holder Name <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="accountHolderName" class="w-full" [class.p-invalid]="isFieldInvalid('bankDetails.accountHolderName')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.accountHolderName')">{{ getFieldError('bankDetails.accountHolderName') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Account Holder Name <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="accountHolderName"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('bankDetails.accountHolderName')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('bankDetails.accountHolderName')"
+              >{{ getFieldError('bankDetails.accountHolderName') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Account Number <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="accountNumber" class="w-full" [class.p-invalid]="isFieldInvalid('bankDetails.accountNumber')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.accountNumber')">{{ getFieldError('bankDetails.accountNumber') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Account Number <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="accountNumber"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('bankDetails.accountNumber')"
+            />
+            <small
+              class="text-red-500 text-xs"
+              *ngIf="isFieldInvalid('bankDetails.accountNumber')"
+              >{{ getFieldError('bankDetails.accountNumber') }}</small
+            >
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">IFSC Code <span class="text-red-500">*</span></label>
-            <input pInputText formControlName="ifscCode" placeholder="ABCD0123456" style="text-transform: uppercase" class="w-full" [class.p-invalid]="isFieldInvalid('bankDetails.ifscCode')" />
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.ifscCode')">{{ getFieldError('bankDetails.ifscCode') }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >IFSC Code <span class="text-red-500">*</span></label
+            >
+            <input
+              pInputText
+              formControlName="ifscCode"
+              placeholder="ABCD0123456"
+              style="text-transform: uppercase"
+              class="w-full"
+              [class.p-invalid]="isFieldInvalid('bankDetails.ifscCode')"
+            />
+            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('bankDetails.ifscCode')">{{
+              getFieldError('bankDetails.ifscCode')
+            }}</small>
           </div>
         </div>
       </p-panel>
@@ -215,15 +414,30 @@
       <!-- STEP 6: Qualifications -->
       <p-panel header="Qualification Details" [toggleable]="true">
         <div formArrayName="qualifications">
-          <div *ngFor="let qual of qualifications.controls; let i = index" [formGroupName]="i" class="mb-4 p-3 border rounded bg-gray-50">
+          <div
+            *ngFor="let qual of qualifications.controls; let i = index"
+            [formGroupName]="i"
+            class="mb-4 p-3 border rounded bg-gray-50"
+          >
             <div class="flex justify-between items-center mb-3">
               <h5 class="font-semibold text-gray-700">Qualification {{ i + 1 }}</h5>
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeQualification(i)" *ngIf="qualifications.length > 1" />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                (onClick)="removeQualification(i)"
+                *ngIf="qualifications.length > 1"
+              />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">Qualification</label>
-                <p-select formControlName="qualification" [options]="qualificationOptions" placeholder="Select" class="w-full" />
+                <p-select
+                  formControlName="qualification"
+                  [options]="qualificationOptions"
+                  placeholder="Select"
+                  class="w-full"
+                />
               </div>
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">Institute Name</label>
@@ -231,7 +445,12 @@
               </div>
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">Year of Passing</label>
-                <input pInputText formControlName="yearOfPassing" placeholder="YYYY" class="w-full" />
+                <input
+                  pInputText
+                  formControlName="yearOfPassing"
+                  placeholder="YYYY"
+                  class="w-full"
+                />
               </div>
               <div class="flex flex-col gap-1">
                 <label class="text-sm font-medium text-gray-700">Percentage / Grade</label>
@@ -240,16 +459,31 @@
             </div>
           </div>
         </div>
-        <p-button label="Add Qualification" icon="pi pi-plus" (onClick)="addQualification()" [outlined]="true" />
+        <p-button
+          label="Add Qualification"
+          icon="pi pi-plus"
+          (onClick)="addQualification()"
+          [outlined]="true"
+        />
       </p-panel>
 
       <!-- STEP 7: Experience -->
       <p-panel header="Experience Details" [toggleable]="true">
         <div formArrayName="experiences">
-          <div *ngFor="let exp of experiences.controls; let i = index" [formGroupName]="i" class="mb-4 p-3 border rounded bg-gray-50">
+          <div
+            *ngFor="let exp of experiences.controls; let i = index"
+            [formGroupName]="i"
+            class="mb-4 p-3 border rounded bg-gray-50"
+          >
             <div class="flex justify-between items-center mb-3">
               <h5 class="font-semibold text-gray-700">Experience {{ i + 1 }}</h5>
-              <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeExperience(i)" *ngIf="experiences.length > 1" />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                [text]="true"
+                (onClick)="removeExperience(i)"
+                *ngIf="experiences.length > 1"
+              />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="flex flex-col gap-1">
@@ -270,12 +504,22 @@
               </div>
               <div class="flex flex-col gap-1 md:col-span-2">
                 <label class="text-sm font-medium text-gray-700">Total Experience</label>
-                <input pInputText formControlName="totalExperience" placeholder="e.g. 2 years 3 months" class="w-full" />
+                <input
+                  pInputText
+                  formControlName="totalExperience"
+                  placeholder="e.g. 2 years 3 months"
+                  class="w-full"
+                />
               </div>
             </div>
           </div>
         </div>
-        <p-button label="Add Experience" icon="pi pi-plus" (onClick)="addExperience()" [outlined]="true" />
+        <p-button
+          label="Add Experience"
+          icon="pi pi-plus"
+          (onClick)="addExperience()"
+          [outlined]="true"
+        />
       </p-panel>
 
       <!-- STEP 8: Family & Nominee -->
@@ -284,33 +528,90 @@
           <h4 class="font-semibold mb-3 text-gray-700">Nominee Details</h4>
           <div formGroupName="nominee" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Nominee Name <span class="text-red-500">*</span></label>
-              <input pInputText formControlName="nomineeName" class="w-full" [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineeName')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('familyNominee.nominee.nomineeName')">{{ getFieldError('familyNominee.nominee.nomineeName') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Nominee Name <span class="text-red-500">*</span></label
+              >
+              <input
+                pInputText
+                formControlName="nomineeName"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineeName')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('familyNominee.nominee.nomineeName')"
+                >{{ getFieldError('familyNominee.nominee.nomineeName') }}</small
+              >
             </div>
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Relationship <span class="text-red-500">*</span></label>
-              <p-select formControlName="relationship" [options]="relationshipOptions" placeholder="Select" class="w-full" [class.p-invalid]="isFieldInvalid('familyNominee.nominee.relationship')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('familyNominee.nominee.relationship')">{{ getFieldError('familyNominee.nominee.relationship') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Relationship <span class="text-red-500">*</span></label
+              >
+              <p-select
+                formControlName="relationship"
+                [options]="relationshipOptions"
+                placeholder="Select"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('familyNominee.nominee.relationship')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('familyNominee.nominee.relationship')"
+                >{{ getFieldError('familyNominee.nominee.relationship') }}</small
+              >
             </div>
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Date of Birth <span class="text-red-500">*</span></label>
-              <p-datepicker formControlName="nomineeDob" [showIcon]="true" class="w-full" [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineeDob')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('familyNominee.nominee.nomineeDob')">{{ getFieldError('familyNominee.nominee.nomineeDob') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Date of Birth <span class="text-red-500">*</span></label
+              >
+              <p-datepicker
+                formControlName="nomineeDob"
+                [showIcon]="true"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineeDob')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('familyNominee.nominee.nomineeDob')"
+                >{{ getFieldError('familyNominee.nominee.nomineeDob') }}</small
+              >
             </div>
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Percentage <span class="text-red-500">*</span></label>
-              <input pInputText formControlName="nomineePercentage" type="number" placeholder="1-100" class="w-full" [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineePercentage')" />
-              <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('familyNominee.nominee.nomineePercentage')">{{ getFieldError('familyNominee.nominee.nomineePercentage') }}</small>
+              <label class="text-sm font-medium text-gray-700"
+                >Percentage <span class="text-red-500">*</span></label
+              >
+              <input
+                pInputText
+                formControlName="nomineePercentage"
+                type="number"
+                placeholder="1-100"
+                class="w-full"
+                [class.p-invalid]="isFieldInvalid('familyNominee.nominee.nomineePercentage')"
+              />
+              <small
+                class="text-red-500 text-xs"
+                *ngIf="isFieldInvalid('familyNominee.nominee.nomineePercentage')"
+                >{{ getFieldError('familyNominee.nominee.nomineePercentage') }}</small
+              >
             </div>
           </div>
 
           <h4 class="font-semibold mb-3 text-gray-700">Family Members</h4>
           <div formArrayName="familyMembers">
-            <div *ngFor="let member of familyMembers.controls; let i = index" [formGroupName]="i" class="mb-4 p-3 border rounded bg-gray-50">
+            <div
+              *ngFor="let member of familyMembers.controls; let i = index"
+              [formGroupName]="i"
+              class="mb-4 p-3 border rounded bg-gray-50"
+            >
               <div class="flex justify-between items-center mb-3">
                 <h5 class="font-semibold text-gray-700">Member {{ i + 1 }}</h5>
-                <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeFamilyMember(i)" *ngIf="familyMembers.length > 1" />
+                <p-button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  [text]="true"
+                  (onClick)="removeFamilyMember(i)"
+                  *ngIf="familyMembers.length > 1"
+                />
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1">
@@ -319,7 +620,12 @@
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="text-sm font-medium text-gray-700">Relationship</label>
-                  <p-select formControlName="relationship" [options]="relationshipOptions" placeholder="Select" class="w-full" />
+                  <p-select
+                    formControlName="relationship"
+                    [options]="relationshipOptions"
+                    placeholder="Select"
+                    class="w-full"
+                  />
                 </div>
                 <div class="flex flex-col gap-1">
                   <label class="text-sm font-medium text-gray-700">Date of Birth</label>
@@ -328,7 +634,12 @@
               </div>
             </div>
           </div>
-          <p-button label="Add Family Member" icon="pi pi-plus" (onClick)="addFamilyMember()" [outlined]="true" />
+          <p-button
+            label="Add Family Member"
+            icon="pi pi-plus"
+            (onClick)="addFamilyMember()"
+            [outlined]="true"
+          />
         </div>
       </p-panel>
 
@@ -336,39 +647,112 @@
       <p-panel header="Document Upload" [toggleable]="true">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Profile Photo <span class="text-red-500">*</span></label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept="image/*" [maxFileSize]="1000000" (onSelect)="onFileSelect($event, 'profilePhoto')" [auto]="true" />
-            <small *ngIf="uploadedFiles.profilePhoto" class="text-green-600 text-xs">✓ {{ uploadedFiles.profilePhoto.name }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Profile Photo <span class="text-red-500">*</span></label
+            >
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept="image/*"
+              [maxFileSize]="1000000"
+              (onSelect)="onFileSelect($event, 'profilePhoto')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.profilePhoto" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.profilePhoto.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Signature <span class="text-red-500">*</span></label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept="image/*" [maxFileSize]="1000000" (onSelect)="onFileSelect($event, 'signature')" [auto]="true" />
-            <small *ngIf="uploadedFiles.signature" class="text-green-600 text-xs">✓ {{ uploadedFiles.signature.name }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Signature <span class="text-red-500">*</span></label
+            >
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept="image/*"
+              [maxFileSize]="1000000"
+              (onSelect)="onFileSelect($event, 'signature')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.signature" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.signature.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Aadhar Copy <span class="text-red-500">*</span></label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept=".pdf,image/*" [maxFileSize]="2000000" (onSelect)="onFileSelect($event, 'aadharCopy')" [auto]="true" />
-            <small *ngIf="uploadedFiles.aadharCopy" class="text-green-600 text-xs">✓ {{ uploadedFiles.aadharCopy.name }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Aadhar Copy <span class="text-red-500">*</span></label
+            >
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept=".pdf,image/*"
+              [maxFileSize]="2000000"
+              (onSelect)="onFileSelect($event, 'aadharCopy')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.aadharCopy" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.aadharCopy.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">PAN Copy <span class="text-red-500">*</span></label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept=".pdf,image/*" [maxFileSize]="2000000" (onSelect)="onFileSelect($event, 'panCopy')" [auto]="true" />
-            <small *ngIf="uploadedFiles.panCopy" class="text-green-600 text-xs">✓ {{ uploadedFiles.panCopy.name }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >PAN Copy <span class="text-red-500">*</span></label
+            >
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept=".pdf,image/*"
+              [maxFileSize]="2000000"
+              (onSelect)="onFileSelect($event, 'panCopy')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.panCopy" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.panCopy.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Cancelled Cheque <span class="text-red-500">*</span></label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept=".pdf,image/*" [maxFileSize]="2000000" (onSelect)="onFileSelect($event, 'cancelledCheque')" [auto]="true" />
-            <small *ngIf="uploadedFiles.cancelledCheque" class="text-green-600 text-xs">✓ {{ uploadedFiles.cancelledCheque.name }}</small>
+            <label class="text-sm font-medium text-gray-700"
+              >Cancelled Cheque <span class="text-red-500">*</span></label
+            >
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept=".pdf,image/*"
+              [maxFileSize]="2000000"
+              (onSelect)="onFileSelect($event, 'cancelledCheque')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.cancelledCheque" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.cancelledCheque.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Education Certificate</label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept=".pdf,image/*" [maxFileSize]="2000000" (onSelect)="onFileSelect($event, 'educationCert')" [auto]="true" />
-            <small *ngIf="uploadedFiles.educationCert" class="text-green-600 text-xs">✓ {{ uploadedFiles.educationCert.name }}</small>
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept=".pdf,image/*"
+              [maxFileSize]="2000000"
+              (onSelect)="onFileSelect($event, 'educationCert')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.educationCert" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.educationCert.name }}</small
+            >
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium text-gray-700">Experience Letter</label>
-            <p-fileUpload mode="basic" chooseLabel="Choose File" accept=".pdf,image/*" [maxFileSize]="2000000" (onSelect)="onFileSelect($event, 'experienceLetter')" [auto]="true" />
-            <small *ngIf="uploadedFiles.experienceLetter" class="text-green-600 text-xs">✓ {{ uploadedFiles.experienceLetter.name }}</small>
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Choose File"
+              accept=".pdf,image/*"
+              [maxFileSize]="2000000"
+              (onSelect)="onFileSelect($event, 'experienceLetter')"
+              [auto]="true"
+            />
+            <small *ngIf="uploadedFiles.experienceLetter" class="text-green-600 text-xs"
+              >✓ {{ uploadedFiles.experienceLetter.name }}</small
+            >
           </div>
         </div>
       </p-panel>
@@ -378,7 +762,10 @@
         <div formGroupName="declaration">
           <div class="p-4 bg-gray-50 border rounded mb-4">
             <h4 class="font-semibold mb-3 text-gray-700">Terms and Declaration</h4>
-            <p class="mb-3 text-gray-600 text-sm">I hereby declare that the information provided in this form is true, complete, and accurate to the best of my knowledge.</p>
+            <p class="mb-3 text-gray-600 text-sm">
+              I hereby declare that the information provided in this form is true, complete, and
+              accurate to the best of my knowledge.
+            </p>
             <ul class="list-disc pl-5 mb-3 text-gray-600 text-sm space-y-1">
               <li>All personal and family details are accurate</li>
               <li>All uploaded documents are genuine</li>
@@ -386,18 +773,43 @@
               <li>Contact information is up-to-date</li>
             </ul>
             <div class="flex items-start gap-3 mt-4">
-              <p-checkbox formControlName="agreed" [binary]="true" inputId="declaration-checkbox" [class.p-invalid]="isFieldInvalid('declaration.agreed')" />
-              <label for="declaration-checkbox" class="text-sm font-medium text-gray-700 cursor-pointer">I hereby declare that the above information is true <span class="text-red-500">*</span></label>
+              <p-checkbox
+                formControlName="agreed"
+                [binary]="true"
+                inputId="declaration-checkbox"
+                [class.p-invalid]="isFieldInvalid('declaration.agreed')"
+              />
+              <label
+                for="declaration-checkbox"
+                class="text-sm font-medium text-gray-700 cursor-pointer"
+                >I hereby declare that the above information is true
+                <span class="text-red-500">*</span></label
+              >
             </div>
-            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('declaration.agreed')">You must accept the declaration</small>
+            <small class="text-red-500 text-xs" *ngIf="isFieldInvalid('declaration.agreed')"
+              >You must accept the declaration</small
+            >
           </div>
         </div>
       </p-panel>
 
       <!-- Action Buttons -->
       <div class="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white">
-        <p-button label="Save Draft" icon="pi pi-save" (onClick)="saveDraft()" [loading]="isSavingDraft()" severity="secondary" [outlined]="true" />
-        <p-button label="Submit Profile" icon="pi pi-check" (onClick)="submitProfile()" [loading]="isSubmitting()" styleClass="!bg-[#1976D2] hover:!bg-[#1565C0]" />
+        <p-button
+          label="Save Draft"
+          icon="pi pi-save"
+          (onClick)="saveDraft()"
+          [loading]="isSavingDraft()"
+          severity="secondary"
+          [outlined]="true"
+        />
+        <p-button
+          label="Submit Profile"
+          icon="pi pi-check"
+          (onClick)="submitProfile()"
+          [loading]="isSubmitting()"
+          styleClass="!bg-[#1976D2] hover:!bg-[#1565C0]"
+        />
       </div>
     </form>
   </p-drawer>
