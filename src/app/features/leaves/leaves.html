@@ -1,165 +1,393 @@
-<div class="leaves-management-container">
-  <!-- PAGE HEADER -->
-  <div class="page-header-section mb-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-2xl font-bold text-gray-800">Leaves</h2>
-      <p-button label="Add Leave" icon="pi pi-plus" (click)="openLeaveDrawer()" [raised]="true"
-        styleClass="!bg-[#1976D2] hover:!bg-[#3581cc] !border-[#1976D2] hover:!border-[#3581cc] !text-white">
-      </p-button>
-    </div>
-  </div>
-
-  <!-- LEAVES TABLE -->
-  <div class="bg-white rounded-lg shadow-sm p-4">
-    <p-table [value]="leaves()" [loading]="loading()" [paginator]="true" [rows]="10" 
-      [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>ID</th>
-          <th>From Date</th>
-          <th>To Date</th>
-          <th>Session From</th>
-          <th>Session To</th>
-          <th>Leave Type</th>
-          <th>Reason</th>
-          <th>Cc To</th>
-          <th>Created At</th>
-          <th>Actions</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-leave>
-        <tr>
-          <td>{{ leave.id }}</td>
-          <td>{{ formatDisplayDate(leave.fromDate) }}</td>
-          <td>{{ formatDisplayDate(leave.toDate) }}</td>
-          <td>{{ leave.sessionFrom }}</td>
-          <td>{{ leave.sessionTo }}</td>
-          <td>{{ leave.leaveType }}</td>
-          <td>{{ leave.reason }}</td>
-          <td>{{ leave.ccTo || '-' }}</td>
-          <td>{{ formatDisplayDate(leave.createdAt) }}</td>
-          <td>
-            <div class="flex gap-2">
-              <p-button icon="pi pi-pencil" [text]="true" severity="info" 
-                (click)="editLeave(leave)" size="small">
-              </p-button>
-              <p-button icon="pi pi-trash" [text]="true" severity="danger" 
-                (click)="deleteLeave(leave.id!)" size="small">
-              </p-button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="10" class="text-center py-4 text-gray-500">No leaves found</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <!-- LEAVE DRAWER -->
-  <p-drawer [(visible)]="leaveDrawerVisible" position="right" [modal]="true" [dismissible]="false"
-    [style]="{ width: '820px', maxWidth: '100vw' }" styleClass="leave-drawer">
-
-    <!-- DRAWER HEADER -->
-    <ng-template pTemplate="header">
-      <div class="flex items-center justify-between px-4 py-3 border-b">
-        <div class="flex items-center gap-2">
-          <i [class]="headerIcon() + ' text-primary'"></i>
-          <span class="text-lg font-semibold">{{ header() }}</span>
-        </div>
+<div class="bg-[#FFFFFF] min-h-screen p-4 sm:p-6 lg:p-0">
+  <div class="bg-white overflow-hidden">
+    <div
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b border-gray-200"
+    >
+      <div class="mb-3 sm:mb-0">
+        <p-breadcrumb [model]="breadcrumbItems()"></p-breadcrumb>
       </div>
-    </ng-template>
+      <div class="flex-shrink-0">
+        <p-button
+          label="Add Leave"
+          icon="pi pi-plus"
+          (click)="openLeaveDrawer()"
+          [raised]="true"
+          styleClass="!bg-[#1976D2] hover:!bg-[#1565C0] !text-white !px-4 !py-2 !rounded !border-0"
+        >
+        </p-button>
+      </div>
+    </div>
 
-    <!-- DRAWER BODY -->
-    <form [formGroup]="leaveForm" class="flex flex-col gap-6 p-4">
+    <!-- VIEW LEAVE DRAWER -->
+    <p-drawer
+      [(visible)]="viewDialogVisible"
+      position="right"
+      [modal]="true"
+      [dismissible]="false"
+      [style]="{ width: '820px', maxWidth: '100vw' }"
+    >
+      <ng-template pTemplate="header">
+        <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-eye text-[#1976D2]"></i>
+            <span class="text-lg font-semibold text-gray-800">View Leave Details</span>
+          </div>
+          <p-button
+            icon="pi pi-times"
+            [text]="true"
+            [rounded]="true"
+            (click)="viewDialogVisible.set(false)"
+            styleClass="!text-gray-600 hover:!bg-gray-100"
+          >
+          </p-button>
+        </div>
+      </ng-template>
 
-      <!-- LEAVE APPLICATION FORM -->
-      <p-panel header="Leave Application" [toggleable]="true">
-        <div class="flex flex-col gap-4">
-          <!-- Row 1: From Date | To Date -->
+      <div *ngIf="selectedLeave()" class="flex flex-col gap-6 p-4">
+        <p-panel header="Leave Identity" [toggleable]="true">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="font-semibold">Leave ID</label>
+              <p>{{ selectedLeave()?.id }}</p>
+            </div>
+            <div>
+              <label class="font-semibold">Leave Type</label>
+              <p>{{ getLeaveTypeLabel(selectedLeave()?.leaveType || '') }}</p>
+            </div>
+          </div>
+        </p-panel>
+
+        <p-panel header="Date & Session Details" [toggleable]="true">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="font-semibold">From Date</label>
+              <p>{{ formatDisplayDate(selectedLeave()?.fromDate) }}</p>
+            </div>
+            <div>
+              <label class="font-semibold">To Date</label>
+              <p>{{ formatDisplayDate(selectedLeave()?.toDate) }}</p>
+            </div>
+            <div>
+              <label class="font-semibold">Session From</label>
+              <p>{{ selectedLeave()?.sessionFrom }}</p>
+            </div>
+            <div>
+              <label class="font-semibold">Session To</label>
+              <p>{{ selectedLeave()?.sessionTo }}</p>
+            </div>
+          </div>
+        </p-panel>
+
+        <p-panel header="Additional Information" [toggleable]="true">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="font-semibold">Reason</label>
+              <p>{{ selectedLeave()?.reason }}</p>
+            </div>
+            @if (selectedLeave()?.ccTo) {
+            <div class="md:col-span-2">
+              <label class="font-semibold">Cc To</label>
+              <p>{{ selectedLeave()?.ccTo }}</p>
+            </div>
+            }
+            @if (selectedLeave()?.createdAt) {
+            <div class="md:col-span-2">
+              <label class="font-semibold">Created At</label>
+              <p>{{ formatDisplayDate(selectedLeave()?.createdAt) }}</p>
+            </div>
+            }
+          </div>
+        </p-panel>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-4 p-4 border-t bg-white">
+          <p-button
+            label="Close"
+            icon="pi pi-times"
+            (click)="viewDialogVisible.set(false)"
+            styleClass="!bg-gray-200 hover:!bg-gray-300 !text-gray-800 !px-4 !py-2 !rounded !border-0"
+          >
+          </p-button>
+        </div>
+      </ng-template>
+    </p-drawer>
+
+    <!-- TABLE -->
+    <div class="bg-white rounded-lg shadow-sm p-4 overflow-x-auto">
+      <!-- Action Template -->
+      <ng-template #actionTemplate let-leave>
+        <div class="flex items-center justify-center">
+          <p-button
+            icon="pi pi-ellipsis-v"
+            [text]="true"
+            [rounded]="true"
+            (click)="actionMenu.toggle($event)"
+            styleClass="!text-gray-600 hover:!bg-gray-100"
+          >
+          </p-button>
+          <p-menu #actionMenu [popup]="true" appendTo="body" [styleClass]="'min-w-[150px]'">
+            <ng-template pTemplate="start">
+              <div class="p-1">
+                <!-- View -->
+                <button
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-blue-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  (click)="viewLeave(leave._originalLeave || leave); actionMenu.hide()"
+                >
+                  <i class="pi pi-eye text-blue-600"></i>
+                  <span class="text-gray-700 hover:text-blue-600">View</span>
+                </button>
+
+                <!-- Edit -->
+                <button
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-amber-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  (click)="editLeave(leave._originalLeave || leave); actionMenu.hide()"
+                >
+                  <i class="pi pi-pencil text-amber-600"></i>
+                  <span class="text-gray-700 hover:text-amber-600">Edit</span>
+                </button>
+
+                <!-- Separator -->
+                <div class="border-t border-gray-200 my-1"></div>
+
+                <!-- Delete -->
+                <button
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-red-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  (click)="deleteLeave(leave._originalLeave || leave); actionMenu.hide()"
+                >
+                  <i class="pi pi-trash text-red-600"></i>
+                  <span class="text-red-600 hover:text-red-700">Delete</span>
+                </button>
+              </div>
+            </ng-template>
+          </p-menu>
+        </div>
+      </ng-template>
+
+      <app-table-template
+        [data]="tableData()"
+        [columns]="columns"
+        [isLoading]="loading()"
+        [totalRecords]="totalRecords()"
+        [rows]="rows()"
+        [first]="first()"
+        [globalFilter]="globalFilter()"
+        [sortField]="sortField()"
+        [sortOrder]="sortOrder()"
+        [actionTemplate]="actionTemplate"
+        [emptyMessage]="'No leaves found'"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)"
+        (globalFilterChange)="onGlobalFilterChange($event)"
+      >
+      </app-table-template>
+    </div>
+
+    <!-- LEAVE DRAWER -->
+    <p-drawer
+      [(visible)]="leaveDrawerVisible"
+      position="right"
+      [modal]="true"
+      [dismissible]="false"
+      [style]="{ width: '100%', maxWidth: '820px' }"
+    >
+      <!-- DRAWER HEADER -->
+      <ng-template pTemplate="header">
+        <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
+          <div class="flex items-center gap-2">
+            <i [class]="headerIcon() + ' text-[#1976D2]'"></i>
+            <span class="text-lg font-semibold text-gray-800">{{ header() }}</span>
+          </div>
+          <p-button
+            icon="pi pi-times"
+            [text]="true"
+            [rounded]="true"
+            (click)="closeLeaveDrawer()"
+            styleClass="!text-gray-600 hover:!bg-gray-100"
+          >
+          </p-button>
+        </div>
+      </ng-template>
+
+      <!-- DRAWER BODY - LEAVE FORM -->
+      <form [formGroup]="leaveForm" class="flex flex-col gap-6 p-4 overflow-y-auto">
+        <!-- DATE & SESSION DETAILS -->
+        <p-panel header="Date & Session Details" [toggleable]="true" [collapsed]="false">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- From Date -->
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">From Date *</label>
-              <p-datepicker formControlName="fromDate" dateFormat="yy-mm-dd" [showIcon]="true" styleClass="w-full"
-                appendTo="body" placeholder="yyyy-mm-dd">
+              <label class="text-sm font-medium text-gray-700"
+                >From Date <span class="text-red-500">*</span></label
+              >
+              <p-datepicker
+                formControlName="fromDate"
+                dateFormat="yy-mm-dd"
+                [showIcon]="true"
+                styleClass="w-full"
+                appendTo="body"
+                placeholder="Select date"
+                [class.p-invalid]="
+                  leaveForm.get('fromDate')?.invalid && leaveForm.get('fromDate')?.touched
+                "
+              >
               </p-datepicker>
+              @if (leaveForm.get('fromDate')?.invalid && leaveForm.get('fromDate')?.touched) {
+              <small class="text-red-500 text-xs mt-1">From date is required</small>
+              }
             </div>
 
             <!-- To Date -->
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">To Date *</label>
-              <p-datepicker formControlName="toDate" dateFormat="yy-mm-dd" [showIcon]="true" styleClass="w-full"
-                appendTo="body" placeholder="yyyy-mm-dd">
+              <label class="text-sm font-medium text-gray-700"
+                >To Date <span class="text-red-500">*</span></label
+              >
+              <p-datepicker
+                formControlName="toDate"
+                dateFormat="yy-mm-dd"
+                [showIcon]="true"
+                styleClass="w-full"
+                appendTo="body"
+                placeholder="Select date"
+                [class.p-invalid]="leaveForm.get('toDate')?.invalid && leaveForm.get('toDate')?.touched"
+              >
               </p-datepicker>
+              @if (leaveForm.get('toDate')?.invalid && leaveForm.get('toDate')?.touched) {
+              <small class="text-red-500 text-xs mt-1">To date is required</small>
+              }
             </div>
-          </div>
 
-          <!-- Row 2: Session From | Session To -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Session From -->
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Session From *</label>
-              <p-select formControlName="sessionFrom" [options]="sessionOptions" optionLabel="label" optionValue="value"
-                placeholder="Select Session" styleClass="w-full">
+              <label class="text-sm font-medium text-gray-700"
+                >Session From <span class="text-red-500">*</span></label
+              >
+              <p-select
+                formControlName="sessionFrom"
+                [options]="sessionOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Session"
+                styleClass="w-full"
+                [class.p-invalid]="
+                  leaveForm.get('sessionFrom')?.invalid && leaveForm.get('sessionFrom')?.touched
+                "
+              >
               </p-select>
+              @if (leaveForm.get('sessionFrom')?.invalid && leaveForm.get('sessionFrom')?.touched) {
+              <small class="text-red-500 text-xs mt-1">Session from is required</small>
+              }
             </div>
 
             <!-- Session To -->
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Session To *</label>
-              <p-select formControlName="sessionTo" [options]="sessionOptions" optionLabel="label" optionValue="value"
-                placeholder="Select Session" styleClass="w-full">
+              <label class="text-sm font-medium text-gray-700"
+                >Session To <span class="text-red-500">*</span></label
+              >
+              <p-select
+                formControlName="sessionTo"
+                [options]="sessionOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Session"
+                styleClass="w-full"
+                [class.p-invalid]="leaveForm.get('sessionTo')?.invalid && leaveForm.get('sessionTo')?.touched"
+              >
               </p-select>
+              @if (leaveForm.get('sessionTo')?.invalid && leaveForm.get('sessionTo')?.touched) {
+              <small class="text-red-500 text-xs mt-1">Session to is required</small>
+              }
             </div>
           </div>
+        </p-panel>
 
-          <!-- Row 3: Leave Type | Cc To -->
+        <!-- LEAVE TYPE DETAILS -->
+        <p-panel header="Leave Type Details" [toggleable]="true" [collapsed]="false">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Leave Type -->
             <div class="flex flex-col gap-1">
-              <label class="text-sm font-medium text-gray-700">Leave Type *</label>
-              <p-select formControlName="leaveType" [options]="leaveTypes" optionLabel="label" optionValue="value"
-                placeholder="Select Leave Type" styleClass="w-full">
+              <label class="text-sm font-medium text-gray-700"
+                >Leave Type <span class="text-red-500">*</span></label
+              >
+              <p-select
+                formControlName="leaveType"
+                [options]="leaveTypes"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Leave Type"
+                styleClass="w-full"
+                [class.p-invalid]="leaveForm.get('leaveType')?.invalid && leaveForm.get('leaveType')?.touched"
+              >
               </p-select>
+              @if (leaveForm.get('leaveType')?.invalid && leaveForm.get('leaveType')?.touched) {
+              <small class="text-red-500 text-xs mt-1">Leave type is required</small>
+              }
             </div>
 
             <!-- Cc To -->
             <div class="flex flex-col gap-1">
               <label class="text-sm font-medium text-gray-700">Cc To</label>
-              <input pInputText formControlName="ccTo" type="email" class="w-full"
-                placeholder="Enter email address (e.g., email@example.com)">
+              <input
+                pInputText
+                formControlName="ccTo"
+                type="email"
+                class="w-full"
+                placeholder="Enter email address (e.g., email@example.com)"
+              />
             </div>
           </div>
+        </p-panel>
 
-          <!-- Row 4: Reason (Full Width) -->
+        <!-- ADDITIONAL INFORMATION -->
+        <p-panel header="Additional Information" [toggleable]="true" [collapsed]="false">
           <div class="flex flex-col gap-1">
-            <label class="text-sm font-medium text-gray-700">Reason *</label>
-            <textarea pInputTextarea formControlName="reason" rows="4" class="w-full"
-              placeholder="Enter reason..."></textarea>
+            <label class="text-sm font-medium text-gray-700"
+              >Reason <span class="text-red-500">*</span></label
+            >
+            <textarea
+              pInputTextarea
+              formControlName="reason"
+              rows="4"
+              class="w-full"
+              placeholder="Enter reason..."
+              [class.p-invalid]="leaveForm.get('reason')?.invalid && leaveForm.get('reason')?.touched"
+            ></textarea>
+            @if (leaveForm.get('reason')?.invalid && leaveForm.get('reason')?.touched) {
+            <small class="text-red-500 text-xs mt-1">Reason is required</small>
+            }
           </div>
+        </p-panel>
+      </form>
+
+      <!-- DRAWER FOOTER -->
+      <ng-template pTemplate="footer">
+        <div class="flex flex-col sm:flex-row justify-end gap-3 p-4 border-t bg-white">
+          <p-button
+            label="Cancel"
+            icon="pi pi-times"
+            (click)="closeLeaveDrawer()"
+            styleClass="!bg-gray-200 hover:!bg-gray-300 !text-gray-800 !px-4 !py-2 !rounded !border-0 w-full sm:w-auto"
+          >
+          </p-button>
+          <p-button
+            label="Reset"
+            icon="pi pi-refresh"
+            (click)="resetLeaveForm()"
+            styleClass="!bg-gray-200 hover:!bg-gray-300 !text-gray-800 !px-4 !py-2 !rounded !border-0 w-full sm:w-auto"
+          >
+          </p-button>
+          <p-button
+            [label]="drawerMode() === 'add' ? 'Add Leave' : 'Update Leave'"
+            [icon]="drawerMode() === 'add' ? 'pi pi-plus' : 'pi pi-check'"
+            (click)="onSubmitLeaveForm()"
+            [loading]="isSubmitting()"
+            styleClass="!bg-[#1976D2] hover:!bg-[#1565C0] !text-white !px-4 !py-2 !rounded !border-0 w-full sm:w-auto"
+          >
+          </p-button>
         </div>
-      </p-panel>
-
-    </form>
-
-    <!-- DRAWER FOOTER -->
-    <ng-template pTemplate="footer">
-      <div class="flex justify-end gap-3 p-4 border-t">
-        <p-button label="Cancel" icon="pi pi-times" (click)="closeLeaveDrawer()" [outlined]="true"
-          styleClass="!bg-transparent !border-[#1976D2] !text-[#1976D2] hover:!bg-[#1976D2] hover:!text-white">
-        </p-button>
-        <p-button label="Reset" icon="pi pi-refresh" (click)="resetLeaveForm()" [outlined]="true"
-          styleClass="!bg-transparent !border-[#1976D2] !text-[#1976D2] hover:!bg-[#1976D2] hover:!text-white">
-        </p-button>
-        <p-button label="Add Leave" icon="pi pi-plus" (click)="onSubmitLeaveForm()" [loading]="isSubmitting()"
-          styleClass="!bg-[#1976D2] hover:!bg-[#3581cc] !border-[#1976D2] hover:!border-[#3581cc] !text-white">
-        </p-button>
-      </div>
-    </ng-template>
-
-  </p-drawer>
+      </ng-template>
+    </p-drawer>
+  </div>
 </div>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

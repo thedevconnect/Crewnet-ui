@@ -87,6 +87,7 @@ export class Layout {
     { menu: 'Employee Profile Setup', icon: 'pi-user', route: '/ess/emp-profile-setup' },
     { menu: 'Leaves', icon: 'pi-calendar-minus', route: '/ess/leaves' },
     { menu: 'Attendance', icon: 'pi-calendar', route: '/ess/attendance' },
+    { menu: 'Employee Calendar', icon: 'pi-calendar-plus', route: '/ess/employee-calendar' },
     { menu: 'Shifts', icon: 'pi-clock', route: '/ess/shifts' },
     { menu: 'Departments', icon: 'pi-building', route: '/ess/departments' },
     { menu: 'Reports', icon: 'pi-file', route: '/ess/reports' },

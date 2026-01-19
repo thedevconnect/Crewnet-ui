@@ -1,0 +1,271 @@
+<div class="ess-dashboard">
+  <div class="dashboard-header">
+    <div>
+      <h1>ESS Dashboard</h1>
+      <p>Employee Self Service Portal</p>
+    </div>
+    @if (currentMonth()) {
+    <div class="month-selector">
+      <span class="current-month">{{ currentMonth()?.monthName }}</span>
+    </div>
+    }
+  </div>
+
+  @if (loading()) {
+  <div class="loading-state">
+    <p>Loading dashboard data...</p>
+  </div>
+  } @else if (error()) {
+  <div class="error-state">
+    <p class="error-message">{{ error() }}</p>
+    <button pButton label="Retry" (onClick)="loadDashboard()"></button>
+  </div>
+  } @else if (dashboardData()) {
+  <!-- Summary Cards -->
+  <div class="stats-grid">
+    <!-- Total Employees -->
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon bg-blue-100 text-blue-600">
+          <i class="pi pi-users"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ summary()?.totalEmployees || 0 }}</div>
+          <div class="stat-label">Total Employees</div>
+          <div class="stat-sublabel">{{ summary()?.activeEmployees || 0 }} Active</div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Today Swipe Ins -->
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon bg-green-100 text-green-600">
+          <i class="pi pi-sign-in"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ summary()?.todaySwipeIns || 0 }}</div>
+          <div class="stat-label">Today Swipe Ins</div>
+          <div class="stat-sublabel">{{ attendancePercentage() }}% Attendance</div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Still Inside -->
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon bg-purple-100 text-purple-600">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ summary()?.todayStats?.still_inside || 0 }}</div>
+          <div class="stat-label">Still Inside</div>
+          <div class="stat-sublabel">{{ summary()?.todayStats?.total_swipe_outs || 0 }} Swiped Out</div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Unique Employees This Month -->
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon bg-orange-100 text-orange-600">
+          <i class="pi pi-calendar"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ currentMonth()?.stats?.uniqueEmployees || 0 }}</div>
+          <div class="stat-label">Unique Employees</div>
+          <div class="stat-sublabel">{{ currentMonth()?.stats?.workingDays || 0 }} Working Days</div>
+        </div>
+      </div>
+    </p-card>
+
+    <!-- Average Working Hours -->
+    <p-card styleClass="stat-card">
+      <div class="stat-content">
+        <div class="stat-icon bg-indigo-100 text-indigo-600">
+          <i class="pi pi-hourglass"></i>
+        </div>
+        <div class="stat-details">
+          <div class="stat-value">{{ avgWorkingHours() }}h</div>
+          <div class="stat-label">Avg Working Hours</div>
+          <div class="stat-sublabel">{{ currentMonth()?.stats?.avgWorkingMinutes || 0 }} Minutes/Day</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="content-grid">
+    <!-- Current Month Stats -->
+    <p-card styleClass="content-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h2>Current Month Overview</h2>
+        </div>
+      </ng-template>
+      @if (currentMonth()) {
+      <div class="month-stats">
+        <div class="stat-row">
+          <span class="stat-label">Total Swipe Ins</span>
+          <span class="stat-value-large">{{ currentMonth()?.stats?.totalSwipeIns || 0 }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total Swipe Outs</span>
+          <span class="stat-value-large">{{ currentMonth()?.stats?.totalSwipeOuts || 0 }}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Working Days</span>
+          <span class="stat-value-large">{{ currentMonth()?.stats?.workingDays || 0 }}</span>
+        </div>
+      </div>
+
+      @if (lastMonth()?.comparison?.uniqueEmployees) {
+      <div class="comparison-section">
+        <h3 class="comparison-title">vs Last Month</h3>
+        <div class="comparison-item">
+          <span>Unique Employees</span>
+          <span [class]="getComparisonClass(lastMonth()!.comparison!.uniqueEmployees!.changeType)">
+            <i [class]="getComparisonIcon(lastMonth()!.comparison!.uniqueEmployees!.changeType)"></i>
+            {{ lastMonth()!.comparison!.uniqueEmployees!.change > 0 ? '+' : '' }}{{ lastMonth()!.comparison!.uniqueEmployees!.change }}
+          </span>
+        </div>
+      </div>
+      }
+      }
+    </p-card>
+
+    <!-- Department Wise Stats -->
+    <p-card styleClass="content-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h2>Department Attendance</h2>
+        </div>
+      </ng-template>
+      @if (departmentWise().length > 0) {
+      <div class="department-list">
+        @for (dept of departmentWise(); track dept.department) {
+        <div class="department-item">
+          <div class="department-info">
+            <span class="department-name">{{ dept.department }}</span>
+            <span class="department-count">{{ dept.presentToday }}/{{ dept.totalEmployees }}</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="(dept.presentToday / dept.totalEmployees) * 100"></div>
+            </div>
+            <span class="percentage-text">{{ getPercentage(dept.presentToday, dept.totalEmployees) }}%</span>
+          </div>
+          <div class="department-stats">
+            <span class="stat-badge leave">Leave: {{ dept.onLeave }}</span>
+            <span class="stat-badge absent">Absent: {{ dept.absent }}</span>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">No department data available</div>
+      }
+    </p-card>
+  </div>
+
+  <!-- Day Wise Chart -->
+  <p-card styleClass="content-card full-width">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h2>Day Wise Attendance</h2>
+      </div>
+    </ng-template>
+    @if (dayWise().length > 0) {
+    <div class="day-wise-container">
+      <div class="day-wise-grid">
+        @for (day of dayWise(); track day.date) {
+        <div class="day-item">
+          <div class="day-date">{{ formatDate(day.date) }}</div>
+          <div class="day-stats">
+            <div class="day-stat">
+              <i class="pi pi-sign-in text-green-600"></i>
+              <span>{{ day.swipe_in_count }}</span>
+            </div>
+            <div class="day-stat">
+              <i class="pi pi-sign-out text-red-600"></i>
+              <span>{{ day.swipe_out_count }}</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    } @else {
+    <div class="empty-state">No day-wise data available</div>
+    }
+  </p-card>
+
+  <!-- Bottom Grid -->
+  <div class="bottom-grid">
+    <!-- Leave Stats -->
+    <p-card styleClass="content-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h2>Leave Statistics</h2>
+        </div>
+      </ng-template>
+      @if (leaveStats().length > 0) {
+      <div class="leave-stats">
+        @for (leave of leaveStats(); track leave.leaveType) {
+        <div class="leave-item">
+          <span class="leave-type">{{ leave.leaveType }}</span>
+          <div class="leave-details">
+            <span class="leave-count">{{ leave.count }} Requests</span>
+            <span class="leave-days">{{ leave.totalDays }} Days</span>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">No leave statistics available</div>
+      }
+    </p-card>
+
+    <!-- Holiday Stats -->
+    <p-card styleClass="content-card">
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h2>Holidays</h2>
+        </div>
+      </ng-template>
+      @if (holidayStats()) {
+      <div class="holiday-stats">
+        <div class="holiday-summary">
+          <div class="holiday-stat">
+            <span class="stat-label">Total Holidays</span>
+            <span class="stat-value">{{ holidayStats()?.totalHolidays || 0 }}</span>
+          </div>
+          <div class="holiday-stat">
+            <span class="stat-label">This Month</span>
+            <span class="stat-value">{{ holidayStats()?.holidaysThisMonth || 0 }}</span>
+          </div>
+        </div>
+        @if (holidayStats()?.upcomingHolidays && holidayStats()!.upcomingHolidays.length > 0) {
+        <div class="upcoming-holidays">
+          <h3 class="section-title">Upcoming Holidays</h3>
+          @for (holiday of holidayStats()!.upcomingHolidays; track holiday.date) {
+          <div class="holiday-item">
+            <i class="pi pi-calendar text-orange-500"></i>
+            <div class="holiday-info">
+              <span class="holiday-name">{{ holiday.name }}</span>
+              <span class="holiday-date">{{ formatFullDate(holiday.date) }}</span>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="empty-state">No holiday information available</div>
+      }
+    </p-card>
+  </div>
+  }
+</div>
+

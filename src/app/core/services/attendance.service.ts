@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, throwError, map, of } from 'rxjs';
 
 export interface AttendanceRecord {
@@ -99,4 +99,33 @@ export class AttendanceService {
       })
     );
   }
+
+  getCalendar(employeeId: number, month: string): Observable<CalendarResponse> {
+    const params = new HttpParams()
+      .set('employeeId', employeeId.toString())
+      .set('month', month);
+    
+    return this.http.get<CalendarResponse>(`${this.baseUrl}/calendar`, { params }).pipe(
+      catchError(error => {
+        console.error('Get Calendar error:', error);
+        return throwError(() => ({
+          success: false,
+          error: error.error?.error || error.error?.message || error.message || 'Failed to fetch calendar data.'
+        }));
+      })
+    );
+  }
+}
+
+export interface CalendarDay {
+  date: string; // YYYY-MM-DD format
+  status: 'P' | 'PH' | 'WO' | 'CL' | 'SL' | 'A' | null;
+}
+
+export interface CalendarResponse {
+  success: boolean;
+  data?: CalendarDay[];
+  month?: string;
+  employeeId?: number;
+  error?: string;
 }

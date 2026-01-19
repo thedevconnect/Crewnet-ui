@@ -1,0 +1,121 @@
+<div class="employee-calendar-container">
+  <p-card styleClass="calendar-card">
+    <!-- Header Section -->
+    <div class="calendar-header">
+      <!-- Employee Selection -->
+      <div class="employee-selector">
+        <label for="employee-select" class="selector-label">Select Employee:</label>
+        <p-select
+          id="employee-select"
+          [options]="employees()"
+          [(ngModel)]="selectedEmployeeId"
+          optionLabel="label"
+          optionValue="id"
+          placeholder="Select an employee"
+          [showClear]="false"
+          styleClass="employee-dropdown"
+        >
+        </p-select>
+      </div>
+
+      <!-- Month Navigation -->
+      <div class="month-navigation">
+        <div class="month-display">
+          <h2 class="month-title">{{ currentMonthFormatted() }}</h2>
+        </div>
+        <div class="navigation-buttons">
+          <p-button
+            icon="pi pi-chevron-left"
+            [text]="true"
+            [rounded]="true"
+            (onClick)="goToPreviousMonth()"
+            pTooltip="Previous Month"
+            styleClass="nav-button"
+          ></p-button>
+          <p-button
+            label="Today"
+            [text]="true"
+            (onClick)="goToToday()"
+            pTooltip="Go to Current Month"
+            styleClass="today-button"
+          ></p-button>
+          <p-button
+            icon="pi pi-chevron-right"
+            [text]="true"
+            [rounded]="true"
+            (onClick)="goToNextMonth()"
+            pTooltip="Next Month"
+            styleClass="nav-button"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    @if (loading()) {
+    <div class="loading-state">
+      <p>Loading calendar...</p>
+    </div>
+    } @else {
+    <div class="calendar-grid">
+      <!-- Week Day Headers -->
+      <div class="week-headers">
+        @for (day of weekDays; track day) {
+        <div class="week-header-cell">{{ day }}</div>
+        }
+      </div>
+
+      <!-- Calendar Cells -->
+      <div class="calendar-cells">
+        @for (cell of calendarCells(); track cell.date.getTime()) {
+        <div
+          class="calendar-cell"
+          [class.cell-current-month]="cell.isCurrentMonth"
+          [class.cell-other-month]="!cell.isCurrentMonth"
+          [class.cell-today]="cell.isToday"
+          [class]="getStatusClass(cell.status)"
+        >
+          <!-- Date Number (Top-Right) -->
+          <div class="date-number">{{ cell.dayNumber }}</div>
+
+          <!-- Status Badge -->
+          @if (cell.status) {
+          <div class="status-badge" [class]="getStatusClass(cell.status)">
+            <span class="status-code">{{ cell.status }}</span>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Legend -->
+    <div class="calendar-legend">
+      <div class="legend-title">Legend:</div>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-badge status-present">P</span>
+          <span class="legend-label">Present</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-public-holiday">PH</span>
+          <span class="legend-label">Public Holiday</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-weekly-off">WO</span>
+          <span class="legend-label">Weekly Off</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-leave">CL/SL</span>
+          <span class="legend-label">Leave</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-badge status-absent">A</span>
+          <span class="legend-label">Absent</span>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>
+

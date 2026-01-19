@@ -14,6 +14,7 @@ import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
 // ESS Components
 import { EssEmployee } from './ess-components/ess-employee/ess-employee';
 import { EmpProfileSetup } from './ess-components/emp-profile-setup/emp-profile-setup';
+import { EmployeeCalendar } from './shared/components/employee-calendar/employee-calendar';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -41,6 +42,7 @@ export const routes: Routes = [
           { path: 'emp-profile-setup', component: EmpProfileSetup },
           { path: 'ess-employee', component: EssEmployee },
           { path: 'attendance', component: Attendance },
+          { path: 'employee-calendar', component: EmployeeCalendar },
           { path: 'leaves', component: Leaves },
         ],
       },
