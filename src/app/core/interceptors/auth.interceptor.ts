@@ -34,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           replaceUrl: true
         });
       }
-      return throwError(() => error);
+      return throwError(() => error); 
     })
   );
 };
