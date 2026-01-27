@@ -28,11 +28,21 @@ export interface ApiResponse<T> {
     data: T;
 }
 
+export interface Role {
+    id: number;
+    roleName: string;
+    roleCode: string;
+    description: string;
+    status: string;
+    menus: any[];
+}
+
 export interface AuthResponse {
     success: boolean;
     message: string;
     token?: string;
     user?: User;
+    roles?: Role[];
 }
 
 @Injectable({
@@ -58,17 +68,43 @@ export class AuthService {
 
     login(email: string, password: string): Observable<AuthResponse> {
         return this.http
-            .post<AuthResponse>(`${this.baseUrl}/auth/login`, { email, password })
+            .post<any>(`${this.baseUrl}/auth/login`, { email, password })
             .pipe(
-                tap((response) => {
-                    if (response.success && response.token && response.user) {
-                        // Store token in localStorage
-                        localStorage.setItem('oblo_token', response.token);
-                        // Store user info in localStorage
-                        localStorage.setItem('oblo_user', JSON.stringify(response.user));
+                map((response) => {
+                    if (response.success) {
+                        // Store token if available
+                        if (response.token) {
+                            localStorage.setItem('oblo_token', response.token);
+                        } else {
+                            // If no token, store a flag to indicate authenticated
+                            localStorage.setItem('oblo_token', 'authenticated');
+                        }
+                        
+                        // Store user info
+                        const user: User = {
+                            id: response.user?.id?.toString() || '',
+                            name: response.user?.name || response.user?.email || '',
+                            email: response.user?.email || email,
+                        };
+                        localStorage.setItem('oblo_user', JSON.stringify(user));
+                        
+                        // Store roles if available
+                        if (response.roles && Array.isArray(response.roles)) {
+                            localStorage.setItem('oblo_roles', JSON.stringify(response.roles));
+                        }
+                        
                         // Update signal
-                        this.currentUser.set(response.user);
+                        this.currentUser.set(user);
+                        
+                        return {
+                            success: true,
+                            message: response.message || 'Login successful',
+                            token: response.token || 'authenticated',
+                            user: user,
+                            roles: response.roles || [],
+                        };
                     }
+                    throw new Error(response.message || 'Login failed');
                 }),
                 catchError((error) => {
                     console.error('Login error:', error);
@@ -130,8 +166,22 @@ export class AuthService {
     logout(): void {
         localStorage.removeItem('oblo_token');
         localStorage.removeItem('oblo_user');
+        localStorage.removeItem('oblo_roles');
         this.currentUser.set(null);
         this.router.navigate(['/login']);
+    }
+
+    getRoles(): Role[] {
+        const rolesStr = localStorage.getItem('oblo_roles');
+        if (rolesStr) {
+            try {
+                return JSON.parse(rolesStr) as Role[];
+            } catch (error) {
+                console.error('Error parsing roles from localStorage:', error);
+                return [];
+            }
+        }
+        return [];
     }
 
     loadUser(): void {

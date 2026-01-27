@@ -51,15 +51,15 @@ export class Layout {
     const user = this.currentUser();
     return user
       ? {
-          name: user.name,
-          email: user.email || '',
-          role: user.role || 'User',
-        }
+        name: user.name,
+        email: user.email || '',
+        role: user.role || 'User',
+      }
       : {
-          name: 'Guest User',
-          email: 'guest@oblo.com',
-          role: 'Guest',
-        };
+        name: 'Guest User',
+        email: 'guest@oblo.com',
+        role: 'Guest',
+      };
   });
 
   protected readonly roleList: RoleOption[] = [

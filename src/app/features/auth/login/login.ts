@@ -1,96 +1,128 @@
-import { Component, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, signal, inject, ChangeDetectorRef, computed } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { CaptchaComponent } from '../../../common components/captcha/captcha';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [FormsModule, CommonModule, ToastModule, CaptchaComponent],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [MessageService],
 })
 export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly messageService = inject(MessageService);
 
-  protected readonly loginForm: FormGroup;
-  protected readonly error = signal('');
+  // Form data
+  userId: string = '';
+  password: string = '';
+  resetEmail: string = '';
+  showPassword: boolean = false;
+
+  // Form display signals
+  protected readonly formIcon = signal('pi pi-arrow-right');
+  protected readonly formTitle = signal('Welcome back!');
+  protected readonly formSubtitle = signal('Please fill the fields to sign-in oblo');
+
+  // State signals
+  protected readonly isLoginView = signal(true);
   protected readonly loading = signal(false);
-  protected readonly showPassword = signal(false);
+  protected readonly error = signal('');
 
-  constructor() {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false],
+  // Computed values for form display
+  protected readonly isLogin = computed(() => this.isLoginView());
+  protected readonly isProccess = computed(() => this.loading());
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+    this.cdr.detectChanges();
+  }
+
+  toggleView(): void {
+    this.isLoginView.update((value) => !value);
+    this.error.set('');
+    this.userId = '';
+    this.password = '';
+    this.resetEmail = '';
+
+    // Update form display based on view
+    if (this.isLoginView()) {
+      this.formIcon.set('pi pi-arrow-right');
+      this.formTitle.set('Welcome back!');
+      this.formSubtitle.set('Please fill the fields to sign-in oblo');
+    } else {
+      this.formIcon.set('pi pi-key');
+      this.formTitle.set('RESET PASSWORD');
+      this.formSubtitle.set('Enter your email to receive a password reset link');
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  login(): void {
+    this.loading.set(true);
+
+    this.authService.login(this.userId, this.password).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.loading.set(false);
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.loading.set(false);
+        }
+      },
+      error: () => {
+        this.loading.set(false);
+      },
     });
   }
 
-  get emailControl() {
-    return this.loginForm.get('email');
-  }
-
-  get passwordControl() {
-    return this.loginForm.get('password');
-  }
-
-  togglePasswordVisibility(): void {
-    this.showPassword.update((value) => !value);
-  }
-
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      Object.keys(this.loginForm.controls).forEach(key => {
-        this.loginForm.get(key)?.markAsTouched();
+  resetPassword(): void {
+    if (!this.resetEmail) {
+      this.error.set('Please enter your email address');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please enter your email address',
       });
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.resetEmail)) {
+      this.error.set('Please enter a valid email address');
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please enter a valid email address',
+      });
+      this.cdr.detectChanges();
       return;
     }
 
     this.loading.set(true);
     this.error.set('');
 
-    const { email, password } = this.loginForm.value;
-
-    this.authService.login(email, password).subscribe({
-      next: (response) => {
-        if (response.success && response.token) {
-          // Token is already stored by the service in tap operator
-          // Wait a tick to ensure localStorage is updated
-          setTimeout(() => {
-            if (this.authService.isAuthenticated()) {
-              const returnUrl = this.router.routerState.snapshot.root.queryParams['returnUrl'] || '/dashboard';
-              this.router.navigate([returnUrl]).then(() => {
-                this.loading.set(false);
-                this.cdr.detectChanges();
-              }).catch(() => {
-                // Fallback: use window.location if router navigation fails
-                this.loading.set(false);
-                window.location.href = '/dashboard';
-              });
-            } else {
-              this.loading.set(false);
-              console.error('Token not found after login');
-              this.error.set('Authentication failed. Please try again.');
-              this.cdr.detectChanges();
-            }
-          }, 0);
-        } else {
-          this.loading.set(false);
-          this.error.set(response.message || 'Login failed. Please try again.');
-          this.cdr.detectChanges();
-        }
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.error.set(
-          err?.message ||
-          err?.error?.message ||
-          'Login failed. Please check your credentials.'
-        );
-        this.cdr.detectChanges();
-      },
-    });
+    // TODO: Implement password reset service call
+    // For now, just show a success message
+    setTimeout(() => {
+      this.loading.set(false);
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Password reset link has been sent to your email',
+      });
+      this.resetEmail = '';
+      this.cdr.detectChanges();
+    }, 1000);
   }
 }

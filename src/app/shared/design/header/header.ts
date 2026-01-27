@@ -69,34 +69,78 @@ export class Header implements OnInit {
 
 
 
-  roleList: RoleOption[] = [
-    { rolDes: 'HR Admin', roleId: 'hrAdmin' },
-    { rolDes: 'ESS', roleId: 'ess' },
-  ];
+  roleList = signal<RoleOption[]>([]);
 
-  internalSelectedRoleId: string = 'hrAdmin';
+  internalSelectedRoleId: string = '';
 
-  filteredRoleList = signal<RoleOption[]>(this.roleList);
+  filteredRoleList = computed(() => this.roleList());
 
   currentRole = computed(() => {
     const roleId = this.internalSelectedRoleId || this.selectedRoleId();
-    const role = this.roleList.find((r) => r.roleId === roleId);
-    return role?.rolDes || 'HR Admin';
+    const roles = this.roleList();
+    const role = roles.find((r) => r.roleId === roleId);
+    return role?.rolDes || (roles.length > 0 ? roles[0].rolDes : 'Select Role');
   });
 
   userMenuItems: MenuItem[] = [];
 
   ngOnInit(): void {
     this.initUserMenu();
+    this.loadRoles();
 
     const parentRoleId = this.selectedRoleId();
-    if (parentRoleId === 'hr') {
-      this.internalSelectedRoleId = 'hrAdmin';
+    if (parentRoleId) {
+      this.internalSelectedRoleId = parentRoleId === 'hr' ? 'hrAdmin' : parentRoleId;
     } else {
-      this.internalSelectedRoleId = parentRoleId || 'hrAdmin';
+      const roles = this.roleList();
+      if (roles.length > 0) {
+        this.internalSelectedRoleId = roles[0].roleId;
+      }
     }
+  }
 
-    if (!this.internalSelectedRoleId && this.roleList.length > 0) {
+  private loadRoles(): void {
+    try {
+      const rolesStr = localStorage.getItem('oblo_roles');
+      if (rolesStr) {
+        const roles = JSON.parse(rolesStr) as any[];
+        const mappedRoles = roles.map(role => {
+          let roleId = role.roleCode?.toLowerCase().replace('_', '') || role.roleCode || `role_${role.id}`;
+          
+          // Map role codes to existing format
+          if (roleId === 'ess') roleId = 'ess';
+          else if (roleId === 'hradmin' || roleId === 'hr_admin') roleId = 'hrAdmin';
+          else if (roleId === 'superadmin' || roleId === 'super_admin') roleId = 'superAdmin';
+          
+          return {
+            rolDes: role.roleName || role.description || role.roleCode,
+            roleId: roleId,
+          };
+        });
+        
+        this.roleList.set(mappedRoles);
+        
+        // Set default selected role if not set
+        if (!this.internalSelectedRoleId && mappedRoles.length > 0) {
+          this.internalSelectedRoleId = mappedRoles[0].roleId;
+        }
+      } else {
+        // Fallback to default roles if none found
+        const defaultRoles = [
+          { rolDes: 'HR Admin', roleId: 'hrAdmin' },
+          { rolDes: 'ESS', roleId: 'ess' },
+        ];
+        this.roleList.set(defaultRoles);
+        this.internalSelectedRoleId = 'hrAdmin';
+      }
+    } catch (error) {
+      console.error('Error loading roles:', error);
+      // Fallback to default roles
+      const defaultRoles = [
+        { rolDes: 'HR Admin', roleId: 'hrAdmin' },
+        { rolDes: 'ESS', roleId: 'ess' },
+      ];
+      this.roleList.set(defaultRoles);
       this.internalSelectedRoleId = 'hrAdmin';
     }
   }

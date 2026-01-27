@@ -9,7 +9,7 @@
 
   <div class="header-right">
     <div class="role-dropdown">
-      <p-select [options]="roleList" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="internalSelectedRoleId"
+      <p-select [options]="roleList()" optionLabel="rolDes" optionValue="roleId" [(ngModel)]="internalSelectedRoleId"
         [placeholder]="currentRole() || 'Select Role'" [filter]="false" appendTo="body" styleClass="header-role-select"
         (onChange)="onRoleDropdownChange($event)">
       </p-select>

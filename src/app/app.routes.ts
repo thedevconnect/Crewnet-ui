@@ -8,7 +8,7 @@ import { EssDashboard } from './ess-components/dashboard/dashboard';
 
 // HR Admin Components
 import { Attendance } from './pages/attendance/attendance';
-import { Leaves } from './features/leaves/leaves';
+import { Leaves } from './ess-components/leaves/leaves';
 import { HrEmployees } from './hr-admin/employees/hr-employees/hr-employees';
 
 // ESS Components

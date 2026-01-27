@@ -29,7 +29,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   selector: 'app-ess-employee',
   imports: [
     CommonModule,
-    ReactiveFormsModule, 
+    ReactiveFormsModule,
     TableModule,
     ButtonModule,
     InputTextModule,
