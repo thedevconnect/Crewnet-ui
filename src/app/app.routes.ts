@@ -32,6 +32,7 @@ export const routes: Routes = [
           { path: 'dashboard', component: HrDashboard },
           { path: 'HrEmployees', component: HrEmployees },
           { path: 'leaves', component: Leaves },
+          { path: 'attendance', component: Attendance },
         ],
       },
       // ESS Routes

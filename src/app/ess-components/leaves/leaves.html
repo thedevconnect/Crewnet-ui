@@ -115,48 +115,41 @@
 
     <!-- TABLE -->
     <div class="bg-white rounded-lg shadow-sm p-4 overflow-x-auto">
-      <!-- Action Template -->
+      <!-- Action Template (shown in first column by table-template) -->
       <ng-template #actionTemplate let-leave>
-        <div class="flex items-center justify-center">
+        <div class="flex items-center justify-center gap-1">
           <p-button
             icon="pi pi-ellipsis-v"
             [text]="true"
             [rounded]="true"
             (click)="actionMenu.toggle($event)"
-            styleClass="!text-gray-600 hover:!bg-gray-100"
+            styleClass="!text-gray-600 hover:!bg-gray-100 !min-w-[2.5rem]"
           >
           </p-button>
-          <p-menu #actionMenu [popup]="true" appendTo="body" [styleClass]="'min-w-[150px]'">
+          <p-menu #actionMenu [popup]="true" appendTo="body" [styleClass]="'min-w-[160px] shadow-lg border border-gray-100'">
             <ng-template pTemplate="start">
               <div class="p-1">
-                <!-- View -->
                 <button
-                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-blue-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-blue-50 transition-all duration-200 border-0 bg-transparent cursor-pointer text-sm"
                   (click)="viewLeave(leave._originalLeave || leave); actionMenu.hide()"
                 >
                   <i class="pi pi-eye text-blue-600"></i>
-                  <span class="text-gray-700 hover:text-blue-600">View</span>
+                  <span class="text-gray-700">View</span>
                 </button>
-
-                <!-- Edit -->
                 <button
-                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-amber-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-amber-50 transition-all duration-200 border-0 bg-transparent cursor-pointer text-sm"
                   (click)="editLeave(leave._originalLeave || leave); actionMenu.hide()"
                 >
                   <i class="pi pi-pencil text-amber-600"></i>
-                  <span class="text-gray-700 hover:text-amber-600">Edit</span>
+                  <span class="text-gray-700">Edit</span>
                 </button>
-
-                <!-- Separator -->
                 <div class="border-t border-gray-200 my-1"></div>
-
-                <!-- Delete -->
                 <button
-                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-red-50 transition-all duration-200 border-0 bg-transparent cursor-pointer"
+                  class="flex items-center gap-3 w-full px-4 py-2.5 text-left rounded-lg hover:bg-red-50 transition-all duration-200 border-0 bg-transparent cursor-pointer text-sm"
                   (click)="deleteLeave(leave._originalLeave || leave); actionMenu.hide()"
                 >
                   <i class="pi pi-trash text-red-600"></i>
-                  <span class="text-red-600 hover:text-red-700">Delete</span>
+                  <span class="text-red-600">Delete</span>
                 </button>
               </div>
             </ng-template>

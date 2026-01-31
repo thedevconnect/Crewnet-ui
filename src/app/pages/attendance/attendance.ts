@@ -9,7 +9,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-attendance-page',
+  selector: 'app-attendance',
   standalone: true,
   imports: [CommonModule, ButtonModule, CardModule, ToastModule, TooltipModule, DatePipe],
   templateUrl: './attendance.html',
@@ -62,8 +62,8 @@ export class Attendance implements OnInit, OnDestroy {
     this.currentDate.set(now);
     this.currentTime.set(
       `${String(now.getHours()).padStart(2, '0')}:` +
-        `${String(now.getMinutes()).padStart(2, '0')}:` +
-        `${String(now.getSeconds()).padStart(2, '0')}`
+      `${String(now.getMinutes()).padStart(2, '0')}:` +
+      `${String(now.getSeconds()).padStart(2, '0')}`
     );
   }
 
@@ -178,7 +178,7 @@ export class Attendance implements OnInit, OnDestroy {
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.timerInterval = null;
         this.swipeInTime = null;
-        
+
         // Reload status to get updated total_time
         setTimeout(() => this.loadTodayStatus(), 400);
       },
@@ -194,11 +194,11 @@ export class Attendance implements OnInit, OnDestroy {
 
     const tick = () => {
       if (!this.swipeInTime) return;
-      
+
       // Current session elapsed time in milliseconds
       const currentSessionMs = Date.now() - this.swipeInTime.getTime();
       const currentSessionSeconds = Math.floor(currentSessionMs / 1000);
-      
+
       // Total time = previous completed sessions + current session
       const totalSeconds = this.previousTimeInSeconds + currentSessionSeconds;
 
@@ -208,8 +208,8 @@ export class Attendance implements OnInit, OnDestroy {
 
       this.elapsedTime.set(
         `${String(h).padStart(2, '0')}:` +
-          `${String(m).padStart(2, '0')}:` +
-          `${String(s).padStart(2, '0')}`
+        `${String(m).padStart(2, '0')}:` +
+        `${String(s).padStart(2, '0')}`
       );
     };
 
@@ -233,8 +233,8 @@ export class Attendance implements OnInit, OnDestroy {
 
     this.elapsedTime.set(
       `${String(h).padStart(2, '0')}:` +
-        `${String(m).padStart(2, '0')}:` +
-        `${String(s).padStart(2, '0')}`
+      `${String(m).padStart(2, '0')}:` +
+      `${String(s).padStart(2, '0')}`
     );
   }
 

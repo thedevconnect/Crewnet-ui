@@ -2,26 +2,9 @@
   <!-- Search Bar -->
   <div class="table-header mb-4">
     <div class="search-container">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search"></i>
-        <input
-          type="text"
-          pInputText
-          [value]="globalFilter"
-          (input)="onGlobalFilter($event)"
-          placeholder="Search..."
-          class="w-full"
-        />
-      </span>
-      @if (globalFilter) {
-      <button
-        pButton
-        icon="pi pi-times"
-        (click)="clearFilter()"
-        class="p-button-text p-button-sm"
-        pTooltip="Clear search"
-      ></button>
-      }
+      <input type="text" pInputText [value]="globalFilter" (input)="onGlobalFilter($event)" placeholder="Search..."
+        class="search-input" icon="pi pi-search" />
+
     </div>
   </div>
 
@@ -38,24 +21,15 @@
     }
   </div>
   } @else {
-  <p-table
-    [value]="data"
-    [columns]="columns"
-    [paginator]="true"
-    [rows]="rows"
-    [first]="first"
-    [totalRecords]="totalRecords"
-    [rowsPerPageOptions]="rowsPerPageOptions"
-    [sortField]="sortField"
-    [sortOrder]="sortOrder"
-    (onPage)="onPageChange($event)"
-    (onSort)="onSort($event)"
-    [lazy]="true"
-    styleClass="p-datatable-striped"
-    [tableStyle]="{ 'min-width': '50rem' }"
-  >
+  <p-table [value]="data" [columns]="columns" [paginator]="true" [rows]="rows" [first]="first"
+    [totalRecords]="totalRecords" [rowsPerPageOptions]="rowsPerPageOptions" [sortField]="sortField"
+    [sortOrder]="sortOrder" (onPage)="onPageChange($event)" (onSort)="onSort($event)" [lazy]="true"
+    styleClass="p-datatable-striped" [tableStyle]="{ 'min-width': '50rem' }">
     <ng-template pTemplate="header">
       <tr>
+        @if (actionTemplate) {
+        <th class="text-center" style="width: 100px">Actions</th>
+        }
         @for (col of columns; track col.field) {
         <th [pSortableColumn]="col.sortable ? col.field : ''" [style.width]="col.width">
           {{ col.header }}
@@ -64,26 +38,25 @@
           }
         </th>
         }
-        @if (actionTemplate) {
-        <th style="width: 120px">Actions</th>
-        }
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-rowData>
       <tr>
+        @if (actionTemplate) {
+        <td class="text-center">
+          <ng-container [ngTemplateOutlet]="actionTemplate"
+            [ngTemplateOutletContext]="{ $implicit: rowData }"></ng-container>
+        </td>
+        }
         @for (col of columns; track col.field) {
         <td>
           @if (col.template) {
-          <ng-container [ngTemplateOutlet]="col.template" [ngTemplateOutletContext]="{ $implicit: rowData, col: col }"></ng-container>
+          <ng-container [ngTemplateOutlet]="col.template"
+            [ngTemplateOutletContext]="{ $implicit: rowData, col: col }"></ng-container>
           } @else {
           {{ rowData[col.field] }}
           }
-        </td>
-        }
-        @if (actionTemplate) {
-        <td>
-          <ng-container [ngTemplateOutlet]="actionTemplate" [ngTemplateOutletContext]="{ $implicit: rowData }"></ng-container>
         </td>
         }
       </tr>
@@ -99,4 +72,3 @@
   </p-table>
   }
 </div>
-

@@ -76,7 +76,7 @@ export class Leaves implements OnInit {
   sortField = signal('');
   sortOrder = signal<number>(0);
 
-  // Table columns
+  // Table columns (Actions column is rendered first by table-template via actionTemplate)
   columns: TableColumn[] = [
     { field: 'id', header: 'ID', sortable: true, width: '80px' },
     { field: 'fromDate', header: 'From Date', sortable: true, width: '120px' },

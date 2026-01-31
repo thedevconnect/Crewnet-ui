@@ -46,7 +46,7 @@ import { EmployeeService } from '../../../core/services/employee.service';
     MenuModule,
     PrimeNgBreadcrumbModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService],
   templateUrl: './hr-employees.html',
   styleUrls: ['./hr-employees.scss'],
 })
@@ -67,7 +67,7 @@ export class HrEmployees implements OnInit {
   selectedEmployee = signal<any>(null);
   drawerMode = signal<'add' | 'edit'>('add');
 
-  header = signal(' Add New Employee11');
+  header = signal(' Add New Employee');
   headerIcon = signal('pi pi-user-plus');
 
   showEmployeeIdentity = signal(true);
@@ -313,7 +313,7 @@ export class HrEmployees implements OnInit {
       status: 'Active',
       gender: 'Male',
       role: 'ESS',
-      employmentType: 'Full Time',
+      employmentType: 'Full-time',
       joiningDate: new Date(),
       firstLogin: true,
     });
